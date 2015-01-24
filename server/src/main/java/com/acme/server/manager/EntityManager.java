@@ -14,20 +14,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Wired
 public class EntityManager extends ManagerSystem {
 
-    @Wired
     private ComponentMapper<InventoryComponent> icm;
-    @Wired
     private ComponentMapper<StatsComponent> scm;
-    @Wired
     private ComponentMapper<TypeComponent> incm;
-    @Wired
     private ComponentMapper<PickupComponent> pcm;
-    @Wired
     private ComponentMapper<DropComponent> dcm;
 
-    @Wired
     private Engine engine;
 
     private final Map<Type, CreatureTemplate> creaturesByType;

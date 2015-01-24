@@ -54,6 +54,9 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addSystem(new CombatManager());
         engine.addSystem(new HateListManager());
 
+        engine.initialize();
+        LOG.info("[Engine initialized]");
+
         populateWorld(spawnManager, worldManager);
         LOG.info("[World created]");
         startNetworkServer(networkSystem);

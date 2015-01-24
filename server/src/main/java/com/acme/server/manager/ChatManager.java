@@ -6,9 +6,9 @@ import com.acme.server.packet.outbound.ChatPacket;
 import com.acme.server.system.NetworkSystem;
 import com.badlogic.ashley.core.Entity;
 
+@Wired
 public class ChatManager extends ManagerSystem {
 
-    @Wired
     private NetworkSystem networkSystem;
 
     public void dispatchMessage(Entity sender, String message) {

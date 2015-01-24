@@ -18,16 +18,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+@Wired
 public class WorldManager extends ManagerSystem {
 
-    @Wired
     private ComponentMapper<PositionComponent> pcm;
-    @Wired
     private ComponentMapper<WorldComponent> wcm;
 
-    @Wired
     private Context context;
-    @Wired
     private NetworkSystem networkSystem;
 
     private final World world;

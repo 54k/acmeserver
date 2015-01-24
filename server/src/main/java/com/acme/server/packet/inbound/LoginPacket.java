@@ -16,8 +16,8 @@ public class LoginPacket extends InboundPacket {
     @Override
     public void read() {
         name = readString();
-        weapon = readInt();
         armor = readInt();
+        weapon = readInt();
     }
 
     @Override
