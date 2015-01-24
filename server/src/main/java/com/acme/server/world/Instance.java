@@ -11,15 +11,15 @@ public class Instance {
     private static final int REGION_WIDTH = 28;
     private static final int REGION_HEIGHT = 12;
 
-    private int id;
-    private World world;
-    private int maxPlayers;
+    private final int id;
+    private final World world;
+    private final int maxPlayers;
 
-    private int regionOffset;
-    private Map<Integer, Region> regions = new HashMap<>();
+    private final int regionOffset;
+    private final Map<Integer, Region> regions = new HashMap<>();
 
-    private Map<Long, Entity> entitiesById = new HashMap<>();
-    private Map<Long, Entity> playersById = new HashMap<>();
+    private final Map<Long, Entity> entitiesById = new HashMap<>();
+    private final Map<Long, Entity> playersById = new HashMap<>();
 
     public Instance(int id, World world, int maxPlayers) {
         this.id = id;
