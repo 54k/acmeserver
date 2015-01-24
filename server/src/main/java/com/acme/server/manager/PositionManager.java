@@ -14,13 +14,12 @@ import com.badlogic.ashley.core.Entity;
 
 import java.util.Random;
 
+@Wired
 public class PositionManager extends ManagerSystem {
 
     private static ComponentMapper<PositionComponent> pcm = ComponentMapper.getFor(PositionComponent.class);
 
-    @Wired
     private ComponentMapper<WorldComponent> wcm;
-    @Wired
     private NetworkSystem networkSystem;
 
     public void updatePosition(Entity entity, Position position) {

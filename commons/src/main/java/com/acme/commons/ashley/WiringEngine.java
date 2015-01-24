@@ -17,6 +17,8 @@ public class WiringEngine extends Engine {
     private final Injector injector;
     private final Engine engine;
 
+    private boolean initialized;
+
     public WiringEngine(Context context, Engine engine) {
         this.engine = engine;
         injector = new Injector(context, this);
@@ -43,7 +45,9 @@ public class WiringEngine extends Engine {
         Listener<Object> listener = ($1, $2) -> wireObject(system);
         injectionListeners.put(system, listener);
         injectSignal.add(listener);
-        injectSignal.dispatch(null);
+        if (initialized) {
+            injectSignal.dispatch(null);
+        }
     }
 
     @Override
@@ -87,7 +91,15 @@ public class WiringEngine extends Engine {
 
     @Override
     public void update(float deltaTime) {
+        initialize();
         engine.update(deltaTime);
+    }
+
+    public void initialize() {
+        if (!initialized) {
+            initialized = true;
+            injectSignal.dispatch(null);
+        }
     }
 
     public void wireObject(Object o) {

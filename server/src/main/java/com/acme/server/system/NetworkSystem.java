@@ -16,24 +16,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
+@Wired
 public class NetworkSystem extends AbstractNetworkSystem {
 
-    @Wired
     private ComponentMapper<SessionComponent> scm;
-    @Wired
     private ComponentMapper<KnownListComponent> kcm;
-    @Wired
     private ComponentMapper<PositionComponent> pcm;
 
-    @Wired
     private WiringEngine engine;
-    @Wired
     private EntityManager entityManager;
 
-    @Wired
     private ObjectMapper objectMapper;
 
-    private PacketReader packetReader;
+    private final PacketReader packetReader;
 
     public NetworkSystem() {
         packetReader = new PacketReader();

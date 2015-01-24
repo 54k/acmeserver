@@ -20,14 +20,13 @@ import java.util.Collection;
 @Wired
 public class LoginManager extends ManagerSystem {
 
-    private Context context;
-
     private ComponentMapper<PlayerComponent> pcm;
     private ComponentMapper<PositionComponent> poscm;
     private ComponentMapper<WorldComponent> wcm;
     private ComponentMapper<KnownListComponent> kcm;
     private ComponentMapper<StatsComponent> scm;
 
+    private Context context;
     private PositionManager positionManager;
     private WorldManager worldManager;
     private InventoryManager inventoryManager;

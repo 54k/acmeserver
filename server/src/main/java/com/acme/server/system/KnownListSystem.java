@@ -16,14 +16,12 @@ import com.badlogic.ashley.systems.IteratingSystem;
 
 import java.util.List;
 
+@Wired
 public class KnownListSystem extends IteratingSystem {
 
-    @Wired
     private ComponentMapper<KnownListComponent> kcm;
-    @Wired
     private ComponentMapper<PositionComponent> pcm;
 
-    @Wired
     private NetworkSystem networkSystem;
 
     private Entity actor;
