@@ -18,14 +18,26 @@ public class StatsManager extends ManagerSystem {
     private NetworkSystem networkSystem;
 
     public void addHitPoints(Entity entity, int amount) {
+        addHitPoints(entity, amount, false);
+    }
+
+    public void addHitPoints(Entity entity, int amount, boolean regen) {
+        amount = adjustAmount(entity, amount);
+        StatsComponent statsComponent = scm.get(entity);
+        int maxHitPoints = statsComponent.getMaxHitPoints();
+        int hitPoints = statsComponent.getHitPoints();
+        int newHitPoints = Math.max(0, Math.min(hitPoints + amount, maxHitPoints));
+        statsComponent.setHitPoints(newHitPoints);
+        if (newHitPoints != hitPoints) {
+            networkSystem.sendPacket(entity, new HealthPacket(statsComponent.getHitPoints(), regen));
+        }
+    }
+
+    private int adjustAmount(Entity entity, int amount) {
         if (icm.has(entity)) {
             amount = Math.max(0, amount);
         }
-        StatsComponent statsComponent = scm.get(entity);
-        int maxHitPoints = statsComponent.getMaxHitPoints();
-        int hitPoints = statsComponent.getHitPoints() + amount;
-        statsComponent.setHitPoints(Math.max(0, Math.min(hitPoints, maxHitPoints)));
-        networkSystem.sendPacket(entity, new HealthPacket(statsComponent.getHitPoints(), amount >= 0));
+        return amount;
     }
 
     public void resetHitPoints(Entity entity) {
