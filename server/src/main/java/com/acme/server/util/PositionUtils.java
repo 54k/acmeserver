@@ -9,11 +9,11 @@ import com.badlogic.ashley.core.Entity;
 import java.util.Random;
 
 public final class PositionUtils {
-    public static ComponentMapper<PositionComponent> pcm = ComponentMapper.getFor(PositionComponent.class);
+
+    private static ComponentMapper<PositionComponent> pcm = ComponentMapper.getFor(PositionComponent.class);
 
     private PositionUtils() {
     }
-
 
     public static boolean isInRange(Entity e1, Entity e2, int range) {
         Position pos1 = pcm.get(e1).getPosition();
