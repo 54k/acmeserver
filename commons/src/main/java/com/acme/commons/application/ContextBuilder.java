@@ -19,7 +19,7 @@ public final class ContextBuilder {
         return this;
     }
 
-    public UpdateLoop build() {
+    public Context build() {
         return new UpdateLoop(application, configuration);
     }
 }
