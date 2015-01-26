@@ -7,6 +7,7 @@ import com.acme.server.component.*;
 import com.acme.server.packet.outbound.HitPointsPacket;
 import com.acme.server.packet.outbound.WelcomePacket;
 import com.acme.server.system.NetworkSystem;
+import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
 import com.acme.server.world.Instance;
@@ -42,7 +43,7 @@ public class LoginManager extends ManagerSystem {
         Collection<Area> startingAreas = worldManager.getWorld().getPlayerStartingAreas().values();
         int i = Rnd.between(0, startingAreas.size() - 1);
         Area area = startingAreas.stream().skip(i).findFirst().get();
-        Position position = PositionManager.getRandomPositionInside(area);
+        Position position = PositionUtils.getRandomPositionInside(area);
 
         positionComponent.setPosition(position);
         positionComponent.setOrientation(Orientation.BOTTOM);

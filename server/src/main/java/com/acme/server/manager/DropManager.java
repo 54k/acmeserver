@@ -4,6 +4,7 @@ import com.acme.commons.application.Context;
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
 import com.acme.server.component.*;
+import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;
@@ -36,7 +37,7 @@ public class DropManager extends ManagerSystem {
 
             Entity dropEntity = entityManager.createEntity(drop.getType());
             wcm.get(dropEntity).setInstance(worldComponent.getInstance());
-            Position dropPosition = PositionManager.getRandomPositionInside(dropArea);
+            Position dropPosition = PositionUtils.getRandomPositionInside(dropArea);
             pcm.get(dropEntity).setPosition(dropPosition);
             DespawnComponent despawnComponent = new DespawnComponent();
             despawnComponent.setCooldown(spawnComponent.getCooldown());

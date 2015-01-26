@@ -4,8 +4,8 @@ import com.acme.commons.ashley.Wired;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.SpawnComponent;
 import com.acme.server.component.WorldComponent;
-import com.acme.server.manager.PositionManager;
 import com.acme.server.manager.WorldManager;
+import com.acme.server.util.PositionUtils;
 import com.acme.server.world.Area;
 import com.acme.server.world.Instance;
 import com.acme.server.world.Position;
@@ -47,7 +47,7 @@ public class SpawnSystem extends IteratingSystem {
     private Position getRandomSpawnPosition(Area area, Instance instance) {
         Position spawnPosition;
         do {
-            spawnPosition = PositionManager.getRandomPositionInside(area);
+            spawnPosition = PositionUtils.getRandomPositionInside(area);
         } while (instance.getWorld().isColliding(spawnPosition.getX(), spawnPosition.getY()));
         return spawnPosition;
     }

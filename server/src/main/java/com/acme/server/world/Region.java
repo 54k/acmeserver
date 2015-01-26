@@ -1,20 +1,17 @@
 package com.acme.server.world;
 
-import com.acme.server.manager.EntityManager;
+import com.acme.server.util.EntityContainer;
 import com.badlogic.ashley.core.Entity;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Region {
 
-    private Map<Long, Entity> entities = new ConcurrentHashMap<>();
-    private Map<Long, Entity> players = new ConcurrentHashMap<>();
-
-    private Set<Region> surroundingRegions = new HashSet<>();
+    private final EntityContainer entities = new EntityContainer();
+    private final Set<Region> surroundingRegions = new HashSet<>();
 
     private boolean active;
 
@@ -27,12 +24,9 @@ public class Region {
     }
 
     public void addEntity(Entity entity) {
-        entities.put(entity.getId(), entity);
-        if (EntityManager.isPlayer(entity)) {
-            players.put(entity.getId(), entity);
-            if (players.size() == 1) {
-                activateRegion();
-            }
+        entities.addEntity(entity);
+        if (entities.getPlayers().size() == 1) {
+            activateRegion();
         }
     }
 
@@ -41,12 +35,9 @@ public class Region {
     }
 
     public void removeEntity(Entity entity) {
-        entities.remove(entity.getId());
-        if (EntityManager.isPlayer(entity)) {
-            players.remove(entity.getId());
-            if (players.isEmpty()) {
-                deactivateRegion();
-            }
+        entities.removeEntity(entity);
+        if (entities.getPlayers().isEmpty()) {
+            deactivateRegion();
         }
     }
 
@@ -55,11 +46,11 @@ public class Region {
     }
 
     public Map<Long, Entity> getEntities() {
-        return Collections.unmodifiableMap(entities);
+        return entities.getEntities();
     }
 
     public Map<Long, Entity> getPlayers() {
-        return Collections.unmodifiableMap(players);
+        return entities.getPlayers();
     }
 
     public boolean isActive() {

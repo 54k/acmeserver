@@ -4,10 +4,10 @@ import com.acme.commons.ashley.Wired;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
-import com.acme.server.manager.EntityManager;
-import com.acme.server.manager.PositionManager;
 import com.acme.server.packet.outbound.DespawnPacket;
 import com.acme.server.packet.outbound.SpawnPacket;
+import com.acme.server.util.EntityUtils;
+import com.acme.server.util.PositionUtils;
 import com.acme.server.world.Region;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -72,12 +72,12 @@ public class KnownListSystem extends IteratingSystem {
     }
 
     private boolean isOutOfRange(Entity entity) {
-        return PositionManager.isOutOfRange(entity, actor, distanceToForgetEntity) || !pcm.get(entity).isSpawned();
+        return PositionUtils.isOutOfRange(entity, actor, distanceToForgetEntity) || !pcm.get(entity).isSpawned();
     }
 
     private void removeFromKnownList(Entity entity) {
         knownEntities.remove(entity);
-        if (EntityManager.isPlayer(entity)) {
+        if (EntityUtils.isPlayer(entity)) {
             knownPlayers.remove(entity);
         }
     }
@@ -99,12 +99,12 @@ public class KnownListSystem extends IteratingSystem {
     }
 
     private boolean isInRange(Entity entity) {
-        return PositionManager.isInRange(entity, actor, distanceToFindEntity) && pcm.get(entity).isSpawned();
+        return PositionUtils.isInRange(entity, actor, distanceToFindEntity) && pcm.get(entity).isSpawned();
     }
 
     private void addToKnownList(Entity entity) {
         knownEntities.add(entity);
-        if (EntityManager.isPlayer(entity)) {
+        if (EntityUtils.isPlayer(entity)) {
             knownPlayers.add(entity);
         }
     }

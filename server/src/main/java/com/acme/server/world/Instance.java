@@ -1,6 +1,6 @@
 package com.acme.server.world;
 
-import com.acme.server.manager.EntityManager;
+import com.acme.server.util.EntityContainer;
 import com.badlogic.ashley.core.Entity;
 
 import java.util.HashMap;
@@ -18,8 +18,7 @@ public class Instance {
     private final int regionOffset;
     private final Map<Integer, Region> regions = new HashMap<>();
 
-    private final Map<Long, Entity> entitiesById = new HashMap<>();
-    private final Map<Long, Entity> playersById = new HashMap<>();
+    private final EntityContainer entities = new EntityContainer();
 
     public Instance(int id, World world, int maxPlayers) {
         this.id = id;
@@ -92,40 +91,29 @@ public class Instance {
     }
 
     public void addEntity(Entity entity) {
-        if (entitiesById.containsKey(entity.getId())) {
+        if (entities.contains(entity)) {
             throw new IllegalArgumentException("Duplicate entity id " + entity.getId());
         }
-
-        if (EntityManager.isPlayer(entity)) {
-            addPlayer(entity);
-        }
-        entitiesById.put(entity.getId(), entity);
+        entities.addEntity(entity);
     }
 
     public void removeEntity(Entity entity) {
-        if (EntityManager.isPlayer(entity)) {
-            removePlayer(entity);
-        }
-        entitiesById.remove(entity.getId(), entity);
+        entities.removeEntity(entity);
     }
 
-    public Entity findEntity(long id) {
-        return entitiesById.get(id);
-    }
-
-    public Map<Long, Entity> getEntities() {
-        return entitiesById;
-    }
-
-    private void addPlayer(Entity player) {
-        playersById.put(player.getId(), player);
-    }
-
-    private void removePlayer(Entity player) {
-        playersById.remove(player.getId());
+    public Entity findEntityById(long id) {
+        return entities.findEntityById(id);
     }
 
     public Map<Long, Entity> getPlayers() {
-        return playersById;
+        return entities.getPlayers();
+    }
+
+    public Map<Long, Entity> getEntities() {
+        return entities.getEntities();
+    }
+
+    public Entity findPlayerById(long id) {
+        return entities.findPlayerById(id);
     }
 }

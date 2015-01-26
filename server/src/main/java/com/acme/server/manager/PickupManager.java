@@ -23,7 +23,7 @@ public class PickupManager extends ManagerSystem {
     public void gatherPickup(Entity entity, long itemId) {
         WorldComponent worldComponent = wcm.get(entity);
 
-        Entity item = worldComponent.getInstance().findEntity(itemId);
+        Entity item = worldComponent.getInstance().findEntityById(itemId);
         PickupComponent pickupComponent = pcm.get(item);
         TypeComponent typeComponent = icm.get(item);
 

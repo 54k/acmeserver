@@ -31,10 +31,6 @@ public class EntityManager extends ManagerSystem {
         this.creaturesByType = creaturesByType;
     }
 
-    public static boolean isPlayer(Entity entity) {
-        return Archetypes.PLAYER_TYPE.getFamily().matches(entity);
-    }
-
     public Entity createPlayer() {
         return create(Type.WARRIOR);
     }

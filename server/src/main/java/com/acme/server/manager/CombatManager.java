@@ -28,13 +28,13 @@ public class CombatManager extends ManagerSystem {
 
     public void engage(long attackerId, Entity target) {
         WorldComponent worldComponent = wcm.get(target);
-        Entity attacker = worldComponent.getInstance().findEntity(attackerId);
+        Entity attacker = worldComponent.getInstance().findEntityById(attackerId);
         engage(attacker, target);
     }
 
     public void engage(Entity attacker, long targetId) {
         WorldComponent worldComponent = wcm.get(attacker);
-        Entity target = worldComponent.getInstance().findEntity(targetId);
+        Entity target = worldComponent.getInstance().findEntityById(targetId);
         engage(attacker, target);
     }
 
@@ -45,13 +45,13 @@ public class CombatManager extends ManagerSystem {
 
     public void attack(Entity attacker, long targetId) {
         WorldComponent worldComponent = wcm.get(attacker);
-        Entity target = worldComponent.getInstance().findEntity(targetId);
+        Entity target = worldComponent.getInstance().findEntityById(targetId);
         attack(attacker, target);
     }
 
     public void attack(long attackerId, Entity target) {
         WorldComponent worldComponent = wcm.get(target);
-        Entity attacker = worldComponent.getInstance().findEntity(attackerId);
+        Entity attacker = worldComponent.getInstance().findEntityById(attackerId);
         attack(attacker, target);
     }
 

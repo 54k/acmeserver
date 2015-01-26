@@ -16,7 +16,7 @@ public class ChestManager extends ManagerSystem {
 
     public void openChest(Entity entity, long chestId) {
         WorldComponent worldComponent = wcm.get(entity);
-        Entity chest = worldComponent.getInstance().findEntity(chestId);
+        Entity chest = worldComponent.getInstance().findEntityById(chestId);
         dropManager.dropItems(chest);
         worldManager.decay(chest);
     }

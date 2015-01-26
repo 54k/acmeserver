@@ -7,8 +7,8 @@ import com.acme.server.component.PlayerComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.TypeComponent;
 import com.acme.server.entity.Type;
-import com.acme.server.manager.EntityManager;
 import com.acme.server.packet.OpCodes;
+import com.acme.server.util.EntityUtils;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
@@ -39,7 +39,7 @@ public class SpawnPacket extends OutboundPacket {
         writeInt(positionComponent.getX());
         writeInt(positionComponent.getY());
 
-        if (EntityManager.isPlayer(entity)) {
+        if (EntityUtils.isPlayer(entity)) {
             PlayerComponent playerComponent = pcm.get(entity);
             writeString(playerComponent.getName());
             writeInt(positionComponent.getOrientation().getValue());

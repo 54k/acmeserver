@@ -8,6 +8,7 @@ import com.acme.server.component.WorldComponent;
 import com.acme.server.packet.outbound.PopulationPacket;
 import com.acme.server.system.NetworkSystem;
 import com.acme.server.template.WorldTemplate;
+import com.acme.server.util.EntityContainer;
 import com.acme.server.world.Instance;
 import com.acme.server.world.Region;
 import com.acme.server.world.World;
@@ -15,7 +16,6 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 @Wired
@@ -27,10 +27,8 @@ public class WorldManager extends ManagerSystem {
     private Context context;
     private NetworkSystem networkSystem;
 
+    private final EntityContainer entities = new EntityContainer();
     private final World world;
-
-    private final Map<Long, Entity> entitiesById = new HashMap<>();
-    private final Map<Long, Entity> playersById = new HashMap<>();
 
     public WorldManager(WorldTemplate template) {
         this.world = new World(template);
@@ -45,6 +43,7 @@ public class WorldManager extends ManagerSystem {
         Instance instance = worldComponent.getInstance();
         instance.addEntity(entity);
         addEntity(entity);
+        broadcastPopulation();
     }
 
     public void spawn(Entity entity) {
@@ -63,6 +62,7 @@ public class WorldManager extends ManagerSystem {
         Instance instance = worldComponent.getInstance();
         instance.removeEntity(entity);
         removeEntity(entity);
+        broadcastPopulation();
     }
 
     public void decay(Entity entity) {
@@ -77,7 +77,7 @@ public class WorldManager extends ManagerSystem {
     }
 
     private void broadcastPopulation() {
-        if (!playersById.isEmpty()) {
+        if (!entities.getPlayers().isEmpty()) {
             context.schedule(this::broadcastPopulation0);
         }
     }
@@ -90,49 +90,36 @@ public class WorldManager extends ManagerSystem {
     private void broadcastPopulationToInstance(Instance instance) {
         Collection<Entity> players = instance.getPlayers().values();
         int instanceCount = players.size();
-        int worldCount = playersById.size();
+        int worldCount = entities.getPlayers().size();
         PopulationPacket population = new PopulationPacket(instanceCount, worldCount);
         players.forEach(p -> networkSystem.sendPacket(p, population));
     }
 
     private void addEntity(Entity entity) {
-        if (entitiesById.containsKey(entity.getId())) {
+        if (entities.contains(entity)) {
             throw new IllegalArgumentException("Duplicate entity id " + entity.getId());
         }
-
-        if (EntityManager.isPlayer(entity)) {
-            addPlayer(entity);
-        }
-        entitiesById.put(entity.getId(), entity);
+        entities.addEntity(entity);
     }
 
     private void removeEntity(Entity entity) {
-        if (EntityManager.isPlayer(entity)) {
-            removePlayer(entity);
-        }
-        entitiesById.remove(entity.getId(), entity);
-    }
-
-    public Entity findEntity(long id) {
-        return entitiesById.get(id);
-    }
-
-    public Map<Long, Entity> getEntities() {
-        return entitiesById;
-    }
-
-    private void addPlayer(Entity player) {
-        playersById.put(player.getId(), player);
-        broadcastPopulation();
-    }
-
-    private void removePlayer(Entity player) {
-        playersById.remove(player.getId());
-        broadcastPopulation();
+        entities.removeEntity(entity);
     }
 
     public Map<Long, Entity> getPlayers() {
-        return playersById;
+        return entities.getPlayers();
+    }
+
+    public Map<Long, Entity> getEntities() {
+        return entities.getEntities();
+    }
+
+    public Entity findPlayerById(long id) {
+        return entities.findPlayerById(id);
+    }
+
+    public Entity findEntityById(long id) {
+        return entities.findEntityById(id);
     }
 
     @Override
