@@ -33,7 +33,7 @@ public class SpawnSystem extends IteratingSystem {
         PositionComponent positionComponent = pcm.get(entity);
         SpawnComponent spawnComponent = scm.get(entity);
         if (!positionComponent.isSpawned()) {
-            int currentRespawnDelay = (int) (spawnComponent.getCooldown() - deltaTime);
+            float currentRespawnDelay = spawnComponent.getCooldown() - deltaTime;
             spawnComponent.setCooldown(currentRespawnDelay);
 
             if (spawnComponent.getCooldown() <= 0) {
