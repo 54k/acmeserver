@@ -91,8 +91,9 @@ final class UpdateLoop implements Context {
             tasks.addAll(scheduledTasks);
             scheduledTasks.clear();
         }
-        tasks.forEach(ScheduledTask::run);
-        tasks.clear();
+        while (!tasks.isEmpty()) {
+            tasks.poll().run();
+        }
     }
 
     @Override
