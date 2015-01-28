@@ -50,11 +50,11 @@ final class UpdateLoop implements Context {
                 waitForUpdate();
             }
             updateDelta();
-            executeTasks();
-            if (!running) {
-                break;
-            }
             try {
+                executeTasks();
+                if (!running) {
+                    break;
+                }
                 application.update();
             } catch (Throwable t) {
                 application.handleError(t);
