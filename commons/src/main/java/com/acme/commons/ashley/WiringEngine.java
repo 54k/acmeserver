@@ -56,7 +56,9 @@ public class WiringEngine extends Engine {
         cleanObject(system);
         Listener<Object> listener = injectionListeners.get(system);
         injectSignal.remove(listener);
-        injectSignal.dispatch(null);
+        if (initialized) {
+            injectSignal.dispatch(null);
+        }
     }
 
     @Override
