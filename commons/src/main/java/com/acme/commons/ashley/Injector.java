@@ -18,7 +18,7 @@ final class Injector {
     private final Context context;
     private final Engine engine;
 
-    public Injector(Context context, Engine engine) {
+    Injector(Context context, Engine engine) {
         this.context = context;
         this.engine = engine;
     }

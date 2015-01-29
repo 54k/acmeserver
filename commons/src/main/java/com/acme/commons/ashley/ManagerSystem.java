@@ -10,6 +10,7 @@ public abstract class ManagerSystem extends EntitySystem implements EntityListen
 
     @Override
     public void addedToEngine(Engine engine) {
+        //noinspection unchecked
         engine.addEntityListener(Family.all().get(), this);
         engine.addEntityListener(this);
     }
