@@ -1,15 +1,14 @@
 package com.acme.commons.application;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 final class UpdateLoop implements Context {
 
-    private static final long NANOS_IN_SECOND = 1000000;
+    private static final long NANOS_IN_SECOND = TimeUnit.SECONDS.toNanos(1);
     private static final long ORIGIN_NANOS = System.nanoTime();
+
+    private final Set<LifeCycleListener> listeners = Collections.synchronizedSet(new LinkedHashSet<>());
 
     private final Queue<ScheduledTask> scheduledTasks = new PriorityQueue<>();
     private final Queue<ScheduledTask> tasks = new PriorityQueue<>();
@@ -61,6 +60,7 @@ final class UpdateLoop implements Context {
             }
         }
         application.dispose();
+        listeners.forEach(LifeCycleListener::dispose);
     }
 
     private void waitForUpdate() {
@@ -98,6 +98,16 @@ final class UpdateLoop implements Context {
                 application.handleError(t);
             }
         }
+    }
+
+    @Override
+    public void addListener(LifeCycleListener lifeCycleListener) {
+        listeners.add(lifeCycleListener);
+    }
+
+    @Override
+    public void removeListener(LifeCycleListener lifeCycleListener) {
+        listeners.add(lifeCycleListener);
     }
 
     @Override
@@ -146,7 +156,7 @@ final class UpdateLoop implements Context {
         if (!running) {
             throw new IllegalStateException(configuration.getApplicationName() + " disposed");
         }
-        synchronized(scheduledTasks) {
+        synchronized (scheduledTasks) {
             scheduledTasks.add(new ScheduledTask(task, unit.toNanos(delay), unit.toNanos(period), scheduledTasks));
         }
     }
