@@ -146,7 +146,9 @@ final class UpdateLoop implements Context {
         if (!running) {
             throw new IllegalStateException(configuration.getApplicationName() + " disposed");
         }
-        scheduledTasks.add(new ScheduledTask(task, unit.toNanos(delay), unit.toNanos(period), scheduledTasks));
+        synchronized(scheduledTasks) {
+            scheduledTasks.add(new ScheduledTask(task, unit.toNanos(delay), unit.toNanos(period), scheduledTasks));
+        }
     }
 
     @Override
