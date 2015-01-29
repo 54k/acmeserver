@@ -3,6 +3,7 @@ package com.acme.server;
 import com.acme.commons.application.ApplicationAdapter;
 import com.acme.commons.application.Context;
 import com.acme.commons.ashley.WiringEngine;
+import com.acme.commons.event.EventManager;
 import com.acme.commons.network.NetworkServer;
 import com.acme.server.entity.Type;
 import com.acme.server.manager.*;
@@ -38,6 +39,7 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addSystem(new InvulnerabilitySystem());
         engine.addSystem(new KnownListSystem());
 
+        engine.addSystem(new EventManager());
         WorldManager worldManager = createWorldManager();
         engine.addSystem(worldManager);
         engine.addSystem(createEntityManager());
