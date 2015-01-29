@@ -4,6 +4,10 @@ import java.util.concurrent.TimeUnit;
 
 public interface Context {
 
+    void addListener(LifeCycleListener lifeCycleListener);
+
+    void removeListener(LifeCycleListener lifeCycleListener);
+
     <T> void register(Class<T> clazz, T object);
 
     <T> void register(Class<T> clazz, String name, T object);
