@@ -1,6 +1,7 @@
 package com.acme.commons.ashley;
 
 import com.acme.commons.application.Context;
+import com.acme.commons.event.EventBus;
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
@@ -11,12 +12,13 @@ import java.util.Map;
 
 public class WiringEngine extends Engine {
 
-    private final Signal<Object> injectSignal = new Signal<>();
-    private final Map<EntitySystem, Listener<Object>> injectionListeners = new HashMap<>();
+    private final Signal<Void> injectSignal = new Signal<>();
+    private final Map<EntitySystem, Listener<Void>> injectionListeners = new HashMap<>();
 
     private final Injector injector;
     private final Engine engine;
 
+    private final EventBus eventBus = new EventBus();
     private boolean initialized;
 
     public WiringEngine(Context context, Engine engine) {
@@ -42,22 +44,41 @@ public class WiringEngine extends Engine {
     @Override
     public void addSystem(EntitySystem system) {
         engine.addSystem(system);
-        Listener<Object> listener = ($1, $2) -> wireObject(system);
+        tryRegisterEngineListener(system);
+
+        Listener<Void> listener = ($1, $2) -> wireObject(system);
         injectionListeners.put(system, listener);
         injectSignal.add(listener);
+
         if (initialized) {
             injectSignal.dispatch(null);
+            if (system instanceof EngineListener) {
+                ((EngineListener) system).initialize();
+            }
+        }
+    }
+
+    private void tryRegisterEngineListener(EntitySystem system) {
+        if (system instanceof EngineListener) {
+            eventBus.register(EngineListener.class, (EngineListener) system);
         }
     }
 
     @Override
     public void removeSystem(EntitySystem system) {
         engine.removeSystem(system);
+        tryUnregisterEngineListener(system);
         cleanObject(system);
-        Listener<Object> listener = injectionListeners.get(system);
+        Listener<Void> listener = injectionListeners.get(system);
         injectSignal.remove(listener);
         if (initialized) {
             injectSignal.dispatch(null);
+        }
+    }
+
+    private void tryUnregisterEngineListener(EntitySystem system) {
+        if (system instanceof EngineListener) {
+            eventBus.unregister(EngineListener.class, (EngineListener) system);
         }
     }
 
@@ -101,6 +122,7 @@ public class WiringEngine extends Engine {
         if (!initialized) {
             initialized = true;
             injectSignal.dispatch(null);
+            eventBus.post(EngineListener.class).initialize();
         }
     }
 
