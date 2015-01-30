@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 public class ServerStartupTest {
 
-    @Test
+    @Test(enabled = false)
     public void testStartup() throws Exception {
         Context ctx = new ContextBuilder(new BrowserQuest()).build();
         ctx.dispose();

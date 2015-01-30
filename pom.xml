@@ -21,10 +21,33 @@
         <jackson-version>2.5.0</jackson-version>
         <testng.version>6.8.13</testng.version>
         <mockito-core.version>1.10.17</mockito-core.version>
+        <felix.version>4.6.0</felix.version>
+        <gogo.runtime.version>0.10.0</gogo.runtime.version>
+        <gogo.command.version>0.14.0</gogo.command.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.framework</artifactId>
+                <version>${felix.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.gogo.runtime</artifactId>
+                <version>${gogo.runtime.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.gogo.shell</artifactId>
+                <version>${gogo.runtime.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.gogo.command</artifactId>
+                <version>${gogo.command.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.badlogicgames.ashley</groupId>
                 <artifactId>ashley</artifactId>
