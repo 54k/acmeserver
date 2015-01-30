@@ -21,8 +21,10 @@ final class UpdateLoop implements Context {
     private final Map<String, Object> injectables = new HashMap<>();
 
     private final Lock lock = new ReentrantLock();
-    private final Condition disposed = lock.newCondition();
+    private volatile boolean initialized = false;
+    private final Condition initializedCondition = lock.newCondition();
     private volatile boolean running = true;
+    private final Condition disposedCondition = lock.newCondition();
 
     private final long updateIntervalNanos;
     private long nextUpdateNanos;
@@ -53,10 +55,14 @@ final class UpdateLoop implements Context {
     }
 
     private void signalDisposed() {
+        if (!initialized) {
+            signalInitialized();
+        }
+
         running = false;
         lock.lock();
         try {
-            disposed.signalAll();
+            disposedCondition.signalAll();
         } finally {
             lock.unlock();
         }
@@ -67,6 +73,7 @@ final class UpdateLoop implements Context {
         synchronized (contextListeners) {
             contextListeners.forEach(ContextListener::created);
         }
+        signalInitialized();
         while (running) {
             if (updateIntervalNanos > 0) {
                 waitForUpdate();
@@ -85,6 +92,16 @@ final class UpdateLoop implements Context {
         application.dispose();
         synchronized (contextListeners) {
             contextListeners.forEach(ContextListener::disposed);
+        }
+    }
+
+    private void signalInitialized() {
+        initialized = true;
+        lock.lock();
+        try {
+            initializedCondition.signalAll();
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -189,12 +206,27 @@ final class UpdateLoop implements Context {
     }
 
     @Override
+    public void waitForStart(long timeoutMillis) {
+        lock.lock();
+        try {
+            while (!initialized) {
+                try {
+                    initializedCondition.await(timeoutMillis, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException ignore) {
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
     public void waitForDispose(long timeoutMillis) {
         lock.lock();
         try {
             while (running) {
                 try {
-                    disposed.await(timeoutMillis, TimeUnit.MILLISECONDS);
+                    disposedCondition.await(timeoutMillis, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException ignore) {
                 }
             }

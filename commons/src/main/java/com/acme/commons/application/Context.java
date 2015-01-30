@@ -24,5 +24,7 @@ public interface Context {
 
     void dispose();
 
+    void waitForStart(long timeoutMillis);
+
     void waitForDispose(long timeoutMillis);
 }
