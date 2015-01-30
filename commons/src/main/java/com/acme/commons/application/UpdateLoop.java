@@ -11,7 +11,7 @@ final class UpdateLoop implements Context {
     private static final long NANOS_IN_SECOND = TimeUnit.SECONDS.toNanos(1);
     private static final long ORIGIN_NANOS = System.nanoTime();
 
-    private final Set<LifeCycleListener> lifeCycleListeners = new LinkedHashSet<>();
+    private final Set<ContextListener> contextListeners = new LinkedHashSet<>();
 
     private final Queue<ScheduledTask> scheduledTasks = new PriorityQueue<>();
     private final Queue<ScheduledTask> tasks = new PriorityQueue<>();
@@ -34,7 +34,7 @@ final class UpdateLoop implements Context {
         this.application = application;
         this.configuration = configuration;
         updateIntervalNanos = configuration.updateInterval * NANOS_IN_SECOND;
-        lifeCycleListeners.addAll(configuration.lifeCycleListeners);
+        contextListeners.addAll(configuration.contextListeners);
         runLoop();
     }
 
@@ -64,8 +64,8 @@ final class UpdateLoop implements Context {
 
     private void loop() {
         application.create(this);
-        synchronized (lifeCycleListeners) {
-            lifeCycleListeners.forEach(LifeCycleListener::created);
+        synchronized (contextListeners) {
+            contextListeners.forEach(ContextListener::created);
         }
         while (running) {
             if (updateIntervalNanos > 0) {
@@ -83,8 +83,8 @@ final class UpdateLoop implements Context {
             }
         }
         application.dispose();
-        synchronized (lifeCycleListeners) {
-            lifeCycleListeners.forEach(LifeCycleListener::disposed);
+        synchronized (contextListeners) {
+            contextListeners.forEach(ContextListener::disposed);
         }
     }
 
@@ -126,16 +126,9 @@ final class UpdateLoop implements Context {
     }
 
     @Override
-    public void addLifeCycleListener(LifeCycleListener lifeCycleListener) {
-        synchronized (lifeCycleListeners) {
-            lifeCycleListeners.add(lifeCycleListener);
-        }
-    }
-
-    @Override
-    public void removeLifeCycleListener(LifeCycleListener lifeCycleListener) {
-        synchronized (lifeCycleListeners) {
-            lifeCycleListeners.add(lifeCycleListener);
+    public void addContextListener(ContextListener contextListener) {
+        synchronized (contextListeners) {
+            contextListeners.add(contextListener);
         }
     }
 
@@ -239,6 +232,7 @@ final class UpdateLoop implements Context {
         }
 
         @Override
+        @SuppressWarnings("NullableProblems")
         public int compareTo(ScheduledTask o) {
             if (nextExecutionNanos > o.nextExecutionNanos) {
                 return 1;

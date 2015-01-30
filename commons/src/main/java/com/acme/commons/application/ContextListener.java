@@ -1,6 +1,6 @@
 package com.acme.commons.application;
 
-public interface LifeCycleListener {
+public interface ContextListener {
 
     void created();
 

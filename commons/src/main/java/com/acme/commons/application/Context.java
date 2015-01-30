@@ -4,9 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 public interface Context {
 
-    void addLifeCycleListener(LifeCycleListener lifeCycleListener);
-
-    void removeLifeCycleListener(LifeCycleListener lifeCycleListener);
+    void addContextListener(ContextListener contextListener);
 
     <T> void register(Class<T> clazz, T object);
 

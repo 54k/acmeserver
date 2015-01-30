@@ -7,5 +7,5 @@ final class Configuration {
 
     String applicationName = "Application";
     long updateInterval = 0;
-    final Set<LifeCycleListener> lifeCycleListeners = new LinkedHashSet<>();
+    final Set<ContextListener> contextListeners = new LinkedHashSet<>();
 }

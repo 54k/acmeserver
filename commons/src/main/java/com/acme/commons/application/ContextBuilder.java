@@ -22,8 +22,8 @@ public final class ContextBuilder {
         return this;
     }
 
-    public ContextBuilder addLifeCycleListener(LifeCycleListener lifeCycleListener) {
-        configuration.lifeCycleListeners.add(lifeCycleListener);
+    public ContextBuilder addContextListener(ContextListener contextListener) {
+        configuration.contextListeners.add(contextListener);
         return this;
     }
 
