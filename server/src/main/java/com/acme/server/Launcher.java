@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 public class Launcher {
 
     public static void main(String[] args) throws Exception {
-        Context context = new ContextBuilder(new BrowserQuest())
+        Context ctx = new ContextBuilder(new BrowserQuest())
                 .setApplicationName(BrowserQuest.class.getSimpleName())
                 .setUpdateInterval(1000 / 60)
                 .build();
@@ -21,10 +21,11 @@ public class Launcher {
             String s;
             while ((s = readLine(br)) != null) {
                 if (s.startsWith("exit")) {
-                    context.dispose();
+                    ctx.dispose();
+                    ctx.waitForDispose(0);
                     break;
                 } else if (s.startsWith("players")) {
-                    System.out.println(context.get(WiringEngine.class).
+                    System.out.println(ctx.get(WiringEngine.class).
                             getEntitiesFor(Archetypes.PLAYER_TYPE.getFamily())
                             .toString("\r\n"));
                 }

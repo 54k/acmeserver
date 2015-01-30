@@ -10,12 +10,20 @@ public final class ContextBuilder {
     }
 
     public ContextBuilder setApplicationName(String applicationName) {
-        configuration.setApplicationName(applicationName);
+        configuration.applicationName = applicationName;
         return this;
     }
 
     public ContextBuilder setUpdateInterval(long updateInterval) {
-        configuration.setUpdateInterval(updateInterval);
+        if (updateInterval < 0) {
+            throw new IllegalArgumentException("updateInterval must be >= 0");
+        }
+        configuration.updateInterval = updateInterval;
+        return this;
+    }
+
+    public ContextBuilder addLifeCycleListener(LifeCycleListener lifeCycleListener) {
+        configuration.lifeCycleListeners.add(lifeCycleListener);
         return this;
     }
 

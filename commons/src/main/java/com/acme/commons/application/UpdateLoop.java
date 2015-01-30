@@ -1,19 +1,17 @@
 package com.acme.commons.application;
 
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 final class UpdateLoop implements Context {
 
     private static final long NANOS_IN_SECOND = TimeUnit.SECONDS.toNanos(1);
     private static final long ORIGIN_NANOS = System.nanoTime();
 
-    private final Set<LifeCycleListener> listeners = new LinkedHashSet<>();
+    private final Set<LifeCycleListener> lifeCycleListeners = new LinkedHashSet<>();
 
     private final Queue<ScheduledTask> scheduledTasks = new PriorityQueue<>();
     private final Queue<ScheduledTask> tasks = new PriorityQueue<>();
@@ -22,6 +20,8 @@ final class UpdateLoop implements Context {
     private final Configuration configuration;
     private final Map<String, Object> injectables = new HashMap<>();
 
+    private final Lock lock = new ReentrantLock();
+    private final Condition disposed = lock.newCondition();
     private volatile boolean running = true;
 
     private final long updateIntervalNanos;
@@ -33,22 +33,40 @@ final class UpdateLoop implements Context {
     UpdateLoop(Application application, Configuration configuration) {
         this.application = application;
         this.configuration = configuration;
-        updateIntervalNanos = configuration.getUpdateInterval() * NANOS_IN_SECOND;
+        updateIntervalNanos = configuration.updateInterval * NANOS_IN_SECOND;
+        lifeCycleListeners.addAll(configuration.lifeCycleListeners);
         runLoop();
     }
 
     private void runLoop() {
-        Thread mainLoopThread = new Thread(configuration.getApplicationName()) {
+        Thread mainLoopThread = new Thread(configuration.applicationName) {
             @Override
             public void run() {
-                UpdateLoop.this.loop();
+                try {
+                    UpdateLoop.this.loop();
+                } finally {
+                    signalDisposed();
+                }
             }
         };
         mainLoopThread.start();
     }
 
+    private void signalDisposed() {
+        running = false;
+        lock.lock();
+        try {
+            disposed.signalAll();
+        } finally {
+            lock.unlock();
+        }
+    }
+
     private void loop() {
         application.create(this);
+        synchronized (lifeCycleListeners) {
+            lifeCycleListeners.forEach(LifeCycleListener::created);
+        }
         while (running) {
             if (updateIntervalNanos > 0) {
                 waitForUpdate();
@@ -65,8 +83,8 @@ final class UpdateLoop implements Context {
             }
         }
         application.dispose();
-        synchronized (listeners) {
-            listeners.forEach(LifeCycleListener::disposed);
+        synchronized (lifeCycleListeners) {
+            lifeCycleListeners.forEach(LifeCycleListener::disposed);
         }
     }
 
@@ -108,16 +126,16 @@ final class UpdateLoop implements Context {
     }
 
     @Override
-    public void addListener(LifeCycleListener lifeCycleListener) {
-        synchronized (listeners) {
-            listeners.add(lifeCycleListener);
+    public void addLifeCycleListener(LifeCycleListener lifeCycleListener) {
+        synchronized (lifeCycleListeners) {
+            lifeCycleListeners.add(lifeCycleListener);
         }
     }
 
     @Override
-    public void removeListener(LifeCycleListener lifeCycleListener) {
-        synchronized (listeners) {
-            listeners.add(lifeCycleListener);
+    public void removeLifeCycleListener(LifeCycleListener lifeCycleListener) {
+        synchronized (lifeCycleListeners) {
+            lifeCycleListeners.add(lifeCycleListener);
         }
     }
 
@@ -165,7 +183,7 @@ final class UpdateLoop implements Context {
     @Override
     public void schedulePeriodic(Runnable task, long delay, long period, TimeUnit unit) {
         if (!running) {
-            throw new IllegalStateException(configuration.getApplicationName() + " disposed");
+            throw new IllegalStateException(configuration.applicationName + " disposed");
         }
         synchronized (scheduledTasks) {
             scheduledTasks.add(new ScheduledTask(task, unit.toNanos(delay), unit.toNanos(period), scheduledTasks));
@@ -175,6 +193,21 @@ final class UpdateLoop implements Context {
     @Override
     public void dispose() {
         schedule(() -> running = false);
+    }
+
+    @Override
+    public void waitForDispose(long timeoutMillis) {
+        lock.lock();
+        try {
+            while (running) {
+                try {
+                    disposed.await(timeoutMillis, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException ignore) {
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
     private static final class ScheduledTask implements Runnable, Comparable<ScheduledTask> {

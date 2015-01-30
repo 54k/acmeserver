@@ -4,9 +4,9 @@ import java.util.concurrent.TimeUnit;
 
 public interface Context {
 
-    void addListener(LifeCycleListener lifeCycleListener);
+    void addLifeCycleListener(LifeCycleListener lifeCycleListener);
 
-    void removeListener(LifeCycleListener lifeCycleListener);
+    void removeLifeCycleListener(LifeCycleListener lifeCycleListener);
 
     <T> void register(Class<T> clazz, T object);
 
@@ -25,4 +25,6 @@ public interface Context {
     void schedulePeriodic(Runnable task, long delay, long period, TimeUnit unit);
 
     void dispose();
+
+    void waitForDispose(long timeoutMillis);
 }
