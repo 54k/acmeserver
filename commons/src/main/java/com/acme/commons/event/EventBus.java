@@ -13,7 +13,7 @@ public final class EventBus {
     private final Map<Class<?>, Dispatcher> dispatcherByType = new ConcurrentHashMap<>();
 
     @SuppressWarnings("unchecked")
-    public <T> T post(Class<T> type) {
+    public <T extends Event> T post(Class<T> type) {
         return (T) getDispatcherFor(type).proxy;
     }
 
@@ -21,18 +21,18 @@ public final class EventBus {
     public void register(Object listener) {
         Class aClass = listener.getClass();
         for (Class iClass : aClass.getInterfaces()) {
-            if (iClass.getAnnotation(Event.class) != null) {
-                register(iClass, listener);
+            if (Event.class.isAssignableFrom(iClass)) {
+                register((Class<Event>) iClass, (Event) listener);
             }
         }
     }
 
-    public <T> void register(Class<T> type, T listener) {
+    public <T extends Event> void register(Class<T> type, T listener) {
         validateType(type);
         getDispatcherFor(type).listeners.add(listener);
     }
 
-    private static void validateType(Class<?> type) {
+    private static void validateType(Class<? extends Event> type) {
         for (Method method : type.getDeclaredMethods()) {
             if (method.getReturnType() != void.class) {
                 throw new IllegalArgumentException();
@@ -49,13 +49,13 @@ public final class EventBus {
     public void unregister(Object listener) {
         Class aClass = listener.getClass();
         for (Class iClass : aClass.getInterfaces()) {
-            if (iClass.getAnnotation(Event.class) != null) {
-                unregister(iClass, listener);
+            if (Event.class.isAssignableFrom(iClass)) {
+                unregister((Class<Event>) iClass, (Event) listener);
             }
         }
     }
 
-    public <T> void unregister(Class<T> type, T listener) {
+    public <T extends Event> void unregister(Class<T> type, T listener) {
         getDispatcherFor(type).listeners.remove(listener);
     }
 

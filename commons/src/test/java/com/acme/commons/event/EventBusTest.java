@@ -3,18 +3,19 @@ package com.acme.commons.event;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import static org.mockito.Mockito.*;
+public class EventBusTest extends Assert {
 
-public class EventManagerTest extends Assert {
-
-    private EventManager eventManager;
+    private EventBus eventManager;
     private SimpleListener mock;
     private SimpleListener listener;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        eventManager = new EventManager();
+        eventManager = new EventBus();
         mock = mock(SimpleListener.class);
         listener = new SimpleListener(mock);
     }
@@ -39,13 +40,11 @@ public class EventManagerTest extends Assert {
         verifyNoMoreInteractions(mock);
     }
 
-    @Event
-    interface Event1 {
+    interface Event1 extends Event {
         void onEvent1();
     }
 
-    @Event
-    interface Event2 {
+    interface Event2 extends Event {
         void onEvent2();
     }
 

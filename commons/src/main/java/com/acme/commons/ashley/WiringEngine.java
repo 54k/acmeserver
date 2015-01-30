@@ -1,14 +1,21 @@
 package com.acme.commons.ashley;
 
 import com.acme.commons.application.Context;
+import com.acme.commons.event.Event;
 import com.acme.commons.event.EventBus;
-import com.badlogic.ashley.core.*;
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntityListener;
+import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.utils.ImmutableArray;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class WiringEngine extends Engine {
 
@@ -19,6 +26,7 @@ public class WiringEngine extends Engine {
     private final Engine engine;
 
     private final EventBus eventBus = new EventBus();
+    private final Set<EngineListener> initListeners = new LinkedHashSet<>();
     private boolean initialized;
 
     public WiringEngine(Context context, Engine engine) {
@@ -44,11 +52,11 @@ public class WiringEngine extends Engine {
     @Override
     public void addSystem(EntitySystem system) {
         engine.addSystem(system);
-        tryRegisterEngineListener(system);
-
         Listener<Void> listener = ($1, $2) -> wireObject(system);
         injectionListeners.put(system, listener);
         injectSignal.add(listener);
+        eventBus.register(system);
+        tryRegisterEngineListener(system);
 
         if (initialized) {
             injectSignal.dispatch(null);
@@ -60,17 +68,21 @@ public class WiringEngine extends Engine {
 
     private void tryRegisterEngineListener(EntitySystem system) {
         if (system instanceof EngineListener) {
-            eventBus.register(EngineListener.class, (EngineListener) system);
+            EngineListener listener = (EngineListener) system;
+            initListeners.add(listener);
+            listener.addedToEngine(this);
         }
     }
 
     @Override
     public void removeSystem(EntitySystem system) {
         engine.removeSystem(system);
-        tryUnregisterEngineListener(system);
         cleanObject(system);
         Listener<Void> listener = injectionListeners.get(system);
         injectSignal.remove(listener);
+        eventBus.unregister(system);
+        tryUnregisterEngineListener(system);
+
         if (initialized) {
             injectSignal.dispatch(null);
         }
@@ -78,7 +90,9 @@ public class WiringEngine extends Engine {
 
     private void tryUnregisterEngineListener(EntitySystem system) {
         if (system instanceof EngineListener) {
-            eventBus.unregister(EngineListener.class, (EngineListener) system);
+            EngineListener listener = (EngineListener) system;
+            initListeners.remove(listener);
+            listener.removedFromEngine(this);
         }
     }
 
@@ -122,7 +136,8 @@ public class WiringEngine extends Engine {
         if (!initialized) {
             initialized = true;
             injectSignal.dispatch(null);
-            eventBus.post(EngineListener.class).initialize();
+            initListeners.forEach(EngineListener::initialize);
+            initListeners.clear();
         }
     }
 
@@ -136,5 +151,25 @@ public class WiringEngine extends Engine {
 
     public <T extends Engine> T unwrap(Class<T> engineClass) {
         return engineClass.cast(engine);
+    }
+
+    public <T extends Event> T post(Class<T> type) {
+        return eventBus.post(type);
+    }
+
+    public void register(Object listener) {
+        eventBus.register(listener);
+    }
+
+    public <T extends Event> void register(Class<T> type, T listener) {
+        eventBus.register(type, listener);
+    }
+
+    public void unregister(Object listener) {
+        eventBus.unregister(listener);
+    }
+
+    public <T extends Event> void unregister(Class<T> type, T listener) {
+        eventBus.unregister(type, listener);
     }
 }
