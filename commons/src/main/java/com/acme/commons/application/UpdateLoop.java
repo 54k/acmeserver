@@ -66,7 +66,7 @@ final class UpdateLoop implements Context {
         }
         application.dispose();
         synchronized (listeners) {
-            listeners.forEach(LifeCycleListener::dispose);
+            listeners.forEach(LifeCycleListener::disposed);
         }
     }
 
