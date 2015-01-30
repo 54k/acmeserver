@@ -1,6 +1,11 @@
 package com.acme.commons.application;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 final class UpdateLoop implements Context {
@@ -8,7 +13,7 @@ final class UpdateLoop implements Context {
     private static final long NANOS_IN_SECOND = TimeUnit.SECONDS.toNanos(1);
     private static final long ORIGIN_NANOS = System.nanoTime();
 
-    private final Set<LifeCycleListener> listeners = Collections.synchronizedSet(new LinkedHashSet<>());
+    private final Set<LifeCycleListener> listeners = new LinkedHashSet<>();
 
     private final Queue<ScheduledTask> scheduledTasks = new PriorityQueue<>();
     private final Queue<ScheduledTask> tasks = new PriorityQueue<>();
@@ -60,7 +65,9 @@ final class UpdateLoop implements Context {
             }
         }
         application.dispose();
-        listeners.forEach(LifeCycleListener::dispose);
+        synchronized (listeners) {
+            listeners.forEach(LifeCycleListener::dispose);
+        }
     }
 
     private void waitForUpdate() {
@@ -102,12 +109,16 @@ final class UpdateLoop implements Context {
 
     @Override
     public void addListener(LifeCycleListener lifeCycleListener) {
-        listeners.add(lifeCycleListener);
+        synchronized (listeners) {
+            listeners.add(lifeCycleListener);
+        }
     }
 
     @Override
     public void removeListener(LifeCycleListener lifeCycleListener) {
-        listeners.add(lifeCycleListener);
+        synchronized (listeners) {
+            listeners.add(lifeCycleListener);
+        }
     }
 
     @Override
