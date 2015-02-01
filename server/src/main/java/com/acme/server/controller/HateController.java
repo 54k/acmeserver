@@ -6,7 +6,6 @@ import com.acme.commons.ashley.Wired;
 import com.acme.server.component.HateComponent;
 import com.acme.server.event.CombatEvents;
 import com.acme.server.event.HateEvents;
-import com.acme.server.util.TypeUtils;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
@@ -19,7 +18,7 @@ import java.util.Set;
 @Wired
 public class HateController extends ManagerSystem implements CombatEvents {
 
-    private static final Family HATE_OWNERS = Family.all(HateComponent.class).get();
+    private static final Family HATE_OWNERS_FAMILY = Family.all(HateComponent.class).get();
 
     private ComponentMapper<HateComponent> hcm;
 
@@ -28,7 +27,7 @@ public class HateController extends ManagerSystem implements CombatEvents {
     @Override
     public void addedToEngine(EntityEngine engine) {
         super.addedToEngine(engine);
-        hateOwners = engine.getEntitiesFor(HATE_OWNERS);
+        hateOwners = engine.getEntitiesFor(HATE_OWNERS_FAMILY);
     }
 
     @Override
@@ -39,7 +38,7 @@ public class HateController extends ManagerSystem implements CombatEvents {
 
     @Override
     public void onEntityDamaged(Entity attacker, Entity victim, int damage) {
-        if (TypeUtils.isCreature(victim)) {
+        if (HATE_OWNERS_FAMILY.matches(victim)) {
             increaseHate(victim, attacker, damage);
         }
     }
@@ -47,10 +46,7 @@ public class HateController extends ManagerSystem implements CombatEvents {
     @Override
     public void onEntityKilled(Entity killer, Entity victim) {
         removeHater(victim);
-        if (TypeUtils.isCreature(killer)) {
-            removeHater(killer, victim);
-        }
-        if (TypeUtils.isCreature(victim)) {
+        if (HATE_OWNERS_FAMILY.matches(victim)) {
             clearHaters(victim);
         }
     }
@@ -75,12 +71,16 @@ public class HateController extends ManagerSystem implements CombatEvents {
 
     public void removeHater(Entity entity, Entity hater) {
         HateComponent hateComponent = hcm.get(entity);
-        if (hateComponent.getHaters().remove(hater) != null) {
+        Map<Entity, Integer> haters = hateComponent.getHaters();
+        if (haters.remove(hater) != null) {
             Entity target = hateComponent.getTarget();
             if (target == hater) {
                 hateComponent.setTarget(null);
             }
             post(HateEvents.class).onHaterRemoved(entity, hater);
+        }
+        if (haters.isEmpty()) {
+            post(HateEvents.class).onHatersEmpty(entity);
         }
     }
 
