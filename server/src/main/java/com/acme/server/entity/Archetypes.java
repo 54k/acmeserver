@@ -36,7 +36,8 @@ public final class Archetypes {
                 .add(InventoryComponent.class)
                 .add(StatsComponent.class)
                 .add(DropComponent.class)
-                .add(HateListComponent.class);
+                .add(HateComponent.class)
+                .add(BrainComponent.class);
     }
 
     public static final Archetype ITEM_TYPE = new Archetype(BASE_TYPE);

@@ -16,7 +16,6 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         BrowserQuest browserQuest = new BrowserQuest();
         application = new ContextBuilder(browserQuest)
-                .setApplicationName(BrowserQuest.class.getSimpleName())
                 .setUpdateInterval(1000 / 60)
                 .build();
         application.waitForStart(0);

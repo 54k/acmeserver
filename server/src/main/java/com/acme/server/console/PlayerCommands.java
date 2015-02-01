@@ -1,6 +1,6 @@
 package com.acme.server.console;
 
-import com.acme.commons.ashley.WiringEngine;
+import com.acme.commons.ashley.EntityEngine;
 import com.acme.commons.network.SessionComponent;
 import com.acme.server.BrowserQuest;
 import com.acme.server.manager.WorldManager;
@@ -14,9 +14,9 @@ public class PlayerCommands {
         this.browserQuest = browserQuest;
     }
 
-    @Descriptor("show online")
+    @Descriptor("show online players")
     public void online() {
-        WiringEngine engine = getEngine();
+        EntityEngine engine = getEngine();
         System.out.println(engine.getSystem(WorldManager.class).getPlayers());
     }
 
@@ -27,7 +27,7 @@ public class PlayerCommands {
                 .getSession().close();
     }
 
-    private WiringEngine getEngine() {
-        return browserQuest.getContext().get(WiringEngine.class);
+    private EntityEngine getEngine() {
+        return browserQuest.getContext().get(EntityEngine.class);
     }
 }

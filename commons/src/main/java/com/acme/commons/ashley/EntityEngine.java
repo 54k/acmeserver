@@ -3,11 +3,7 @@ package com.acme.commons.ashley;
 import com.acme.commons.application.Context;
 import com.acme.commons.event.Event;
 import com.acme.commons.event.EventBus;
-import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.EntityListener;
-import com.badlogic.ashley.core.EntitySystem;
-import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.utils.ImmutableArray;
@@ -17,7 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class WiringEngine extends Engine {
+public class EntityEngine extends Engine {
 
     private final Signal<Void> injectSignal = new Signal<>();
     private final Map<EntitySystem, Listener<Void>> injectionListeners = new HashMap<>();
@@ -29,7 +25,7 @@ public class WiringEngine extends Engine {
     private final Set<EngineListener> initListeners = new LinkedHashSet<>();
     private boolean initialized;
 
-    public WiringEngine(Context context, Engine engine) {
+    public EntityEngine(Context context, Engine engine) {
         this.engine = engine;
         injector = new Injector(context, this);
     }

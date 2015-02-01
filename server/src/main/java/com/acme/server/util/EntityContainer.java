@@ -12,7 +12,7 @@ public final class EntityContainer {
     private final Map<Long, Entity> playersById = new HashMap<>();
 
     public Entity addEntity(Entity entity) {
-        if (EntityUtils.isPlayer(entity)) {
+        if (TypeUtils.isPlayer(entity)) {
             addPlayer(entity);
         }
         return entitiesById.put(entity.getId(), entity);
@@ -23,7 +23,7 @@ public final class EntityContainer {
     }
 
     public boolean removeEntity(Entity entity) {
-        if (EntityUtils.isPlayer(entity)) {
+        if (TypeUtils.isPlayer(entity)) {
             removePlayer(entity);
         }
         return entitiesById.remove(entity.getId(), entity);

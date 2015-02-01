@@ -1,18 +1,22 @@
-package com.acme.server.manager;
+package com.acme.server.controller;
 
 import com.acme.commons.application.Context;
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
 import com.acme.server.component.*;
+import com.acme.server.event.CombatEvents;
+import com.acme.server.manager.EntityManager;
+import com.acme.server.manager.WorldManager;
 import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
+import com.acme.server.util.TypeUtils;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class DropManager extends ManagerSystem {
+public class DropController extends ManagerSystem implements CombatEvents {
 
     private ComponentMapper<WorldComponent> wcm;
     private ComponentMapper<DropComponent> dcm;
@@ -22,6 +26,13 @@ public class DropManager extends ManagerSystem {
     private Context context;
     private EntityManager entityManager;
     private WorldManager worldManager;
+
+    @Override
+    public void onEntityKilled(Entity killer, Entity victim) {
+        if (TypeUtils.isCreature(victim)) {
+            dropItems(victim);
+        }
+    }
 
     public void dropItems(Entity entity) {
         WorldComponent worldComponent = wcm.get(entity);

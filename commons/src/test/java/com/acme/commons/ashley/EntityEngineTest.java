@@ -7,20 +7,17 @@ import com.badlogic.ashley.core.EntitySystem;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
-public class WiringEngineTest extends Assert {
+public class EntityEngineTest extends Assert {
 
-    private WiringEngine engine;
+    private EntityEngine engine;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        engine = new WiringEngine(mock(Context.class), new Engine());
+        engine = new EntityEngine(mock(Context.class), new Engine());
     }
 
     @Test
@@ -54,7 +51,7 @@ public class WiringEngineTest extends Assert {
     }
 
     static class EventProducer extends EntitySystem implements EngineListener {
-        WiringEngine engine;
+        EntityEngine engine;
 
         public void sendEvent() {
             engine.post(Events.class).event();
@@ -65,12 +62,12 @@ public class WiringEngineTest extends Assert {
         }
 
         @Override
-        public void addedToEngine(WiringEngine engine) {
+        public void addedToEngine(EntityEngine engine) {
             this.engine = engine;
         }
 
         @Override
-        public void removedFromEngine(WiringEngine engine) {
+        public void removedFromEngine(EntityEngine engine) {
             this.engine = null;
         }
     }

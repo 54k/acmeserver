@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 final class UpdateLoop implements Context {
 
-    private static final long NANOS_IN_SECOND = TimeUnit.SECONDS.toNanos(1);
+    private static final long NANOS_IN_SECOND = 1000000;
     private static final long ORIGIN_NANOS = System.nanoTime();
 
     private final Set<ContextListener> contextListeners = new LinkedHashSet<>();

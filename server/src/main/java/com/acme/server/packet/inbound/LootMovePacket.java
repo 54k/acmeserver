@@ -23,6 +23,6 @@ public class LootMovePacket extends InboundPacket {
 
     @Override
     public void run() {
-        positionManager.updatePosition(getClient(), new Position(x, y));
+        positionManager.moveEntity(getClient(), new Position(x, y));
     }
 }

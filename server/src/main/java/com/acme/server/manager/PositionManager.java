@@ -19,11 +19,15 @@ public class PositionManager extends ManagerSystem {
 
     private NetworkSystem networkSystem;
 
+    public void moveEntity(Entity entity, Position position) {
+        updatePosition(entity, position);
+        networkSystem.sendToSelfAndRegion(entity, new MovePacket(entity));
+    }
+
     public void updatePosition(Entity entity, Position position) {
         PositionComponent positionComponent = pcm.get(entity);
         positionComponent.setPosition(position);
         updateRegion(entity, positionComponent.getPosition());
-        networkSystem.sendToKnownList(entity, new MovePacket(entity));
     }
 
     private void updateRegion(Entity entity, Position position) {

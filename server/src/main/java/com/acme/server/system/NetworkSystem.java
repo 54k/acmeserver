@@ -1,7 +1,7 @@
 package com.acme.server.system;
 
+import com.acme.commons.ashley.EntityEngine;
 import com.acme.commons.ashley.Wired;
-import com.acme.commons.ashley.WiringEngine;
 import com.acme.commons.network.*;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PositionComponent;
@@ -23,7 +23,7 @@ public class NetworkSystem extends AbstractNetworkSystem {
     private ComponentMapper<KnownListComponent> kcm;
     private ComponentMapper<PositionComponent> pcm;
 
-    private WiringEngine engine;
+    private EntityEngine engine;
     private EntityManager entityManager;
 
     private ObjectMapper objectMapper;
@@ -104,7 +104,10 @@ public class NetworkSystem extends AbstractNetworkSystem {
 
     public void sendToSelfAndRegion(Entity sender, OutboundPacket packet) {
         sendPacket(sender, packet);
-        pcm.get(sender).getRegion().getPlayers().values().forEach(e -> sendPacket(e, packet));
+        pcm.get(sender).getRegion()
+                .getSurroundingRegions()
+                .stream().flatMap(r -> r.getPlayers().values().stream())
+                .forEach(e -> sendPacket(e, packet));
     }
 
     @Override

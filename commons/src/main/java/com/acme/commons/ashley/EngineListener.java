@@ -2,9 +2,12 @@ package com.acme.commons.ashley;
 
 public interface EngineListener {
 
-    void addedToEngine(WiringEngine engine);
+    default void addedToEngine(EntityEngine engine) {
+    }
 
-    void removedFromEngine(WiringEngine engine);
+    default void removedFromEngine(EntityEngine engine) {
+    }
 
-    void initialize();
+    default void initialize() {
+    }
 }

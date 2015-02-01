@@ -53,8 +53,8 @@ public class LoginManager extends ManagerSystem {
         worldComponent.setInstance(instance);
 
         KnownListComponent knownListComponent = kcm.get(entity);
-        knownListComponent.setDistanceToFindObject(30);
-        knownListComponent.setDistanceToForgetObject(30);
+        knownListComponent.setDistanceToFindObject(60);
+        knownListComponent.setDistanceToForgetObject(60);
 
         inventoryManager.tryEquipWeapon(entity, weapon);
         inventoryManager.tryEquipArmor(entity, armor);

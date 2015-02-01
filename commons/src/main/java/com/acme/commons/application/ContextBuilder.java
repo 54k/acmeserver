@@ -7,6 +7,7 @@ public final class ContextBuilder {
 
     public ContextBuilder(Application application) {
         this.application = application;
+        setApplicationName(application.getClass().getSimpleName());
     }
 
     public ContextBuilder setApplicationName(String applicationName) {
