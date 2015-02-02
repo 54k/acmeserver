@@ -2,27 +2,12 @@ package com.acme.server;
 
 import com.acme.commons.application.ApplicationAdapter;
 import com.acme.commons.application.Context;
-import com.acme.commons.ashley.WiringEngine;
+import com.acme.commons.ashley.EntityEngine;
 import com.acme.commons.network.NetworkServer;
+import com.acme.server.controller.*;
 import com.acme.server.entity.Type;
-import com.acme.server.manager.ChatManager;
-import com.acme.server.manager.ChestManager;
-import com.acme.server.manager.CombatManager;
-import com.acme.server.manager.DropManager;
-import com.acme.server.manager.EntityManager;
-import com.acme.server.manager.HateListManager;
-import com.acme.server.manager.InventoryManager;
-import com.acme.server.manager.LoginManager;
-import com.acme.server.manager.PickupManager;
-import com.acme.server.manager.PositionManager;
-import com.acme.server.manager.SpawnManager;
-import com.acme.server.manager.StatsManager;
-import com.acme.server.manager.WorldManager;
-import com.acme.server.system.DespawnSystem;
-import com.acme.server.system.InvulnerabilitySystem;
-import com.acme.server.system.KnownListSystem;
-import com.acme.server.system.NetworkSystem;
-import com.acme.server.system.SpawnSystem;
+import com.acme.server.manager.*;
+import com.acme.server.system.*;
 import com.acme.server.template.CreatureTemplate;
 import com.acme.server.template.WorldTemplate;
 import com.acme.server.world.Instance;
@@ -46,13 +31,22 @@ public class BrowserQuest extends ApplicationAdapter {
     public void create(Context context) {
         super.create(context);
         context.register(ObjectMapper.class, new ObjectMapper());
-        WiringEngine engine = context.get(WiringEngine.class);
-        NetworkSystem networkSystem = new NetworkSystem();
+        EntityEngine engine = context.get(EntityEngine.class);
+        PacketSystem networkSystem = new PacketSystem();
         engine.addSystem(networkSystem);
         engine.addSystem(new SpawnSystem());
         engine.addSystem(new DespawnSystem());
         engine.addSystem(new InvulnerabilitySystem());
+        engine.addSystem(new CreatureBrainSystem());
         engine.addSystem(new KnownListSystem());
+
+        engine.addSystem(new PositionController());
+        engine.addSystem(new PickupController());
+        engine.addSystem(new InventoryController());
+        engine.addSystem(new StatsController());
+        engine.addSystem(new DropController());
+        engine.addSystem(new CombatController());
+        engine.addSystem(new HateController());
 
         WorldManager worldManager = createWorldManager();
         engine.addSystem(worldManager);
@@ -60,15 +54,7 @@ public class BrowserQuest extends ApplicationAdapter {
         SpawnManager spawnManager = new SpawnManager();
         engine.addSystem(spawnManager);
         engine.addSystem(new LoginManager());
-        engine.addSystem(new PositionManager());
         engine.addSystem(new ChatManager());
-        engine.addSystem(new PickupManager());
-        engine.addSystem(new InventoryManager());
-        engine.addSystem(new StatsManager());
-        engine.addSystem(new DropManager());
-        engine.addSystem(new ChestManager());
-        engine.addSystem(new CombatManager());
-        engine.addSystem(new HateListManager());
 
         engine.initialize();
         LOG.info("[Engine initialized]");
@@ -84,7 +70,7 @@ public class BrowserQuest extends ApplicationAdapter {
         spawnManager.spawnInstanceEntities(instance);
     }
 
-    private void startNetworkServer(NetworkSystem networkSystem) {
+    private void startNetworkServer(PacketSystem networkSystem) {
         networkServer = NetworkServer.create();
         networkServer.setListener(networkSystem);
         networkServer.bind(8000);

@@ -54,6 +54,15 @@ public class Region {
     }
 
     public boolean isActive() {
+        for (Region surroundingRegion : surroundingRegions) {
+            if (surroundingRegion.isRegionActive()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isRegionActive() {
         return active;
     }
 }

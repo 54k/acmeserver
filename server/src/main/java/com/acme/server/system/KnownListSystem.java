@@ -6,8 +6,8 @@ import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.packet.outbound.DespawnPacket;
 import com.acme.server.packet.outbound.SpawnPacket;
-import com.acme.server.util.EntityUtils;
 import com.acme.server.util.PositionUtils;
+import com.acme.server.util.TypeUtils;
 import com.acme.server.world.Region;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -22,7 +22,7 @@ public class KnownListSystem extends IteratingSystem {
     private ComponentMapper<KnownListComponent> kcm;
     private ComponentMapper<PositionComponent> pcm;
 
-    private NetworkSystem networkSystem;
+    private PacketSystem networkSystem;
 
     private Entity actor;
     private List<Entity> knownEntities;
@@ -77,7 +77,7 @@ public class KnownListSystem extends IteratingSystem {
 
     private void removeFromKnownList(Entity entity) {
         knownEntities.remove(entity);
-        if (EntityUtils.isPlayer(entity)) {
+        if (TypeUtils.isPlayer(entity)) {
             knownPlayers.remove(entity);
         }
     }
@@ -104,7 +104,7 @@ public class KnownListSystem extends IteratingSystem {
 
     private void addToKnownList(Entity entity) {
         knownEntities.add(entity);
-        if (EntityUtils.isPlayer(entity)) {
+        if (TypeUtils.isPlayer(entity)) {
             knownPlayers.add(entity);
         }
     }

@@ -24,7 +24,6 @@ public class SpawnSystem extends IteratingSystem {
     private WorldManager worldManager;
 
     public SpawnSystem() {
-        //noinspection unchecked
         super(Family.all(WorldComponent.class, SpawnComponent.class, PositionComponent.class).get());
     }
 
@@ -37,7 +36,9 @@ public class SpawnSystem extends IteratingSystem {
             spawnComponent.setCooldown(currentRespawnDelay);
 
             if (spawnComponent.getCooldown() <= 0) {
-                positionComponent.setPosition(getRandomSpawnPosition(spawnComponent.getArea(), wcm.get(entity).getInstance()));
+                Position spawnPosition = getRandomSpawnPosition(spawnComponent.getArea(), wcm.get(entity).getInstance());
+                spawnComponent.setSpawnPosition(spawnPosition);
+                positionComponent.setPosition(spawnPosition);
                 spawnComponent.refreshCooldown();
                 worldManager.spawn(entity);
             }

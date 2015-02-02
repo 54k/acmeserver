@@ -2,14 +2,17 @@ package com.acme.server.packet.inbound;
 
 import com.acme.commons.ashley.Wired;
 import com.acme.commons.network.InboundPacket;
-import com.acme.server.manager.ChestManager;
+import com.acme.server.controller.PickupController;
+import com.acme.server.manager.WorldManager;
 
+@Wired
 public class OpenPacket extends InboundPacket {
 
     private int chestId;
 
-    @Wired
-    private ChestManager chestManager;
+    private PickupController chestManager;
+
+    private WorldManager worldManager;
 
     @Override
     public void read() {
@@ -18,6 +21,6 @@ public class OpenPacket extends InboundPacket {
 
     @Override
     public void run() {
-        chestManager.openChest(getClient(), chestId);
+        chestManager.openChest(worldManager.findEntityById(chestId));
     }
 }

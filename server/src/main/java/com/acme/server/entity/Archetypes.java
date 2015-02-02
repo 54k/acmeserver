@@ -1,5 +1,6 @@
 package com.acme.server.entity;
 
+import com.acme.commons.ai.BrainComponent;
 import com.acme.commons.ashley.Archetype;
 import com.acme.server.component.*;
 
@@ -36,7 +37,8 @@ public final class Archetypes {
                 .add(InventoryComponent.class)
                 .add(StatsComponent.class)
                 .add(DropComponent.class)
-                .add(HateListComponent.class);
+                .add(HateComponent.class)
+                .add(BrainComponent.class);
     }
 
     public static final Archetype ITEM_TYPE = new Archetype(BASE_TYPE);

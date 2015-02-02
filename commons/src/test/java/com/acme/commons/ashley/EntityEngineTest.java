@@ -14,13 +14,13 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import static org.mockito.Matchers.eq;
 
-public class WiringEngineTest extends Assert {
+public class EntityEngineTest extends Assert {
 
-    private WiringEngine engine;
+    private EntityEngine engine;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        engine = new WiringEngine(mock(Context.class), new Engine());
+        engine = new EntityEngine(mock(Context.class), new Engine());
     }
 
     @Test
@@ -29,7 +29,7 @@ public class WiringEngineTest extends Assert {
         engine.addSystem(spy);
         verify(spy).addedToEngine(eq(engine));
         engine.initialize();
-        verify(spy).initialize();
+        verify(spy).wired();
         engine.removeSystem(spy);
         verify(spy).removedFromEngine(eq(engine));
     }
@@ -53,24 +53,24 @@ public class WiringEngineTest extends Assert {
         void event();
     }
 
-    static class EventProducer extends EntitySystem implements EngineListener {
-        WiringEngine engine;
+    static class EventProducer extends EntitySystem implements EntityEngineListener, WiredListener {
+        EntityEngine engine;
 
         public void sendEvent() {
             engine.post(Events.class).event();
         }
 
         @Override
-        public void initialize() {
+        public void wired() {
         }
 
         @Override
-        public void addedToEngine(WiringEngine engine) {
+        public void addedToEngine(EntityEngine engine) {
             this.engine = engine;
         }
 
         @Override
-        public void removedFromEngine(WiringEngine engine) {
+        public void removedFromEngine(EntityEngine engine) {
             this.engine = null;
         }
     }

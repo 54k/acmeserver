@@ -1,21 +1,31 @@
-package com.acme.server.manager;
+package com.acme.server.controller;
 
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
 import com.acme.server.component.InvulnerableComponent;
 import com.acme.server.component.StatsComponent;
+import com.acme.server.event.CombatEvents;
 import com.acme.server.packet.outbound.HealthPacket;
-import com.acme.server.system.NetworkSystem;
+import com.acme.server.system.PacketSystem;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class StatsManager extends ManagerSystem {
+public class StatsController extends ManagerSystem implements CombatEvents {
 
     private ComponentMapper<StatsComponent> scm;
     private ComponentMapper<InvulnerableComponent> icm;
 
-    private NetworkSystem networkSystem;
+    private PacketSystem packetSystem;
+
+    @Override
+    public void onEntityDamaged(Entity attacker, Entity victim, int damage) {
+    }
+
+    @Override
+    public void onEntityKilled(Entity killer, Entity victim) {
+        resetHitPoints(victim);
+    }
 
     public void addHitPoints(Entity entity, int amount) {
         addHitPoints(entity, amount, false);
@@ -29,7 +39,7 @@ public class StatsManager extends ManagerSystem {
         int newHitPoints = Math.max(0, Math.min(hitPoints + amount, maxHitPoints));
         statsComponent.setHitPoints(newHitPoints);
         if (newHitPoints != hitPoints) {
-            networkSystem.sendPacket(entity, new HealthPacket(statsComponent.getHitPoints(), regen));
+            packetSystem.sendPacket(entity, new HealthPacket(statsComponent.getHitPoints(), regen));
         }
     }
 
@@ -43,5 +53,9 @@ public class StatsManager extends ManagerSystem {
     public void resetHitPoints(Entity entity) {
         StatsComponent statsComponent = scm.get(entity);
         statsComponent.setHitPoints(statsComponent.getMaxHitPoints());
+    }
+
+    public boolean isDead(Entity entity) {
+        return scm.get(entity).getHitPoints() == 0;
     }
 }

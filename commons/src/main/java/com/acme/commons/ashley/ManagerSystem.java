@@ -1,39 +1,40 @@
 package com.acme.commons.ashley;
 
-import com.badlogic.ashley.core.Engine;
+import com.acme.commons.event.Event;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 
-public abstract class ManagerSystem extends EntitySystem implements EngineListener, EntityListener {
+public abstract class ManagerSystem extends EntitySystem implements EntityEngineListener, EntityListener {
+
+    private Family family;
+    private EntityEngine engine;
 
     public ManagerSystem() {
+        this(Family.all().get());
+    }
+
+    public ManagerSystem(Family family) {
+        this.family = family;
         setProcessing(false);
     }
 
     @Override
-    public void addedToEngine(Engine engine) {
-        //noinspection unchecked
-        engine.addEntityListener(Family.all().get(), this);
+    public void addedToEngine(EntityEngine engine) {
+        this.engine = engine;
+        engine.addEntityListener(family, this);
         engine.addEntityListener(this);
     }
 
     @Override
-    public void removedFromEngine(Engine engine) {
+    public void removedFromEngine(EntityEngine engine) {
         engine.removeEntityListener(this);
+        this.engine = null;
     }
 
-    @Override
-    public void addedToEngine(WiringEngine engine) {
-    }
-
-    @Override
-    public void removedFromEngine(WiringEngine engine) {
-    }
-
-    @Override
-    public void initialize() {
+    public <T extends Event> T post(Class<T> type) {
+        return engine.post(type);
     }
 
     @Override

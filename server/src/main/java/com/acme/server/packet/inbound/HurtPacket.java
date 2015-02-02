@@ -2,12 +2,16 @@ package com.acme.server.packet.inbound;
 
 import com.acme.commons.ashley.Wired;
 import com.acme.commons.network.InboundPacket;
-import com.acme.server.manager.CombatManager;
+import com.acme.server.controller.CombatController;
+import com.acme.server.manager.WorldManager;
 
+@Wired
 public class HurtPacket extends InboundPacket {
 
-    @Wired
-    private CombatManager combatManager;
+    private CombatController combatController;
+
+    private WorldManager worldManager;
+
     private long creatureId;
 
     @Override
@@ -17,6 +21,6 @@ public class HurtPacket extends InboundPacket {
 
     @Override
     public void run() {
-        combatManager.attack(creatureId, getClient());
+        combatController.attack(worldManager.findEntityById(creatureId), getClient());
     }
 }

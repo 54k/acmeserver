@@ -1,7 +1,10 @@
 package com.acme.server.manager;
 
+import com.acme.commons.ai.Brain;
+import com.acme.commons.ai.BrainComponent;
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
+import com.acme.server.ai.PatrolBrainState;
 import com.acme.server.component.*;
 import com.acme.server.entity.Archetypes;
 import com.acme.server.entity.Type;
@@ -22,6 +25,7 @@ public class EntityManager extends ManagerSystem {
     private ComponentMapper<TypeComponent> incm;
     private ComponentMapper<PickupComponent> pcm;
     private ComponentMapper<DropComponent> dcm;
+    private ComponentMapper<BrainComponent> bcm;
 
     private Engine engine;
 
@@ -64,7 +68,7 @@ public class EntityManager extends ManagerSystem {
                 break;
             case FIREPOTION:
                 pickupComponent.setPickupType(PickupComponent.PickupType.FIREFOX_POTION);
-                pickupComponent.setAmount(30 * 1000);
+                pickupComponent.setAmount(10 * 1000);
                 break;
             case SWORD1:
             case SWORD2:
@@ -107,6 +111,8 @@ public class EntityManager extends ManagerSystem {
                 .map(e -> new DropComponent.Drop(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
         dropComponent.getDrops().addAll(drops);
+        bcm.get(entity).setBrain(new Brain(entity, engine.getSystem(PatrolBrainState.class)));
+
         engine.addEntity(entity);
         return entity;
     }

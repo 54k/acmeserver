@@ -1,6 +1,6 @@
 package com.acme.commons.application;
 
-import com.acme.commons.ashley.WiringEngine;
+import com.acme.commons.ashley.EntityEngine;
 import com.badlogic.ashley.core.Engine;
 
 public abstract class ApplicationAdapter implements Application {
@@ -10,12 +10,12 @@ public abstract class ApplicationAdapter implements Application {
     @Override
     public void create(Context context) {
         this.context = context;
-        context.register(WiringEngine.class, new WiringEngine(context, new Engine()));
+        context.register(EntityEngine.class, new EntityEngine(context, new Engine()));
     }
 
     @Override
     public void update() {
-        context.get(WiringEngine.class).update(context.getDelta());
+        context.get(EntityEngine.class).update(context.getDelta());
     }
 
     @Override

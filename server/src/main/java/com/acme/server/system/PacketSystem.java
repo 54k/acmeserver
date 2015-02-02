@@ -1,7 +1,7 @@
 package com.acme.server.system;
 
+import com.acme.commons.ashley.EntityEngine;
 import com.acme.commons.ashley.Wired;
-import com.acme.commons.ashley.WiringEngine;
 import com.acme.commons.network.*;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PositionComponent;
@@ -17,20 +17,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 
 @Wired
-public class NetworkSystem extends AbstractNetworkSystem {
+public class PacketSystem extends NetworkSystem {
 
     private ComponentMapper<SessionComponent> scm;
     private ComponentMapper<KnownListComponent> kcm;
     private ComponentMapper<PositionComponent> pcm;
 
-    private WiringEngine engine;
+    private EntityEngine engine;
     private EntityManager entityManager;
 
     private ObjectMapper objectMapper;
 
     private final PacketReader packetReader;
 
-    public NetworkSystem() {
+    public PacketSystem() {
         packetReader = new PacketReader();
         packetReader.registerPacketPrototype(OpCodes.HELLO, LoginPacket.class);
         packetReader.registerPacketPrototype(OpCodes.MOVE, MovePacket.class);
@@ -104,7 +104,10 @@ public class NetworkSystem extends AbstractNetworkSystem {
 
     public void sendToSelfAndRegion(Entity sender, OutboundPacket packet) {
         sendPacket(sender, packet);
-        pcm.get(sender).getRegion().getPlayers().values().forEach(e -> sendPacket(e, packet));
+        pcm.get(sender).getRegion()
+                .getSurroundingRegions()
+                .stream().flatMap(r -> r.getPlayers().values().stream())
+                .forEach(e -> sendPacket(e, packet));
     }
 
     @Override
