@@ -7,9 +7,12 @@ import com.badlogic.ashley.core.EntitySystem;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
 
 public class EntityEngineTest extends Assert {
 
@@ -26,7 +29,7 @@ public class EntityEngineTest extends Assert {
         engine.addSystem(spy);
         verify(spy).addedToEngine(eq(engine));
         engine.initialize();
-        verify(spy).initialize();
+        verify(spy).wired();
         engine.removeSystem(spy);
         verify(spy).removedFromEngine(eq(engine));
     }
@@ -50,7 +53,7 @@ public class EntityEngineTest extends Assert {
         void event();
     }
 
-    static class EventProducer extends EntitySystem implements EngineListener {
+    static class EventProducer extends EntitySystem implements EntityEngineListener, WiredListener {
         EntityEngine engine;
 
         public void sendEvent() {
@@ -58,7 +61,7 @@ public class EntityEngineTest extends Assert {
         }
 
         @Override
-        public void initialize() {
+        public void wired() {
         }
 
         @Override

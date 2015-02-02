@@ -6,7 +6,7 @@ import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 
-public abstract class ManagerSystem extends EntitySystem implements EngineListener, EntityListener {
+public abstract class ManagerSystem extends EntitySystem implements EntityEngineListener, EntityListener {
 
     private Family family;
     private EntityEngine engine;
