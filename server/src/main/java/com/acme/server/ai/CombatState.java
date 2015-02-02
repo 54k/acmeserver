@@ -1,10 +1,8 @@
 package com.acme.server.ai;
 
-import com.acme.commons.ai.Brain;
 import com.acme.commons.ai.BrainState;
-import com.acme.commons.ashley.ManagerSystem;
+import com.acme.commons.ai.BrainStateController;
 import com.acme.commons.ashley.Wired;
-import com.acme.server.component.BrainComponent;
 import com.acme.server.component.HateComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.SpawnComponent;
@@ -17,11 +15,10 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class CombatState extends ManagerSystem implements BrainState, HateEvents {
+public class CombatState extends BrainStateController implements BrainState, HateEvents {
 
     private ComponentMapper<PositionComponent> pcm;
     private ComponentMapper<SpawnComponent> scm;
-    private ComponentMapper<BrainComponent> bcm;
     private ComponentMapper<HateComponent> hcm;
 
     private PositionManager positionManager;
@@ -76,12 +73,5 @@ public class CombatState extends ManagerSystem implements BrainState, HateEvents
         Position spawnPosition = spawnComponent.getSpawnPosition();
         positionManager.moveEntity(entity, spawnPosition);
         changeState(entity, patrolState);
-    }
-
-    private void changeState(Entity entity, BrainState state) {
-        Brain brain = bcm.get(entity).getBrain();
-        if (!brain.isInState(state)) {
-            brain.changeState(state);
-        }
     }
 }

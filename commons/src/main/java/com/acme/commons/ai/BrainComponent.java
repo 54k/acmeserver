@@ -1,6 +1,5 @@
-package com.acme.server.component;
+package com.acme.commons.ai;
 
-import com.acme.commons.ai.Brain;
 import com.badlogic.ashley.core.Component;
 
 public class BrainComponent extends Component {

@@ -6,7 +6,7 @@ import com.acme.commons.ashley.Wired;
 import com.acme.server.component.*;
 import com.acme.server.packet.outbound.HitPointsPacket;
 import com.acme.server.packet.outbound.WelcomePacket;
-import com.acme.server.system.NetworkSystem;
+import com.acme.server.system.GameServerNetworkSystem;
 import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
@@ -31,7 +31,7 @@ public class LoginManager extends ManagerSystem {
     private PositionManager positionManager;
     private WorldManager worldManager;
     private InventoryManager inventoryManager;
-    private NetworkSystem networkSystem;
+    private GameServerNetworkSystem networkSystem;
 
     public void login(Entity entity, String name, int weapon, int armor) {
         PlayerComponent playerComponent = pcm.get(entity);

@@ -11,7 +11,7 @@ import com.acme.server.manager.WorldManager;
 import com.acme.server.packet.outbound.AttackPacket;
 import com.acme.server.packet.outbound.DamagePacket;
 import com.acme.server.packet.outbound.KillPacket;
-import com.acme.server.system.NetworkSystem;
+import com.acme.server.system.GameServerNetworkSystem;
 import com.acme.server.util.Rnd;
 import com.acme.server.util.TypeUtils;
 import com.acme.server.world.Position;
@@ -30,7 +30,7 @@ public class CombatController extends ManagerSystem {
 
     private EntityEngine engine;
     private StatsManager statsManager;
-    private NetworkSystem networkSystem;
+    private GameServerNetworkSystem networkSystem;
     private WorldManager worldManager;
     private PositionManager positionManager;
 

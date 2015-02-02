@@ -5,7 +5,7 @@ import com.acme.commons.ashley.Wired;
 import com.acme.server.component.InvulnerableComponent;
 import com.acme.server.component.StatsComponent;
 import com.acme.server.packet.outbound.HealthPacket;
-import com.acme.server.system.NetworkSystem;
+import com.acme.server.system.GameServerNetworkSystem;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
@@ -15,7 +15,7 @@ public class StatsManager extends ManagerSystem {
     private ComponentMapper<StatsComponent> scm;
     private ComponentMapper<InvulnerableComponent> icm;
 
-    private NetworkSystem networkSystem;
+    private GameServerNetworkSystem networkSystem;
 
     public void addHitPoints(Entity entity, int amount) {
         addHitPoints(entity, amount, false);

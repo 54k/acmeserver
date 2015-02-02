@@ -5,7 +5,7 @@ import com.acme.commons.ashley.Wired;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.packet.outbound.MovePacket;
-import com.acme.server.system.NetworkSystem;
+import com.acme.server.system.GameServerNetworkSystem;
 import com.acme.server.world.Position;
 import com.acme.server.world.Region;
 import com.badlogic.ashley.core.ComponentMapper;
@@ -17,7 +17,7 @@ public class PositionManager extends ManagerSystem {
     private ComponentMapper<PositionComponent> pcm;
     private ComponentMapper<WorldComponent> wcm;
 
-    private NetworkSystem networkSystem;
+    private GameServerNetworkSystem networkSystem;
 
     public void moveEntity(Entity entity, Position position) {
         updatePosition(entity, position);

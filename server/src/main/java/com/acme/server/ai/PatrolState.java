@@ -1,10 +1,9 @@
 package com.acme.server.ai;
 
 import com.acme.commons.ai.BrainState;
-import com.acme.commons.ashley.ManagerSystem;
+import com.acme.commons.ai.BrainStateController;
 import com.acme.commons.ashley.Wired;
 import com.acme.server.component.PatrolComponent;
-import com.acme.server.component.PositionComponent;
 import com.acme.server.component.SpawnComponent;
 import com.acme.server.manager.PositionManager;
 import com.acme.server.util.PositionUtils;
@@ -15,11 +14,10 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class PatrolState extends ManagerSystem implements BrainState {
+public class PatrolState extends BrainStateController implements BrainState {
 
     private ComponentMapper<PatrolComponent> pcm;
     private ComponentMapper<SpawnComponent> scm;
-    private ComponentMapper<PositionComponent> poscm;
 
     private PositionManager positionManager;
 

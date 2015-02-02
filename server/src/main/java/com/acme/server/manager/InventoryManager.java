@@ -4,7 +4,7 @@ import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
 import com.acme.server.component.InventoryComponent;
 import com.acme.server.packet.outbound.EquipPacket;
-import com.acme.server.system.NetworkSystem;
+import com.acme.server.system.GameServerNetworkSystem;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
@@ -13,7 +13,7 @@ public class InventoryManager extends ManagerSystem {
 
     private ComponentMapper<InventoryComponent> icm;
 
-    private NetworkSystem networkSystem;
+    private GameServerNetworkSystem networkSystem;
 
     public boolean tryEquipWeapon(Entity entity, int weapon) {
         InventoryComponent inventoryComponent = icm.get(entity);

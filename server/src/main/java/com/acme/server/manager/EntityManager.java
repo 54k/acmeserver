@@ -1,6 +1,7 @@
 package com.acme.server.manager;
 
 import com.acme.commons.ai.Brain;
+import com.acme.commons.ai.BrainComponent;
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
 import com.acme.server.ai.PatrolState;

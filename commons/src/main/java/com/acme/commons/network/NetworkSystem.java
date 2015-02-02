@@ -9,13 +9,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AbstractNetworkSystem extends IteratingSystem implements SessionListener {
+public abstract class NetworkSystem extends IteratingSystem implements SessionListener {
 
     private ComponentMapper<SessionComponent> scm = ComponentMapper.getFor(SessionComponent.class);
 
     private final Map<Session, Entity> entitiesBySession = new HashMap<>();
 
-    public AbstractNetworkSystem() {
+    public NetworkSystem() {
         //noinspection unchecked
         super(Family.all(SessionComponent.class).get(), Integer.MAX_VALUE);
     }
