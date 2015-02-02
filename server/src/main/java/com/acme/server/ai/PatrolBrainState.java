@@ -5,7 +5,7 @@ import com.acme.commons.ai.BrainStateController;
 import com.acme.commons.ashley.Wired;
 import com.acme.server.component.PatrolComponent;
 import com.acme.server.component.SpawnComponent;
-import com.acme.server.manager.PositionManager;
+import com.acme.server.controller.PositionController;
 import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
@@ -14,12 +14,12 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class PatrolState extends BrainStateController implements BrainState {
+public class PatrolBrainState extends BrainStateController implements BrainState {
 
     private ComponentMapper<PatrolComponent> pcm;
     private ComponentMapper<SpawnComponent> scm;
 
-    private PositionManager positionManager;
+    private PositionController positionController;
 
     @Override
     public void enter(Entity entity) {
@@ -47,7 +47,7 @@ public class PatrolState extends BrainStateController implements BrainState {
         SpawnComponent spawnComponent = scm.get(entity);
         Area spawnArea = spawnComponent.getArea();
         Position rndPos = PositionUtils.getRandomPositionInside(spawnArea);
-        positionManager.moveEntity(entity, rndPos);
+        positionController.moveEntity(entity, rndPos);
     }
 
     @Override

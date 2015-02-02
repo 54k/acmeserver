@@ -5,9 +5,7 @@ import com.badlogic.ashley.core.Entity;
 
 public interface CombatEvents extends Event {
 
-    default void onEntityDamaged(Entity attacker, Entity victim, int damage) {
-    }
+    void onEntityDamaged(Entity attacker, Entity victim, int damage);
 
-    default void onEntityKilled(Entity killer, Entity victim) {
-    }
+    void onEntityKilled(Entity killer, Entity victim);
 }

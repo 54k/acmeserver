@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 final class UpdateLoop implements Context {
 
-    private static final long NANOS_IN_SECOND = 1000000;
+    private static final long MICROS_IN_SECOND = 1000000;
     private static final long ORIGIN_NANOS = System.nanoTime();
 
     private final Set<ContextListener> contextListeners = new LinkedHashSet<>();
@@ -35,7 +35,7 @@ final class UpdateLoop implements Context {
     UpdateLoop(Application application, Configuration configuration) {
         this.application = application;
         this.configuration = configuration;
-        updateIntervalNanos = configuration.updateInterval * NANOS_IN_SECOND;
+        updateIntervalNanos = configuration.updateInterval * MICROS_IN_SECOND;
         contextListeners.addAll(configuration.contextListeners);
         runLoop();
     }
@@ -109,7 +109,7 @@ final class UpdateLoop implements Context {
         long currentNanos = nanos();
         if (nextUpdateNanos > currentNanos) {
             try {
-                Thread.sleep((nextUpdateNanos - currentNanos) / NANOS_IN_SECOND);
+                Thread.sleep((nextUpdateNanos - currentNanos) / MICROS_IN_SECOND);
             } catch (InterruptedException ignore) {
             }
             nextUpdateNanos = nanos() + updateIntervalNanos;
@@ -120,7 +120,7 @@ final class UpdateLoop implements Context {
 
     private void updateDelta() {
         long currentNanos = nanos();
-        delta = (currentNanos - lastNanos) / NANOS_IN_SECOND;
+        delta = (currentNanos - lastNanos) / MICROS_IN_SECOND;
         lastNanos = currentNanos;
     }
 

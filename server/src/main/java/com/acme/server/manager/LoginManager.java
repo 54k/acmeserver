@@ -4,9 +4,10 @@ import com.acme.commons.application.Context;
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
 import com.acme.server.component.*;
+import com.acme.server.controller.PositionController;
 import com.acme.server.packet.outbound.HitPointsPacket;
 import com.acme.server.packet.outbound.WelcomePacket;
-import com.acme.server.system.GameServerNetworkSystem;
+import com.acme.server.system.PacketSystem;
 import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
@@ -21,6 +22,7 @@ import java.util.Collection;
 @Wired
 public class LoginManager extends ManagerSystem {
 
+    private ComponentMapper<InventoryComponent> icm;
     private ComponentMapper<PlayerComponent> pcm;
     private ComponentMapper<PositionComponent> poscm;
     private ComponentMapper<WorldComponent> wcm;
@@ -28,10 +30,10 @@ public class LoginManager extends ManagerSystem {
     private ComponentMapper<StatsComponent> scm;
 
     private Context context;
-    private PositionManager positionManager;
+
+    private PositionController positionController;
     private WorldManager worldManager;
-    private InventoryManager inventoryManager;
-    private GameServerNetworkSystem networkSystem;
+    private PacketSystem packetSystem;
 
     public void login(Entity entity, String name, int weapon, int armor) {
         PlayerComponent playerComponent = pcm.get(entity);
@@ -55,9 +57,9 @@ public class LoginManager extends ManagerSystem {
         KnownListComponent knownListComponent = kcm.get(entity);
         knownListComponent.setDistanceToFindObject(60);
         knownListComponent.setDistanceToForgetObject(60);
-
-        inventoryManager.tryEquipWeapon(entity, weapon);
-        inventoryManager.tryEquipArmor(entity, armor);
+        InventoryComponent inventoryComponent = icm.get(entity);
+        inventoryComponent.setWeapon(weapon);
+        inventoryComponent.setArmor(armor);
 
         StatsComponent statsComponent = scm.get(entity);
         int hitPoints = 60;
@@ -68,10 +70,12 @@ public class LoginManager extends ManagerSystem {
     }
 
     private void spawnPlayer(Entity entity, String name, Position position, int hitPoints) {
-        worldManager.bringIntoWorld(entity);
+        if (worldManager.findPlayerById(entity.getId()) == null) {
+            worldManager.bringIntoWorld(entity);
+        }
         worldManager.spawn(entity);
         WelcomePacket welcomePacket = new WelcomePacket(entity.getId(), name, position.getX(), position.getY(), 0);
-        networkSystem.sendPacket(entity, welcomePacket);
-        networkSystem.sendPacket(entity, new HitPointsPacket(hitPoints));
+        packetSystem.sendPacket(entity, welcomePacket);
+        packetSystem.sendPacket(entity, new HitPointsPacket(hitPoints));
     }
 }

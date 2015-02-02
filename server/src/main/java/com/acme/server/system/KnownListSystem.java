@@ -22,7 +22,7 @@ public class KnownListSystem extends IteratingSystem {
     private ComponentMapper<KnownListComponent> kcm;
     private ComponentMapper<PositionComponent> pcm;
 
-    private GameServerNetworkSystem networkSystem;
+    private PacketSystem networkSystem;
 
     private Entity actor;
     private List<Entity> knownEntities;

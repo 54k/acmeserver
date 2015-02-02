@@ -15,6 +15,9 @@ import com.acme.server.world.Position;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Wired
 public class DropController extends ManagerSystem implements CombatEvents {
 
@@ -24,8 +27,13 @@ public class DropController extends ManagerSystem implements CombatEvents {
     private ComponentMapper<SpawnComponent> scm;
 
     private Context context;
+
     private EntityManager entityManager;
     private WorldManager worldManager;
+
+    @Override
+    public void onEntityDamaged(Entity attacker, Entity victim, int damage) {
+    }
 
     @Override
     public void onEntityKilled(Entity killer, Entity victim) {
@@ -35,17 +43,16 @@ public class DropController extends ManagerSystem implements CombatEvents {
     }
 
     public void dropItems(Entity entity) {
+        List<DropComponent.Drop> drops = dcm.get(entity).getDrops().stream()
+                .filter(this::isDropSucceed)
+                .collect(Collectors.toList());
+
         WorldComponent worldComponent = wcm.get(entity);
-        DropComponent dropComponent = dcm.get(entity);
         PositionComponent positionComponent = pcm.get(entity);
         SpawnComponent spawnComponent = scm.get(entity);
         Area dropArea = new Area(positionComponent.getX() - 1, positionComponent.getY() - 1, 2, 2);
 
-        for (DropComponent.Drop drop : dropComponent.getDrops()) {
-            if (!dropSucceed(drop)) {
-                continue;
-            }
-
+        for (DropComponent.Drop drop : drops) {
             Entity dropEntity = entityManager.createEntity(drop.getType());
             wcm.get(dropEntity).setInstance(worldComponent.getInstance());
             Position dropPosition = PositionUtils.getRandomPositionInside(dropArea);
@@ -53,14 +60,18 @@ public class DropController extends ManagerSystem implements CombatEvents {
             DespawnComponent despawnComponent = new DespawnComponent();
             despawnComponent.setCooldown(spawnComponent.getCooldown());
             dropEntity.add(despawnComponent);
-            context.schedule(() -> {
-                worldManager.bringIntoWorld(dropEntity);
-                worldManager.spawn(dropEntity);
-            });
+            spawnDrop(dropEntity);
         }
     }
 
-    private boolean dropSucceed(DropComponent.Drop drop) {
+    private boolean isDropSucceed(DropComponent.Drop drop) {
         return drop.getChance() >= Rnd.between(0, 100);
+    }
+
+    private void spawnDrop(Entity dropEntity) {
+        context.schedule(() -> {
+            worldManager.bringIntoWorld(dropEntity);
+            worldManager.spawn(dropEntity);
+        });
     }
 }

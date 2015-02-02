@@ -5,12 +5,9 @@ import com.badlogic.ashley.core.Entity;
 
 public interface HateEvents extends Event {
 
-    default void onHaterAdded(Entity entity, Entity hater) {
-    }
+    void onHaterAdded(Entity entity, Entity hater);
 
-    default void onHaterRemoved(Entity entity, Entity hater) {
-    }
+    void onHaterRemoved(Entity entity, Entity hater);
 
-    default void onHatersEmpty(Entity entity) {
-    }
+    void onHatersEmpty(Entity entity);
 }

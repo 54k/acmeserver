@@ -3,11 +3,14 @@ package com.acme.server.packet.inbound;
 import com.acme.commons.ashley.Wired;
 import com.acme.commons.network.InboundPacket;
 import com.acme.server.controller.CombatController;
+import com.acme.server.manager.WorldManager;
 
+@Wired
 public class HitPacket extends InboundPacket {
 
-    @Wired
     private CombatController combatController;
+
+    private WorldManager worldManager;
 
     private long targetId;
 
@@ -18,6 +21,6 @@ public class HitPacket extends InboundPacket {
 
     @Override
     public void run() {
-        combatController.attack(getClient(), targetId);
+        combatController.attack(getClient(), worldManager.findEntityById(targetId));
     }
 }

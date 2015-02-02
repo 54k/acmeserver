@@ -18,7 +18,7 @@ public class DespawnSystem extends IteratingSystem {
 
     private Engine engine;
     private WorldManager worldManager;
-    private GameServerNetworkSystem networkSystem;
+    private PacketSystem networkSystem;
 
     public DespawnSystem() {
         //noinspection unchecked

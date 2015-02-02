@@ -1,4 +1,4 @@
-package com.acme.server.manager;
+package com.acme.server.controller;
 
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
@@ -6,37 +6,37 @@ import com.acme.server.component.InvulnerableComponent;
 import com.acme.server.component.PickupComponent;
 import com.acme.server.component.TypeComponent;
 import com.acme.server.component.WorldComponent;
+import com.acme.server.manager.WorldManager;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class PickupManager extends ManagerSystem {
+public class PickupController extends ManagerSystem {
 
     private ComponentMapper<WorldComponent> wcm;
     private ComponentMapper<PickupComponent> pcm;
     private ComponentMapper<TypeComponent> icm;
 
+    private InventoryController inventoryController;
+    private StatsController statsController;
+    private DropController dropController;
+
     private WorldManager worldManager;
-    private InventoryManager inventoryManager;
-    private StatsManager statsManager;
 
-    public void gatherPickup(Entity entity, long itemId) {
-        WorldComponent worldComponent = wcm.get(entity);
-
-        Entity item = worldComponent.getInstance().findEntityById(itemId);
+    public void gatherPickup(Entity entity, Entity item) {
         PickupComponent pickupComponent = pcm.get(item);
         TypeComponent typeComponent = icm.get(item);
 
         boolean shouldDecayPickup = false;
         switch (pickupComponent.getPickupType()) {
             case ARMOR:
-                shouldDecayPickup = inventoryManager.tryEquipArmor(entity, typeComponent.getType().getId());
+                shouldDecayPickup = inventoryController.tryEquipArmor(entity, typeComponent.getType().getId());
                 break;
             case WEAPON:
-                shouldDecayPickup = inventoryManager.tryEquipWeapon(entity, typeComponent.getType().getId());
+                shouldDecayPickup = inventoryController.tryEquipWeapon(entity, typeComponent.getType().getId());
                 break;
             case HEALTH_POTION:
-                statsManager.addHitPoints(entity, pickupComponent.getAmount());
+                statsController.addHitPoints(entity, pickupComponent.getAmount());
                 shouldDecayPickup = true;
                 break;
             case FIREFOX_POTION:
@@ -49,5 +49,10 @@ public class PickupManager extends ManagerSystem {
         if (shouldDecayPickup) {
             worldManager.decay(item);
         }
+    }
+
+    public void openChest(Entity chest) {
+        dropController.dropItems(chest);
+        worldManager.decay(chest);
     }
 }

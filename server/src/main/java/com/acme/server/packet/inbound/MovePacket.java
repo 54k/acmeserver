@@ -2,13 +2,13 @@ package com.acme.server.packet.inbound;
 
 import com.acme.commons.ashley.Wired;
 import com.acme.commons.network.InboundPacket;
-import com.acme.server.manager.PositionManager;
+import com.acme.server.controller.PositionController;
 import com.acme.server.world.Position;
 
 public class MovePacket extends InboundPacket {
 
     @Wired
-    private PositionManager positionManager;
+    private PositionController positionController;
 
     private int x;
     private int y;
@@ -21,6 +21,6 @@ public class MovePacket extends InboundPacket {
 
     @Override
     public void run() {
-        positionManager.moveEntity(getClient(), new Position(x, y));
+        positionController.moveEntity(getClient(), new Position(x, y));
     }
 }

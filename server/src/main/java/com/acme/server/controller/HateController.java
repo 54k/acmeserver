@@ -97,4 +97,8 @@ public class HateController extends ManagerSystem implements CombatEvents {
         h.forEach(hater -> hateEvents.onHaterRemoved(entity, hater));
         hateEvents.onHatersEmpty(entity);
     }
+
+    public boolean hasHaters(Entity entity) {
+        return !hcm.get(entity).getHaters().isEmpty();
+    }
 }

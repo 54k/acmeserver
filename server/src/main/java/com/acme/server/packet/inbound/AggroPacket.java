@@ -2,13 +2,17 @@ package com.acme.server.packet.inbound;
 
 import com.acme.commons.ashley.Wired;
 import com.acme.commons.network.InboundPacket;
-import com.acme.server.controller.CombatController;
+import com.acme.server.controller.HateController;
+import com.acme.server.manager.WorldManager;
 
+@Wired
 public class AggroPacket extends InboundPacket {
 
-    @Wired
-    private CombatController combatController;
     private long creatureId;
+
+    private HateController hateController;
+
+    private WorldManager worldManager;
 
     @Override
     public void read() {
@@ -17,6 +21,6 @@ public class AggroPacket extends InboundPacket {
 
     @Override
     public void run() {
-        combatController.engage(creatureId, getClient());
+        hateController.increaseHate(worldManager.findEntityById(creatureId), getClient(), 5);
     }
 }

@@ -1,25 +1,25 @@
-package com.acme.server.manager;
+package com.acme.server.controller;
 
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
 import com.acme.server.component.InventoryComponent;
 import com.acme.server.packet.outbound.EquipPacket;
-import com.acme.server.system.GameServerNetworkSystem;
+import com.acme.server.system.PacketSystem;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class InventoryManager extends ManagerSystem {
+public class InventoryController extends ManagerSystem {
 
     private ComponentMapper<InventoryComponent> icm;
 
-    private GameServerNetworkSystem networkSystem;
+    private PacketSystem packetSystem;
 
     public boolean tryEquipWeapon(Entity entity, int weapon) {
         InventoryComponent inventoryComponent = icm.get(entity);
         if (inventoryComponent.getWeapon() < weapon) {
             inventoryComponent.setWeapon(weapon);
-            networkSystem.sendToKnownList(entity, new EquipPacket(entity, weapon));
+            packetSystem.sendToSelfAndRegion(entity, new EquipPacket(entity, weapon));
             return true;
         }
         return false;
@@ -29,9 +29,17 @@ public class InventoryManager extends ManagerSystem {
         InventoryComponent inventoryComponent = icm.get(entity);
         if (inventoryComponent.getArmor() < armor) {
             inventoryComponent.setArmor(armor);
-            networkSystem.sendToKnownList(entity, new EquipPacket(entity, armor));
+            packetSystem.sendToSelfAndRegion(entity, new EquipPacket(entity, armor));
             return true;
         }
         return false;
+    }
+
+    public int getEquippedWeapon(Entity entity) {
+        return icm.get(entity).getWeapon();
+    }
+
+    public int getEquippedArmor(Entity entity) {
+        return icm.get(entity).getArmor();
     }
 }

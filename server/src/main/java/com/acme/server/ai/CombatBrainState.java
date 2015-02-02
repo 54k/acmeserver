@@ -8,24 +8,24 @@ import com.acme.server.component.PositionComponent;
 import com.acme.server.component.SpawnComponent;
 import com.acme.server.controller.CombatController;
 import com.acme.server.controller.HateController;
+import com.acme.server.controller.PositionController;
 import com.acme.server.event.HateEvents;
-import com.acme.server.manager.PositionManager;
 import com.acme.server.world.Position;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class CombatState extends BrainStateController implements BrainState, HateEvents {
+public class CombatBrainState extends BrainStateController implements BrainState, HateEvents {
 
     private ComponentMapper<PositionComponent> pcm;
     private ComponentMapper<SpawnComponent> scm;
     private ComponentMapper<HateComponent> hcm;
 
-    private PositionManager positionManager;
+    private PositionController positionController;
     private CombatController combatController;
     private HateController hateController;
 
-    private PatrolState patrolState;
+    private PatrolBrainState patrolBrainState;
 
     @Override
     public void update(Entity entity, float deltaTime) {
@@ -49,7 +49,7 @@ public class CombatState extends BrainStateController implements BrainState, Hat
             hateComponent.setTarget(mostHated);
             combatController.engage(entity, mostHated);
         } else {
-            positionManager.updatePosition(entity, pcm.get(target).getPosition());
+            positionController.updatePosition(entity, pcm.get(target).getPosition());
         }
     }
 
@@ -64,6 +64,10 @@ public class CombatState extends BrainStateController implements BrainState, Hat
     }
 
     @Override
+    public void onHaterRemoved(Entity entity, Entity hater) {
+    }
+
+    @Override
     public void onHatersEmpty(Entity entity) {
         startPatrol(entity);
     }
@@ -71,7 +75,7 @@ public class CombatState extends BrainStateController implements BrainState, Hat
     private void startPatrol(Entity entity) {
         SpawnComponent spawnComponent = scm.get(entity);
         Position spawnPosition = spawnComponent.getSpawnPosition();
-        positionManager.moveEntity(entity, spawnPosition);
-        changeState(entity, patrolState);
+        positionController.moveEntity(entity, spawnPosition);
+        changeState(entity, patrolBrainState);
     }
 }

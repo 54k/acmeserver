@@ -2,20 +2,23 @@ package com.acme.server.system;
 
 import com.acme.commons.ai.BrainSystem;
 import com.acme.commons.ashley.Wired;
-import com.acme.server.ai.CombatState;
-import com.acme.server.ai.PatrolState;
+import com.acme.server.ai.CombatBrainState;
+import com.acme.server.ai.PatrolBrainState;
 import com.acme.server.component.PositionComponent;
+import com.acme.server.controller.HateController;
+import com.acme.server.entity.Archetypes;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 
 @Wired
 public class CreatureBrainSystem extends BrainSystem {
 
     private ComponentMapper<PositionComponent> pcm;
 
+    private HateController hateController;
+
     public CreatureBrainSystem() {
-        super(Family.all(PositionComponent.class).get(), new PatrolState(), new CombatState());
+        super(Archetypes.CREATURE_TYPE.getFamily(), new PatrolBrainState(), new CombatBrainState());
     }
 
     @Override
@@ -23,6 +26,6 @@ public class CreatureBrainSystem extends BrainSystem {
         PositionComponent positionComponent = pcm.get(entity);
         boolean isSpawned = positionComponent.isSpawned();
         boolean isRegionActive = positionComponent.getRegion().isActive();
-        return isSpawned && isRegionActive;
+        return isSpawned && (hateController.hasHaters(entity) || isRegionActive);
     }
 }
