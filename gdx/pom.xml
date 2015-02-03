@@ -10,7 +10,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>LibGDX OSGi Wrapper</name>
+    <name>BrowserQuest - LibGDX OSGi Wrapper</name>
     <artifactId>gdx</artifactId>
     <packaging>bundle</packaging>
 

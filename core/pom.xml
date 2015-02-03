@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Core Framework Bundle</name>
+    <name>BrowserQuest - Core Library</name>
     <artifactId>core</artifactId>
     <packaging>bundle</packaging>
 

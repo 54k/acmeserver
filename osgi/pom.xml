@@ -10,7 +10,7 @@
     <artifactId>osgi</artifactId>
     <packaging>pom</packaging>
 
-    <name>OSGi Parent POM</name>
+    <name>BrowserQuest - OSGi Parent POM</name>
 
     <dependencies>
         <dependency>

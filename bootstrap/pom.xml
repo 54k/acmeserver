@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Server OSGi Launcher</name>
+    <name>BrowserQuest - Server OSGi Launcher</name>
     <artifactId>bootstrap</artifactId>
     <packaging>jar</packaging>
 

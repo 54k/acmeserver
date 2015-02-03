@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Game Server Bundle</name>
+    <name>BrowserQuest - Game Server</name>
     <artifactId>gameserver</artifactId>
     <packaging>bundle</packaging>
 
