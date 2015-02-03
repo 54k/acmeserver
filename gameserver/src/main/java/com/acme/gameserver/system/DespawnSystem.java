@@ -19,7 +19,7 @@ public class DespawnSystem extends IteratingSystem {
 
     private Engine engine;
     private WorldManager worldManager;
-    private PacketSystem packetSystem;
+    private GsPacketSystem gsPacketSystem;
 
     public DespawnSystem() {
         super(Family.all(DespawnComponent.class).get());
@@ -36,7 +36,7 @@ public class DespawnSystem extends IteratingSystem {
         despawnComponent.setCooldown(despawnCooldown);
 
         if (despawnCooldown <= 4000 && !despawnComponent.isBlinking()) {
-            packetSystem.sendToSelfAndRegion(entity, new BlinkPacket(entity.getId()));
+            gsPacketSystem.sendToSelfAndRegion(entity, new BlinkPacket(entity.getId()));
             despawnComponent.setBlinking(true);
         }
 

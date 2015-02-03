@@ -6,7 +6,7 @@ import com.acme.core.ashley.Wired;
 import com.acme.gameserver.component.PositionComponent;
 import com.acme.gameserver.component.WorldComponent;
 import com.acme.gameserver.packet.outbound.PopulationPacket;
-import com.acme.gameserver.system.PacketSystem;
+import com.acme.gameserver.system.GsPacketSystem;
 import com.acme.gameserver.template.WorldTemplate;
 import com.acme.gameserver.util.EntityContainer;
 import com.acme.gameserver.world.Instance;
@@ -25,7 +25,7 @@ public class WorldManager extends ManagerSystem {
     private ComponentMapper<WorldComponent> wcm;
 
     private Context context;
-    private PacketSystem networkSystem;
+    private GsPacketSystem networkSystem;
 
     private final EntityContainer entities = new EntityContainer();
     private final World world;

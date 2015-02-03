@@ -1,7 +1,3 @@
-# default gosh_profile
-# only read if etc/gosh_profile doesn't exist relative to the System property
-# gosh.home or failing that the current directory.
-
 # catch all exceptions from this script to avoid it aborting startup
 try {
 

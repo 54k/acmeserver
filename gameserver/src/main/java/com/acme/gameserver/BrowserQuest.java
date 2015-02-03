@@ -10,6 +10,7 @@ import com.acme.gameserver.manager.*;
 import com.acme.gameserver.system.*;
 import com.acme.gameserver.template.CreatureTemplate;
 import com.acme.gameserver.template.WorldTemplate;
+import com.acme.gameserver.util.WebSocketServer;
 import com.acme.gameserver.world.Instance;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
@@ -32,8 +33,8 @@ public class BrowserQuest extends ApplicationAdapter {
         super.create(context);
         context.register(ObjectMapper.class, new ObjectMapper());
         EntityEngine engine = context.get(EntityEngine.class);
-        PacketSystem networkSystem = new PacketSystem();
-        engine.addSystem(networkSystem);
+        GsPacketSystem gsPacketSystem = new GsPacketSystem();
+        engine.addSystem(gsPacketSystem);
         engine.addSystem(new SpawnSystem());
         engine.addSystem(new DespawnSystem());
         engine.addSystem(new InvulnerabilitySystem());
@@ -61,7 +62,7 @@ public class BrowserQuest extends ApplicationAdapter {
 
         populateWorld(spawnManager, worldManager);
         LOG.info("[World created]");
-        startNetworkServer(networkSystem);
+        startNetworkServer(gsPacketSystem);
         LOG.info("[Server started]");
     }
 
@@ -70,8 +71,8 @@ public class BrowserQuest extends ApplicationAdapter {
         spawnManager.spawnInstanceEntities(instance);
     }
 
-    private void startNetworkServer(PacketSystem networkSystem) {
-        networkServer = NetworkServer.create();
+    private void startNetworkServer(GsPacketSystem networkSystem) {
+        networkServer = new WebSocketServer();
         networkServer.setListener(networkSystem);
         networkServer.bind(8000);
     }

@@ -1,0 +1,1 @@
+Export-Package: com.badlogic.ashley.core,com.badlogic.ashley.signals,com.badlogic.ashley.systems,com.badlogic.ashley.utils

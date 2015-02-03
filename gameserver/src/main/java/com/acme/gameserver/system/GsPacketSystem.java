@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 
 @Wired
-public class PacketSystem extends NetworkSystem {
+public class GsPacketSystem extends PacketSystem {
 
     private ComponentMapper<SessionComponent> scm;
     private ComponentMapper<KnownListComponent> kcm;
@@ -30,7 +30,7 @@ public class PacketSystem extends NetworkSystem {
 
     private final PacketReader packetReader;
 
-    public PacketSystem() {
+    public GsPacketSystem() {
         packetReader = new PacketReader();
         packetReader.registerPacketPrototype(OpCodes.HELLO, LoginPacket.class);
         packetReader.registerPacketPrototype(OpCodes.MOVE, MovePacket.class);

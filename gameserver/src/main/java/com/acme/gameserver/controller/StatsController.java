@@ -6,7 +6,7 @@ import com.acme.gameserver.component.InvulnerableComponent;
 import com.acme.gameserver.component.StatsComponent;
 import com.acme.gameserver.event.CombatEvents;
 import com.acme.gameserver.packet.outbound.HealthPacket;
-import com.acme.gameserver.system.PacketSystem;
+import com.acme.gameserver.system.GsPacketSystem;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
@@ -16,7 +16,7 @@ public class StatsController extends ManagerSystem implements CombatEvents {
     private ComponentMapper<StatsComponent> scm;
     private ComponentMapper<InvulnerableComponent> icm;
 
-    private PacketSystem packetSystem;
+    private GsPacketSystem gsPacketSystem;
 
     @Override
     public void onEntityDamaged(Entity attacker, Entity victim, int damage) {
@@ -39,7 +39,7 @@ public class StatsController extends ManagerSystem implements CombatEvents {
         int newHitPoints = Math.max(0, Math.min(hitPoints + amount, maxHitPoints));
         statsComponent.setHitPoints(newHitPoints);
         if (newHitPoints != hitPoints) {
-            packetSystem.sendPacket(entity, new HealthPacket(statsComponent.getHitPoints(), regen));
+            gsPacketSystem.sendPacket(entity, new HealthPacket(statsComponent.getHitPoints(), regen));
         }
     }
 

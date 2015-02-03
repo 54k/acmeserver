@@ -7,7 +7,7 @@ import com.acme.gameserver.component.*;
 import com.acme.gameserver.controller.PositionController;
 import com.acme.gameserver.packet.outbound.HitPointsPacket;
 import com.acme.gameserver.packet.outbound.WelcomePacket;
-import com.acme.gameserver.system.PacketSystem;
+import com.acme.gameserver.system.GsPacketSystem;
 import com.acme.gameserver.util.PositionUtils;
 import com.acme.gameserver.util.Rnd;
 import com.acme.gameserver.world.Area;
@@ -33,7 +33,7 @@ public class LoginManager extends ManagerSystem {
 
     private PositionController positionController;
     private WorldManager worldManager;
-    private PacketSystem packetSystem;
+    private GsPacketSystem gsPacketSystem;
 
     public void login(Entity entity, String name, int weapon, int armor) {
         PlayerComponent playerComponent = pcm.get(entity);
@@ -75,7 +75,7 @@ public class LoginManager extends ManagerSystem {
         }
         worldManager.spawn(entity);
         WelcomePacket welcomePacket = new WelcomePacket(entity.getId(), name, position.getX(), position.getY(), 0);
-        packetSystem.sendPacket(entity, welcomePacket);
-        packetSystem.sendPacket(entity, new HitPointsPacket(hitPoints));
+        gsPacketSystem.sendPacket(entity, welcomePacket);
+        gsPacketSystem.sendPacket(entity, new HitPointsPacket(hitPoints));
     }
 }

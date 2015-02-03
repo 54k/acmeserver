@@ -8,7 +8,7 @@ import com.acme.gameserver.manager.WorldManager;
 import com.acme.gameserver.packet.outbound.AttackPacket;
 import com.acme.gameserver.packet.outbound.DamagePacket;
 import com.acme.gameserver.packet.outbound.KillPacket;
-import com.acme.gameserver.system.PacketSystem;
+import com.acme.gameserver.system.GsPacketSystem;
 import com.acme.gameserver.util.Rnd;
 import com.acme.gameserver.util.TypeUtils;
 import com.acme.gameserver.world.Position;
@@ -25,12 +25,12 @@ public class CombatController extends ManagerSystem {
     private InventoryController inventoryController;
 
     private WorldManager worldManager;
-    private PacketSystem packetSystem;
+    private GsPacketSystem gsPacketSystem;
 
     public void engage(Entity attacker, Entity target) {
         Position targetPosition = positionController.getPosition(target);
         positionController.updatePosition(attacker, targetPosition);
-        packetSystem.sendToSelfAndRegion(attacker, new AttackPacket(attacker.getId(), target.getId()));
+        gsPacketSystem.sendToSelfAndRegion(attacker, new AttackPacket(attacker.getId(), target.getId()));
     }
 
     public void attack(Entity attacker, Entity target) {
@@ -40,7 +40,7 @@ public class CombatController extends ManagerSystem {
         if (statsController.isDead(target)) {
             post(CombatEvents.class).onEntityKilled(attacker, target);
             worldManager.decay(target);
-            packetSystem.sendPacket(attacker, new KillPacket(tcm.get(target).getType()));
+            gsPacketSystem.sendPacket(attacker, new KillPacket(tcm.get(target).getType()));
         }
     }
 
@@ -58,6 +58,6 @@ public class CombatController extends ManagerSystem {
 
     private void applyDamage(Entity attacker, Entity target, int damage) {
         statsController.addHitPoints(target, -damage);
-        packetSystem.sendPacket(attacker, new DamagePacket(target.getId(), damage));
+        gsPacketSystem.sendPacket(attacker, new DamagePacket(target.getId(), damage));
     }
 }
