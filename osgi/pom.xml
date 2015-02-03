@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>root</artifactId>
+        <groupId>com.acme</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>osgi</artifactId>
+    <packaging>pom</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.5.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <excludeDependencies>true</excludeDependencies>
+                    <instructions>
+                        <Embed-Dependency>dependencies</Embed-Dependency>
+                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-dependency-plugin</artifactId>-->
+                <!--<version>2.4</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>copy-dependencies</id>-->
+                        <!--<phase>package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>copy-dependencies</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+                <!--<configuration>-->
+                    <!--<outputDirectory>${project.build.directory}/../../target/all</outputDirectory>-->
+                    <!--<silent>true</silent>-->
+                    <!--<includeScope>compile</includeScope>-->
+                    <!--<excludeArtifactIds>org.apache.felix.scr.annotations</excludeArtifactIds>-->
+                    <!--<excludeGroupIds>org.osgi</excludeGroupIds>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-antrun-plugin</artifactId>-->
+                <!--<version>1.7</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--&lt;!&ndash; copies the JARs we have built locally (eg bootstrap JAR) that no one else depends on into the target/all &ndash;&gt;-->
+                        <!--<id>copy-jars-for-dev-or-assembly</id>-->
+                        <!--<phase>package</phase>-->
+                        <!--<configuration>-->
+                            <!--<target>-->
+                                <!--<copy preservelastmodified="true" todir="${project.build.directory}/../../target/all">-->
+                                    <!--<fileset dir="${project.build.directory}">-->
+                                        <!--<include name="*.jar" />-->
+                                        <!--<exclude name="*-tests.jar" />-->
+                                        <!--<exclude name="*-sources.jar" />-->
+                                    <!--</fileset>-->
+                                <!--</copy>-->
+                            <!--</target>-->
+                        <!--</configuration>-->
+                        <!--<goals>-->
+                            <!--<goal>run</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+        </plugins>
+    </build>
+</project>
