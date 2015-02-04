@@ -2,7 +2,7 @@ package com.acme.server.component;
 
 import com.badlogic.ashley.core.Component;
 
-public class DespawnComponent extends Component {
+public class DecayComponent extends Component {
 
     private float cooldown;
     private boolean blinking;

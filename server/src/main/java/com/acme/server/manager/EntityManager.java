@@ -5,7 +5,11 @@ import com.acme.commons.ai.BrainComponent;
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
 import com.acme.server.ai.PatrolBrainState;
-import com.acme.server.component.*;
+import com.acme.server.component.DropComponent;
+import com.acme.server.component.InventoryComponent;
+import com.acme.server.component.PickupComponent;
+import com.acme.server.component.StatsComponent;
+import com.acme.server.component.TypeComponent;
 import com.acme.server.entity.Archetypes;
 import com.acme.server.entity.Type;
 import com.acme.server.template.CreatureTemplate;
@@ -22,7 +26,7 @@ public class EntityManager extends ManagerSystem {
 
     private ComponentMapper<InventoryComponent> icm;
     private ComponentMapper<StatsComponent> scm;
-    private ComponentMapper<TypeComponent> incm;
+    private ComponentMapper<TypeComponent> tcm;
     private ComponentMapper<PickupComponent> pcm;
     private ComponentMapper<DropComponent> dcm;
     private ComponentMapper<BrainComponent> bcm;
@@ -33,6 +37,10 @@ public class EntityManager extends ManagerSystem {
 
     public EntityManager(Map<Type, CreatureTemplate> creaturesByType) {
         this.creaturesByType = creaturesByType;
+    }
+
+    public Type getType(Entity entity) {
+        return tcm.get(entity).getType();
     }
 
     public Entity createPlayer() {
@@ -51,7 +59,7 @@ public class EntityManager extends ManagerSystem {
 
     private Entity createItem(Type type) {
         Entity entity = create(type);
-        incm.get(entity).setType(type);
+        tcm.get(entity).setType(type);
         PickupComponent pickupComponent = pcm.get(entity);
         switch (type) {
             case BURGER:
@@ -105,7 +113,7 @@ public class EntityManager extends ManagerSystem {
         int hitPoints = creatureTemplate.getHitPoints();
         statsComponent.setHitPoints(hitPoints);
         statsComponent.setMaxHitPoints(hitPoints);
-        incm.get(entity).setType(type);
+        tcm.get(entity).setType(type);
         DropComponent dropComponent = dcm.get(entity);
         List<DropComponent.Drop> drops = creatureTemplate.getDrops().entrySet().stream()
                 .map(e -> new DropComponent.Drop(e.getKey(), e.getValue()))
@@ -127,7 +135,7 @@ public class EntityManager extends ManagerSystem {
 
     private Entity create(Type type) {
         Entity entity = type.getArchetype().build();
-        incm.get(entity).setType(type);
+        tcm.get(entity).setType(type);
         engine.addEntity(entity);
         return entity;
     }

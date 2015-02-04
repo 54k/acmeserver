@@ -35,7 +35,7 @@ public class BrowserQuest extends ApplicationAdapter {
         PacketSystem networkSystem = new PacketSystem();
         engine.addSystem(networkSystem);
         engine.addSystem(new SpawnSystem());
-        engine.addSystem(new DespawnSystem());
+        engine.addSystem(new DecaySystem());
         engine.addSystem(new InvulnerabilitySystem());
         engine.addSystem(new CreatureBrainSystem());
         engine.addSystem(new KnownListSystem());

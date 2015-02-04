@@ -3,23 +3,30 @@ package com.acme.server.controller;
 import com.acme.commons.application.Context;
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
-import com.acme.server.component.*;
+import com.acme.server.component.DecayComponent;
+import com.acme.server.component.DropComponent;
+import com.acme.server.component.DropComponent.Drop;
+import com.acme.server.component.PositionComponent;
+import com.acme.server.component.SpawnComponent;
+import com.acme.server.component.WorldComponent;
 import com.acme.server.event.CombatEvents;
 import com.acme.server.manager.EntityManager;
 import com.acme.server.manager.WorldManager;
 import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
-import com.acme.server.util.TypeUtils;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Wired
 public class DropController extends ManagerSystem implements CombatEvents {
+
+    private static final Family DROP_OWNERS_FAMILY = Family.all(DropComponent.class).get();
 
     private ComponentMapper<WorldComponent> wcm;
     private ComponentMapper<DropComponent> dcm;
@@ -37,15 +44,13 @@ public class DropController extends ManagerSystem implements CombatEvents {
 
     @Override
     public void onEntityKilled(Entity killer, Entity victim) {
-        if (TypeUtils.isCreature(victim)) {
+        if (DROP_OWNERS_FAMILY.matches(victim)) {
             dropItems(victim);
         }
     }
 
     public void dropItems(Entity entity) {
-        List<DropComponent.Drop> drops = dcm.get(entity).getDrops().stream()
-                .filter(this::isDropSucceed)
-                .collect(Collectors.toList());
+        List<DropComponent.Drop> drops = getSucceedDrops(entity);
 
         WorldComponent worldComponent = wcm.get(entity);
         PositionComponent positionComponent = pcm.get(entity);
@@ -57,11 +62,17 @@ public class DropController extends ManagerSystem implements CombatEvents {
             wcm.get(dropEntity).setInstance(worldComponent.getInstance());
             Position dropPosition = PositionUtils.getRandomPositionInside(dropArea);
             pcm.get(dropEntity).setPosition(dropPosition);
-            DespawnComponent despawnComponent = new DespawnComponent();
-            despawnComponent.setCooldown(spawnComponent.getCooldown());
-            dropEntity.add(despawnComponent);
+            DecayComponent decayComponent = new DecayComponent();
+            decayComponent.setCooldown(spawnComponent.getCooldown());
+            dropEntity.add(decayComponent);
             spawnDrop(dropEntity);
         }
+    }
+
+    private List<Drop> getSucceedDrops(Entity entity) {
+        return dcm.get(entity).getDrops().stream()
+                .filter(this::isDropSucceed)
+                .collect(Collectors.toList());
     }
 
     private boolean isDropSucceed(DropComponent.Drop drop) {
