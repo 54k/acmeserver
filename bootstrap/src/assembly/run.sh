@@ -61,4 +61,4 @@ if [ "$cygwin" = "true" ]; then
     # echo "Modified BQ_CONFIG_FILE_PROPERTIES: $BQ_CONFIG_FILE_PROPERTIES"
 fi
 
-java $BQ_OPTS -Dgosh.home=$BQ_HOME/conf -Dorg.osgi.framework.storage="$BQ_OSGI_FRAMEWORK_STORAGE" -Dfelix.auto.deploy.dir="$BQ_AUTO_DEPLOY_DIRECTORY" -Dfelix.config.properties="file:$BQ_CONFIG_FILE_PROPERTIES" -cp "$BQ_CP" com.acme.bootstrap.Main
+java $BQ_OPTS -Djava.util.logging.config.file=$BQ_HOME/conf/logging.properties -Dgosh.home=$BQ_HOME/conf -Dorg.osgi.framework.storage="$BQ_OSGI_FRAMEWORK_STORAGE" -Dfelix.auto.deploy.dir="$BQ_AUTO_DEPLOY_DIRECTORY" -Dfelix.config.properties="file:$BQ_CONFIG_FILE_PROPERTIES" -cp "$BQ_CP" com.acme.bootstrap.Main

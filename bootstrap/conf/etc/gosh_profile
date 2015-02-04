@@ -24,7 +24,7 @@ try {
   #.Format.Pipe = false
 
   # set prompt
-  prompt = 'bq! '
+  prompt = 'bq> '
 
   # print welcome message
   cat ($0 resolve motd)
