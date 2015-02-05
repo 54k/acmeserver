@@ -22,8 +22,6 @@ public final class Archetypes {
     static {
         PLAYER_TYPE
                 .add(PlayerComponent.class)
-                .add(PositionComponent.class)
-                .add(WorldComponent.class)
                 .add(KnownListComponent.class)
                 .add(InventoryComponent.class)
                 .add(StatsComponent.class);
