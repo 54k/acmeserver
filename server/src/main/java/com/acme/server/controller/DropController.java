@@ -3,13 +3,9 @@ package com.acme.server.controller;
 import com.acme.commons.application.Context;
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
-import com.acme.server.component.DecayComponent;
-import com.acme.server.component.DropComponent;
+import com.acme.server.component.*;
 import com.acme.server.component.DropComponent.Drop;
-import com.acme.server.component.PositionComponent;
-import com.acme.server.component.SpawnComponent;
-import com.acme.server.component.WorldComponent;
-import com.acme.server.event.CombatEvents;
+import com.acme.server.event.CombatControllerEvent;
 import com.acme.server.manager.EntityManager;
 import com.acme.server.manager.WorldManager;
 import com.acme.server.util.PositionUtils;
@@ -24,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Wired
-public class DropController extends ManagerSystem implements CombatEvents {
+public class DropController extends ManagerSystem implements CombatControllerEvent {
 
     private static final Family DROP_OWNERS_FAMILY = Family.all(DropComponent.class).get();
 

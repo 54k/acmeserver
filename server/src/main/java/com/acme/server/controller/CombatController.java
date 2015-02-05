@@ -2,7 +2,7 @@ package com.acme.server.controller;
 
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
-import com.acme.server.event.CombatEvents;
+import com.acme.server.event.CombatControllerEvent;
 import com.acme.server.manager.EntityManager;
 import com.acme.server.manager.WorldManager;
 import com.acme.server.packet.outbound.AttackPacket;
@@ -35,9 +35,9 @@ public class CombatController extends ManagerSystem {
     public void attack(Entity attacker, Entity target) {
         int damage = calculateDamage(attacker, target);
         applyDamage(attacker, target, damage);
-        post(CombatEvents.class).onEntityDamaged(attacker, target, damage);
+        post(CombatControllerEvent.class).onEntityDamaged(attacker, target, damage);
         if (statsController.isDead(target)) {
-            post(CombatEvents.class).onEntityKilled(attacker, target);
+            post(CombatControllerEvent.class).onEntityKilled(attacker, target);
             worldManager.decay(target);
             packetSystem.sendPacket(attacker, new KillPacket(entityManager.getType(target)));
         }

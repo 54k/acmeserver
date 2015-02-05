@@ -7,9 +7,9 @@ import com.acme.server.packet.OpCodes;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
+@Wired
 public class MovePacket extends OutboundPacket {
 
-    @Wired
     private ComponentMapper<PositionComponent> pcm;
 
     private Entity entity;

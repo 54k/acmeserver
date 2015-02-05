@@ -2,6 +2,7 @@ package com.acme.server.util;
 
 import com.badlogic.ashley.core.Entity;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,10 @@ public final class EntityContainer {
 
     private final Map<Long, Entity> entitiesById = new HashMap<>();
     private final Map<Long, Entity> playersById = new HashMap<>();
+
+    public void addAll(Collection<Entity> entities) {
+        entities.forEach(this::addEntity);
+    }
 
     public Entity addEntity(Entity entity) {
         if (TypeUtils.isPlayer(entity)) {
