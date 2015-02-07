@@ -1,11 +1,11 @@
 package com.acme.commons.application;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 final class Configuration {
 
     String applicationName = "Application";
     long updateInterval = 0;
-    final Set<ContextListener> contextListeners = new LinkedHashSet<>();
+    final List<ContextListener> contextListeners = new ArrayList<>();
 }

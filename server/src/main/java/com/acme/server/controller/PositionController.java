@@ -19,6 +19,10 @@ public class PositionController extends ManagerSystem {
 
     private PacketSystem packetSystem;
 
+    public Position getPosition(Entity entity) {
+        return pcm.get(entity).getPosition();
+    }
+
     public void moveEntity(Entity entity, Position position) {
         updatePosition(entity, position);
         packetSystem.sendToSelfAndRegion(entity, new MovePacket(entity));
@@ -41,9 +45,5 @@ public class PositionController extends ManagerSystem {
             newRegion.addEntity(entity);
             positionComponent.setRegion(newRegion);
         }
-    }
-
-    public Position getPosition(Entity entity) {
-        return pcm.get(entity).getPosition();
     }
 }

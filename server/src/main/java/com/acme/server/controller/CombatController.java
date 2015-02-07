@@ -2,8 +2,8 @@ package com.acme.server.controller;
 
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
-import com.acme.server.component.TypeComponent;
-import com.acme.server.event.CombatEvents;
+import com.acme.server.event.CombatControllerEvent;
+import com.acme.server.manager.EntityManager;
 import com.acme.server.manager.WorldManager;
 import com.acme.server.packet.outbound.AttackPacket;
 import com.acme.server.packet.outbound.DamagePacket;
@@ -12,19 +12,18 @@ import com.acme.server.system.PacketSystem;
 import com.acme.server.util.Rnd;
 import com.acme.server.util.TypeUtils;
 import com.acme.server.world.Position;
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
 public class CombatController extends ManagerSystem {
 
-    private ComponentMapper<TypeComponent> tcm;
-
     private PositionController positionController;
     private StatsController statsController;
     private InventoryController inventoryController;
 
+    private EntityManager entityManager;
     private WorldManager worldManager;
+
     private PacketSystem packetSystem;
 
     public void engage(Entity attacker, Entity target) {
@@ -36,11 +35,11 @@ public class CombatController extends ManagerSystem {
     public void attack(Entity attacker, Entity target) {
         int damage = calculateDamage(attacker, target);
         applyDamage(attacker, target, damage);
-        post(CombatEvents.class).onEntityDamaged(attacker, target, damage);
+        post(CombatControllerEvent.class).onEntityDamaged(attacker, target, damage);
         if (statsController.isDead(target)) {
-            post(CombatEvents.class).onEntityKilled(attacker, target);
+            post(CombatControllerEvent.class).onEntityKilled(attacker, target);
             worldManager.decay(target);
-            packetSystem.sendPacket(attacker, new KillPacket(tcm.get(target).getType()));
+            packetSystem.sendPacket(attacker, new KillPacket(entityManager.getType(target)));
         }
     }
 

@@ -4,14 +4,14 @@ import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
 import com.acme.server.component.InvulnerableComponent;
 import com.acme.server.component.StatsComponent;
-import com.acme.server.event.CombatEvents;
+import com.acme.server.event.CombatControllerEvent;
 import com.acme.server.packet.outbound.HealthPacket;
 import com.acme.server.system.PacketSystem;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class StatsController extends ManagerSystem implements CombatEvents {
+public class StatsController extends ManagerSystem implements CombatControllerEvent {
 
     private ComponentMapper<StatsComponent> scm;
     private ComponentMapper<InvulnerableComponent> icm;

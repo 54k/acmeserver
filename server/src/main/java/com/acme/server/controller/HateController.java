@@ -4,8 +4,9 @@ import com.acme.commons.ashley.EntityEngine;
 import com.acme.commons.ashley.ManagerSystem;
 import com.acme.commons.ashley.Wired;
 import com.acme.server.component.HateComponent;
-import com.acme.server.event.CombatEvents;
-import com.acme.server.event.HateEvents;
+import com.acme.server.event.CombatControllerEvent;
+import com.acme.server.event.HateControllerEvent;
+import com.acme.server.util.EntityContainer;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Wired
-public class HateController extends ManagerSystem implements CombatEvents {
+public class HateController extends ManagerSystem implements CombatControllerEvent {
 
     private static final Family HATE_OWNERS_FAMILY = Family.all(HateComponent.class).get();
 
@@ -60,7 +61,7 @@ public class HateController extends ManagerSystem implements CombatEvents {
         HateComponent hateComponent = hcm.get(entity);
         Map<Entity, Integer> attackers = hateComponent.getHaters();
         if (attackers.putIfAbsent(hater, 0) == null) {
-            post(HateEvents.class).onHaterAdded(entity, hater);
+            post(HateControllerEvent.class).onHaterAdded(entity, hater);
         }
         attackers.compute(hater, (e, hate) -> hate + amount);
     }
@@ -77,10 +78,10 @@ public class HateController extends ManagerSystem implements CombatEvents {
             if (target == hater) {
                 hateComponent.setTarget(null);
             }
-            post(HateEvents.class).onHaterRemoved(entity, hater);
+            post(HateControllerEvent.class).onHaterRemoved(entity, hater);
         }
         if (haters.isEmpty()) {
-            post(HateEvents.class).onHatersEmpty(entity);
+            post(HateControllerEvent.class).onHatersEmpty(entity);
         }
     }
 
@@ -93,12 +94,30 @@ public class HateController extends ManagerSystem implements CombatEvents {
         haters.clear();
         hateComponent.setTarget(null);
 
-        HateEvents hateEvents = post(HateEvents.class);
-        h.forEach(hater -> hateEvents.onHaterRemoved(entity, hater));
-        hateEvents.onHatersEmpty(entity);
+        HateControllerEvent hateControllerEvent = post(HateControllerEvent.class);
+        h.forEach(hater -> hateControllerEvent.onHaterRemoved(entity, hater));
+        hateControllerEvent.onHatersEmpty(entity);
+    }
+
+    public EntityContainer getHaters(Entity entity) {
+        EntityContainer entityContainer = new EntityContainer();
+        entityContainer.addAll(hcm.get(entity).getHaters().keySet());
+        return entityContainer;
     }
 
     public boolean hasHaters(Entity entity) {
         return !hcm.get(entity).getHaters().isEmpty();
+    }
+
+    public Entity getMostHated(Entity entity) {
+        return hcm.get(entity).getMostHated();
+    }
+
+    public Entity getTarget(Entity entity) {
+        return hcm.get(entity).getTarget();
+    }
+
+    public void setTarget(Entity entity, Entity target) {
+        hcm.get(entity).setTarget(target);
     }
 }

@@ -1,6 +1,11 @@
 package com.acme.commons.application;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -11,9 +16,9 @@ final class UpdateLoop implements Context {
     private static final long MICROS_IN_SECOND = 1000000;
     private static final long ORIGIN_NANOS = System.nanoTime();
 
-    private final Set<ContextListener> contextListeners = new LinkedHashSet<>();
+    private final Queue<ContextListener> contextListeners = new ConcurrentLinkedQueue<>();
 
-    private final Queue<ScheduledTask> scheduledTasks = new PriorityQueue<>();
+    private final Queue<ScheduledTask> scheduledTasks = new PriorityBlockingQueue<>();
     private final Queue<ScheduledTask> tasks = new PriorityQueue<>();
 
     private final Application application;
@@ -21,10 +26,10 @@ final class UpdateLoop implements Context {
     private final Map<String, Object> injectables = new HashMap<>();
 
     private final Lock lock = new ReentrantLock();
-    private volatile boolean initialized = false;
-    private final Condition initializedCondition = lock.newCondition();
-    private volatile boolean running = true;
+    private final Condition createdCondition = lock.newCondition();
     private final Condition disposedCondition = lock.newCondition();
+    private volatile boolean created = false;
+    private volatile boolean running = true;
 
     private final long updateIntervalNanos;
     private long nextUpdateNanos;
@@ -55,8 +60,8 @@ final class UpdateLoop implements Context {
     }
 
     private void signalDisposed() {
-        if (!initialized) {
-            signalInitialized();
+        if (!created) {
+            signalCreated();
         }
 
         running = false;
@@ -73,7 +78,7 @@ final class UpdateLoop implements Context {
         synchronized (contextListeners) {
             contextListeners.forEach(ContextListener::created);
         }
-        signalInitialized();
+        signalCreated();
         while (running) {
             if (updateIntervalNanos > 0) {
                 waitForUpdate();
@@ -95,11 +100,11 @@ final class UpdateLoop implements Context {
         }
     }
 
-    private void signalInitialized() {
-        initialized = true;
+    private void signalCreated() {
+        created = true;
         lock.lock();
         try {
-            initializedCondition.signalAll();
+            createdCondition.signalAll();
         } finally {
             lock.unlock();
         }
@@ -139,13 +144,6 @@ final class UpdateLoop implements Context {
             } catch (Throwable t) {
                 application.handleError(t);
             }
-        }
-    }
-
-    @Override
-    public void addContextListener(ContextListener contextListener) {
-        synchronized (contextListeners) {
-            contextListeners.add(contextListener);
         }
     }
 
@@ -209,9 +207,9 @@ final class UpdateLoop implements Context {
     public void waitForStart(long timeoutMillis) {
         lock.lock();
         try {
-            while (!initialized) {
+            while (!created) {
                 try {
-                    initializedCondition.await(timeoutMillis, TimeUnit.MILLISECONDS);
+                    createdCondition.await(timeoutMillis, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException ignore) {
                 }
             }
@@ -266,12 +264,7 @@ final class UpdateLoop implements Context {
         @Override
         @SuppressWarnings("NullableProblems")
         public int compareTo(ScheduledTask o) {
-            if (nextExecutionNanos > o.nextExecutionNanos) {
-                return 1;
-            } else if (nextExecutionNanos == o.nextExecutionNanos) {
-                return 0;
-            }
-            return -1;
+            return nextExecutionNanos > o.nextExecutionNanos ? 1 : nextExecutionNanos == o.nextExecutionNanos ? 0 : -1;
         }
     }
 }

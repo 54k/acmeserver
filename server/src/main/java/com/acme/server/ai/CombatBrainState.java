@@ -3,23 +3,21 @@ package com.acme.server.ai;
 import com.acme.commons.ai.BrainState;
 import com.acme.commons.ai.BrainStateController;
 import com.acme.commons.ashley.Wired;
-import com.acme.server.component.HateComponent;
-import com.acme.server.component.PositionComponent;
 import com.acme.server.component.SpawnComponent;
 import com.acme.server.controller.CombatController;
 import com.acme.server.controller.HateController;
 import com.acme.server.controller.PositionController;
-import com.acme.server.event.HateEvents;
+import com.acme.server.event.HateControllerEvent;
+import com.acme.server.packet.outbound.MovePacket;
+import com.acme.server.system.PacketSystem;
 import com.acme.server.world.Position;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class CombatBrainState extends BrainStateController implements BrainState, HateEvents {
+public class CombatBrainState extends BrainStateController implements BrainState, HateControllerEvent {
 
-    private ComponentMapper<PositionComponent> pcm;
     private ComponentMapper<SpawnComponent> scm;
-    private ComponentMapper<HateComponent> hcm;
 
     private PositionController positionController;
     private CombatController combatController;
@@ -27,29 +25,34 @@ public class CombatBrainState extends BrainStateController implements BrainState
 
     private PatrolBrainState patrolBrainState;
 
+    private PacketSystem packetSystem;
+
     @Override
     public void update(Entity entity, float deltaTime) {
-        PositionComponent positionComponent = pcm.get(entity);
-        SpawnComponent spawnComponent = scm.get(entity);
+        Position position = positionController.getPosition(entity);
+        // TODO this should go into spawn manager
+        Position spawnPosition = scm.get(entity).getSpawnPosition();
 
-        Position position = positionComponent.getPosition();
-        Position spawnPosition = spawnComponent.getSpawnPosition();
-
-        int distanceToFollow = 20;
+        int distanceToFollow = 15;
         if (Math.abs(position.getX() - spawnPosition.getX()) >= distanceToFollow
                 || Math.abs(position.getY() - spawnPosition.getY()) >= distanceToFollow) {
             startPatrol(entity);
+            // TODO remove this hack later
+            MovePacket movePacket = new MovePacket(entity);
+            hateController.getHaters(entity).getPlayers().values()
+                    .forEach(p -> packetSystem.sendPacket(p, movePacket));
             return;
         }
 
-        HateComponent hateComponent = hcm.get(entity);
-        Entity target = hateComponent.getTarget();
-        Entity mostHated = hateComponent.getMostHated();
+        Entity target = hateController.getTarget(entity);
+        Entity mostHated = hateController.getMostHated(entity);
+
         if (target != mostHated) {
-            hateComponent.setTarget(mostHated);
+            hateController.setTarget(entity, mostHated);
             combatController.engage(entity, mostHated);
         } else {
-            positionController.updatePosition(entity, pcm.get(target).getPosition());
+            Position targetPosition = positionController.getPosition(target);
+            positionController.updatePosition(entity, targetPosition);
         }
     }
 

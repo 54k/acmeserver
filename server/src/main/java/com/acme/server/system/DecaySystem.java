@@ -1,7 +1,7 @@
 package com.acme.server.system;
 
 import com.acme.commons.ashley.Wired;
-import com.acme.server.component.DespawnComponent;
+import com.acme.server.component.DecayComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.manager.WorldManager;
 import com.acme.server.packet.outbound.BlinkPacket;
@@ -12,32 +12,32 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
 @Wired
-public class DespawnSystem extends IteratingSystem {
+public class DecaySystem extends IteratingSystem {
 
-    private ComponentMapper<DespawnComponent> dcm;
+    private ComponentMapper<DecayComponent> dcm;
     private ComponentMapper<PositionComponent> pcm;
 
     private Engine engine;
     private WorldManager worldManager;
     private PacketSystem packetSystem;
 
-    public DespawnSystem() {
-        super(Family.all(DespawnComponent.class).get());
+    public DecaySystem() {
+        super(Family.all(DecayComponent.class).get());
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        DespawnComponent despawnComponent = dcm.get(entity);
+        DecayComponent decayComponent = dcm.get(entity);
         PositionComponent positionComponent = pcm.get(entity);
         float despawnCooldown = 0;
         if (positionComponent.isSpawned()) {
-            despawnCooldown = despawnComponent.getCooldown() - deltaTime;
+            despawnCooldown = decayComponent.getCooldown() - deltaTime;
         }
-        despawnComponent.setCooldown(despawnCooldown);
+        decayComponent.setCooldown(despawnCooldown);
 
-        if (despawnCooldown <= 4000 && !despawnComponent.isBlinking()) {
+        if (despawnCooldown <= 4000 && !decayComponent.isBlinking()) {
             packetSystem.sendToSelfAndRegion(entity, new BlinkPacket(entity.getId()));
-            despawnComponent.setBlinking(true);
+            decayComponent.setBlinking(true);
         }
 
         if (despawnCooldown <= 0) {
