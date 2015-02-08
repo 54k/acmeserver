@@ -1,6 +1,6 @@
 package com.acme.server.system;
 
-import com.acme.commons.ashley.Wired;
+import com.acme.engine.ashley.Wired;
 import com.acme.server.component.DecayComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.manager.WorldManager;

@@ -1,6 +1,6 @@
 package com.acme.server;
 
-import com.acme.commons.network.NetworkServer;
+import com.acme.engine.network.NetworkServer;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.nio.NioSocketChannel;
 

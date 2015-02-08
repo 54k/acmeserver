@@ -1,7 +1,7 @@
 package com.acme.server.packet.outbound;
 
-import com.acme.commons.ashley.Wired;
-import com.acme.commons.network.OutboundPacket;
+import com.acme.engine.ashley.Wired;
+import com.acme.engine.network.OutboundPacket;
 import com.acme.server.component.InventoryComponent;
 import com.acme.server.component.PlayerComponent;
 import com.acme.server.component.PositionComponent;

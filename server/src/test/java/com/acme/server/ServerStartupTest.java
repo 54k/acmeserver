@@ -1,7 +1,7 @@
 package com.acme.server;
 
-import com.acme.commons.application.Context;
-import com.acme.commons.application.ContextBuilder;
+import com.acme.engine.application.Context;
+import com.acme.engine.application.ContextBuilder;
 import org.testng.annotations.Test;
 
 public class ServerStartupTest {

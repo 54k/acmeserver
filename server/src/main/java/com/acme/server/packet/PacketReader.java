@@ -1,9 +1,9 @@
 package com.acme.server.packet;
 
-import com.acme.commons.network.InboundPacket;
+import com.acme.engine.network.InboundPacket;
 import com.badlogic.ashley.core.Entity;
 
-public class PacketReader extends com.acme.commons.network.PacketReader {
+public class PacketReader extends com.acme.engine.network.PacketReader {
 
     @Override
     public InboundPacket readPacket(Entity entity, Object[] data) {

@@ -1,7 +1,7 @@
 package com.acme.server.controller;
 
-import com.acme.commons.ashley.ManagerSystem;
-import com.acme.commons.ashley.Wired;
+import com.acme.engine.ashley.ManagerSystem;
+import com.acme.engine.ashley.Wired;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.packet.outbound.MovePacket;
