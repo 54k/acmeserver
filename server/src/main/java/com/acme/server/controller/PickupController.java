@@ -1,7 +1,7 @@
 package com.acme.server.controller;
 
-import com.acme.commons.ashley.ManagerSystem;
-import com.acme.commons.ashley.Wired;
+import com.acme.engine.ashley.ManagerSystem;
+import com.acme.engine.ashley.Wired;
 import com.acme.server.component.InvulnerableComponent;
 import com.acme.server.component.PickupComponent;
 import com.acme.server.entity.Type;

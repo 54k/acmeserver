@@ -1,7 +1,7 @@
 package com.acme.server.entity;
 
-import com.acme.commons.ai.BrainComponent;
-import com.acme.commons.ashley.Archetype;
+import com.acme.engine.ai.BrainComponent;
+import com.acme.engine.ashley.Archetype;
 import com.acme.server.component.*;
 
 public final class Archetypes {

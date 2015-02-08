@@ -1,8 +1,8 @@
 package com.acme.server.ai;
 
-import com.acme.commons.ai.BrainState;
-import com.acme.commons.ai.BrainStateController;
-import com.acme.commons.ashley.Wired;
+import com.acme.engine.ai.BrainState;
+import com.acme.engine.ai.BrainStateController;
+import com.acme.engine.ashley.Wired;
 import com.acme.server.component.SpawnComponent;
 import com.acme.server.controller.CombatController;
 import com.acme.server.controller.HateController;
@@ -58,7 +58,9 @@ public class CombatBrainState extends BrainStateController implements BrainState
 
     @Override
     public void exit(Entity entity) {
-        hateController.clearHaters(entity);
+        if (!hateController.getHaters(entity).isEmpty()) {
+            hateController.clearHaters(entity);
+        }
     }
 
     @Override

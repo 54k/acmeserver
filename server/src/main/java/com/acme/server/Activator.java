@@ -1,7 +1,7 @@
 package com.acme.server;
 
-import com.acme.commons.application.Context;
-import com.acme.commons.application.ContextBuilder;
+import com.acme.engine.application.Context;
+import com.acme.engine.application.ContextBuilder;
 import com.acme.server.console.PlayerCommands;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -16,6 +16,7 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         BrowserQuest browserQuest = new BrowserQuest();
         application = new ContextBuilder(browserQuest)
+                .setApplicationName("BrowserQuest Server")
                 .setUpdateInterval(1000 / 60)
                 .build();
         application.waitForStart(0);

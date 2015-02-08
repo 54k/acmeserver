@@ -1,7 +1,7 @@
 package com.acme.server.console;
 
-import com.acme.commons.ashley.EntityEngine;
-import com.acme.commons.network.SessionComponent;
+import com.acme.engine.ashley.EntityEngine;
+import com.acme.engine.network.SessionComponent;
 import com.acme.server.BrowserQuest;
 import com.acme.server.manager.WorldManager;
 import org.apache.felix.service.command.Descriptor;

@@ -1,9 +1,9 @@
 package com.acme.server;
 
-import com.acme.commons.application.ApplicationAdapter;
-import com.acme.commons.application.Context;
-import com.acme.commons.ashley.EntityEngine;
-import com.acme.commons.network.NetworkServer;
+import com.acme.engine.application.ApplicationAdapter;
+import com.acme.engine.application.Context;
+import com.acme.engine.ashley.EntityEngine;
+import com.acme.engine.network.NetworkServer;
 import com.acme.server.controller.*;
 import com.acme.server.entity.Type;
 import com.acme.server.manager.*;
@@ -32,8 +32,8 @@ public class BrowserQuest extends ApplicationAdapter {
         super.create(context);
         context.register(ObjectMapper.class, new ObjectMapper());
         EntityEngine engine = context.get(EntityEngine.class);
-        PacketSystem networkSystem = new PacketSystem();
-        engine.addSystem(networkSystem);
+        PacketSystem packetSystem = new PacketSystem();
+        engine.addSystem(packetSystem);
         engine.addSystem(new SpawnSystem());
         engine.addSystem(new DecaySystem());
         engine.addSystem(new InvulnerabilitySystem());
@@ -61,7 +61,7 @@ public class BrowserQuest extends ApplicationAdapter {
 
         populateWorld(spawnManager, worldManager);
         LOG.info("[World created]");
-        startNetworkServer(networkSystem);
+        startNetworkServer(packetSystem);
         LOG.info("[Server started]");
     }
 
@@ -70,9 +70,9 @@ public class BrowserQuest extends ApplicationAdapter {
         spawnManager.spawnInstanceEntities(instance);
     }
 
-    private void startNetworkServer(PacketSystem networkSystem) {
+    private void startNetworkServer(PacketSystem packetSystem) {
         networkServer = NetworkServer.create();
-        networkServer.setListener(networkSystem);
+        networkServer.setListener(packetSystem);
         networkServer.bind(8000);
     }
 

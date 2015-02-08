@@ -1,7 +1,7 @@
 package com.acme.server.packet.inbound;
 
-import com.acme.commons.ashley.Wired;
-import com.acme.commons.network.InboundPacket;
+import com.acme.engine.ashley.Wired;
+import com.acme.engine.network.InboundPacket;
 import com.acme.server.controller.PickupController;
 import com.acme.server.manager.WorldManager;
 

@@ -57,4 +57,8 @@ public final class EntityContainer {
     public boolean contains(Entity entity) {
         return entitiesById.containsKey(entity.getId());
     }
+
+    public boolean isEmpty() {
+        return entitiesById.isEmpty();
+    }
 }

@@ -1,6 +1,6 @@
 package com.acme.server.event;
 
-import com.acme.commons.event.Event;
+import com.acme.engine.event.Event;
 import com.badlogic.ashley.core.Entity;
 
 public interface CombatControllerEvent extends Event {

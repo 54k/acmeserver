@@ -1,8 +1,8 @@
 package com.acme.server.system;
 
-import com.acme.commons.ashley.EntityEngine;
-import com.acme.commons.ashley.Wired;
-import com.acme.commons.network.*;
+import com.acme.engine.ashley.EntityEngine;
+import com.acme.engine.ashley.Wired;
+import com.acme.engine.network.*;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.manager.EntityManager;
@@ -77,7 +77,7 @@ public class PacketSystem extends NetworkSystem {
     }
 
     @Override
-    protected com.acme.commons.network.PacketReader getPacketReader() {
+    protected com.acme.engine.network.PacketReader getPacketReader() {
         return packetReader;
     }
 

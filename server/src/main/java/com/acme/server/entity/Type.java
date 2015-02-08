@@ -1,6 +1,6 @@
 package com.acme.server.entity;
 
-import com.acme.commons.ashley.Archetype;
+import com.acme.engine.ashley.Archetype;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 

@@ -1,15 +1,11 @@
 package com.acme.server.manager;
 
-import com.acme.commons.ai.Brain;
-import com.acme.commons.ai.BrainComponent;
-import com.acme.commons.ashley.ManagerSystem;
-import com.acme.commons.ashley.Wired;
+import com.acme.engine.ai.Brain;
+import com.acme.engine.ai.BrainComponent;
+import com.acme.engine.ashley.ManagerSystem;
+import com.acme.engine.ashley.Wired;
 import com.acme.server.ai.PatrolBrainState;
-import com.acme.server.component.DropComponent;
-import com.acme.server.component.InventoryComponent;
-import com.acme.server.component.PickupComponent;
-import com.acme.server.component.StatsComponent;
-import com.acme.server.component.TypeComponent;
+import com.acme.server.component.*;
 import com.acme.server.entity.Archetypes;
 import com.acme.server.entity.Type;
 import com.acme.server.template.CreatureTemplate;
