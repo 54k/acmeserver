@@ -1,8 +1,8 @@
 package com.acme.server.controller;
 
 import com.acme.engine.application.Context;
-import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
+import com.acme.engine.ashley.system.ManagerSystem;
 import com.acme.server.component.*;
 import com.acme.server.component.DropComponent.Drop;
 import com.acme.server.event.CombatControllerEvent;

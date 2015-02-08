@@ -99,14 +99,14 @@ public class PacketSystem extends NetworkSystem {
     }
 
     public void sendToKnownList(Entity sender, OutboundPacket packet) {
-        kcm.get(sender).getKnownPlayers().forEach(e -> sendPacket(e, packet));
+        kcm.get(sender).getKnownEntities().getPlayers().forEach(e -> sendPacket(e, packet));
     }
 
     public void sendToSelfAndRegion(Entity sender, OutboundPacket packet) {
         sendPacket(sender, packet);
         pcm.get(sender).getRegion()
                 .getSurroundingRegions()
-                .stream().flatMap(r -> r.getPlayers().values().stream())
+                .stream().flatMap(r -> r.getPlayers().stream())
                 .forEach(e -> sendPacket(e, packet));
     }
 

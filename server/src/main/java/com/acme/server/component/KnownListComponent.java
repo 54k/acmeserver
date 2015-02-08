@@ -1,25 +1,17 @@
 package com.acme.server.component;
 
+import com.acme.server.util.EntityContainer;
 import com.badlogic.ashley.core.Component;
-import com.badlogic.ashley.core.Entity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class KnownListComponent extends Component {
 
-    private final List<Entity> knownPlayers = new ArrayList<>();
-    private final List<Entity> knownObjects = new ArrayList<>();
+    private final EntityContainer entityContainer = new EntityContainer();
 
     private int distanceToFindObject;
     private int distanceToForgetObject;
 
-    public List<Entity> getKnownPlayers() {
-        return knownPlayers;
-    }
-
-    public List<Entity> getKnownEntities() {
-        return knownObjects;
+    public EntityContainer getKnownEntities() {
+        return entityContainer;
     }
 
     public int getDistanceToFindEntity() {

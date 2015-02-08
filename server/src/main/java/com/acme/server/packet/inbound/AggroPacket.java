@@ -21,6 +21,6 @@ public class AggroPacket extends InboundPacket {
 
     @Override
     public void run() {
-        hateController.increaseHate(worldManager.findEntityById(creatureId), getClient(), 5);
+        hateController.increaseHate(worldManager.getEntityById(creatureId), getClient(), 5);
     }
 }

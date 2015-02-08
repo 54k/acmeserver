@@ -1,8 +1,8 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
-import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
+import com.acme.engine.ashley.system.ManagerSystem;
 import com.acme.server.component.*;
 import com.acme.server.controller.PositionController;
 import com.acme.server.packet.outbound.HitPointsPacket;
@@ -70,7 +70,7 @@ public class LoginManager extends ManagerSystem {
     }
 
     private void spawnPlayer(Entity entity, String name, Position position, int hitPoints) {
-        if (worldManager.findPlayerById(entity.getId()) == null) {
+        if (worldManager.getPlayerById(entity.getId()) == null) {
             worldManager.bringIntoWorld(entity);
         }
         worldManager.spawn(entity);

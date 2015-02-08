@@ -1,12 +1,13 @@
 package com.acme.server.ai;
 
 import com.acme.engine.ai.BrainState;
-import com.acme.engine.ai.BrainStateController;
 import com.acme.engine.ashley.Wired;
+import com.acme.engine.ashley.system.BrainStateController;
 import com.acme.server.component.SpawnComponent;
 import com.acme.server.controller.CombatController;
 import com.acme.server.controller.HateController;
 import com.acme.server.controller.PositionController;
+import com.acme.server.controller.StatsController;
 import com.acme.server.event.HateControllerEvent;
 import com.acme.server.packet.outbound.MovePacket;
 import com.acme.server.system.PacketSystem;
@@ -19,6 +20,7 @@ public class CombatBrainState extends BrainStateController implements BrainState
 
     private ComponentMapper<SpawnComponent> scm;
 
+    private StatsController statsController;
     private PositionController positionController;
     private CombatController combatController;
     private HateController hateController;
@@ -29,6 +31,10 @@ public class CombatBrainState extends BrainStateController implements BrainState
 
     @Override
     public void update(Entity entity, float deltaTime) {
+        if (statsController.isDead(entity)) {
+            return;
+        }
+
         Position position = positionController.getPosition(entity);
         // TODO this should go into spawn manager
         Position spawnPosition = scm.get(entity).getSpawnPosition();
@@ -39,7 +45,7 @@ public class CombatBrainState extends BrainStateController implements BrainState
             startPatrol(entity);
             // TODO remove this hack later
             MovePacket movePacket = new MovePacket(entity);
-            hateController.getHaters(entity).getPlayers().values()
+            hateController.getHaters(entity).getPlayers()
                     .forEach(p -> packetSystem.sendPacket(p, movePacket));
             return;
         }
@@ -74,7 +80,11 @@ public class CombatBrainState extends BrainStateController implements BrainState
 
     @Override
     public void onHatersEmpty(Entity entity) {
-        startPatrol(entity);
+        if (statsController.isDead(entity)) {
+            changeState(entity, patrolBrainState);
+        } else {
+            startPatrol(entity);
+        }
     }
 
     private void startPatrol(Entity entity) {

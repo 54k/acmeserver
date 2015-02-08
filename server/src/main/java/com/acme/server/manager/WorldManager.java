@@ -1,10 +1,11 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
-import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
+import com.acme.engine.ashley.system.ManagerSystem;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
+import com.acme.server.event.WorldManagerEvent;
 import com.acme.server.packet.outbound.PopulationPacket;
 import com.acme.server.system.PacketSystem;
 import com.acme.server.template.WorldTemplate;
@@ -16,7 +17,6 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 import java.util.Collection;
-import java.util.Map;
 
 @Wired
 public class WorldManager extends ManagerSystem {
@@ -25,7 +25,7 @@ public class WorldManager extends ManagerSystem {
     private ComponentMapper<WorldComponent> wcm;
 
     private Context context;
-    private PacketSystem networkSystem;
+    private PacketSystem packetSystem;
 
     private final EntityContainer entities = new EntityContainer();
     private final World world;
@@ -54,6 +54,7 @@ public class WorldManager extends ManagerSystem {
         newRegion.addEntity(entity);
         positionComponent.setRegion(newRegion);
         positionComponent.setSpawned(true);
+        post(WorldManagerEvent.class).onEntitySpawned(entity);
     }
 
     public void removeFromWorld(Entity entity) {
@@ -70,6 +71,7 @@ public class WorldManager extends ManagerSystem {
         Region region = positionComponent.getRegion();
         region.removeEntity(entity);
         positionComponent.setSpawned(false);
+        post(WorldManagerEvent.class).onEntityDecayed(entity);
     }
 
     public Instance getAvailableInstance() {
@@ -88,38 +90,38 @@ public class WorldManager extends ManagerSystem {
     }
 
     private void broadcastPopulationToInstance(Instance instance) {
-        Collection<Entity> players = instance.getPlayers().values();
+        Collection<Entity> players = instance.getPlayers();
         int instanceCount = players.size();
         int worldCount = entities.getPlayers().size();
         PopulationPacket population = new PopulationPacket(instanceCount, worldCount);
-        players.forEach(p -> networkSystem.sendPacket(p, population));
+        players.forEach(p -> packetSystem.sendPacket(p, population));
     }
 
     private void addEntity(Entity entity) {
-        if (entities.contains(entity)) {
+        if (entities.containsById(entity.getId())) {
             throw new IllegalArgumentException("Duplicate entity id " + entity.getId());
         }
-        entities.addEntity(entity);
+        entities.add(entity);
     }
 
     private void removeEntity(Entity entity) {
-        entities.removeEntity(entity);
+        entities.remove(entity);
     }
 
-    public Map<Long, Entity> getPlayers() {
+    public EntityContainer getPlayers() {
         return entities.getPlayers();
     }
 
-    public Map<Long, Entity> getEntities() {
-        return entities.getEntities();
+    public EntityContainer getEntities() {
+        return entities;
     }
 
-    public Entity findPlayerById(long id) {
-        return entities.findPlayerById(id);
+    public Entity getPlayerById(long id) {
+        return entities.getPlayerById(id).orElse(null);
     }
 
-    public Entity findEntityById(long id) {
-        return entities.findEntityById(id);
+    public Entity getEntityById(long id) {
+        return entities.getEntityById(id).orElse(null);
     }
 
     @Override

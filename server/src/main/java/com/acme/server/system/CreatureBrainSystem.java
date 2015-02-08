@@ -1,7 +1,7 @@
 package com.acme.server.system;
 
-import com.acme.engine.ai.BrainSystem;
 import com.acme.engine.ashley.Wired;
+import com.acme.engine.ashley.system.BrainSystem;
 import com.acme.server.ai.CombatBrainState;
 import com.acme.server.ai.PatrolBrainState;
 import com.acme.server.component.PositionComponent;

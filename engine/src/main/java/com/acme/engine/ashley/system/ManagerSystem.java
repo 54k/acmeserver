@@ -1,5 +1,7 @@
-package com.acme.engine.ashley;
+package com.acme.engine.ashley.system;
 
+import com.acme.engine.ashley.EntityEngine;
+import com.acme.engine.ashley.EntityEngineListener;
 import com.acme.engine.event.Event;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;

@@ -21,6 +21,6 @@ public class AttackPacket extends InboundPacket {
 
     @Override
     public void run() {
-        combatController.engage(getClient(), worldManager.findEntityById(targetId));
+        combatController.engage(getClient(), worldManager.getEntityById(targetId));
     }
 }

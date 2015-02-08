@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.Entity;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class Region {
@@ -24,7 +23,7 @@ public class Region {
     }
 
     public void addEntity(Entity entity) {
-        entities.addEntity(entity);
+        entities.add(entity);
         if (entities.getPlayers().size() == 1) {
             activateRegion();
         }
@@ -35,7 +34,7 @@ public class Region {
     }
 
     public void removeEntity(Entity entity) {
-        entities.removeEntity(entity);
+        entities.add(entity);
         if (entities.getPlayers().isEmpty()) {
             deactivateRegion();
         }
@@ -45,11 +44,11 @@ public class Region {
         active = false;
     }
 
-    public Map<Long, Entity> getEntities() {
-        return entities.getEntities();
+    public EntityContainer getEntities() {
+        return entities;
     }
 
-    public Map<Long, Entity> getPlayers() {
+    public EntityContainer getPlayers() {
         return entities.getPlayers();
     }
 
