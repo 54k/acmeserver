@@ -3,6 +3,7 @@ package com.acme.boot;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.FelixConstants;
 import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.launch.Framework;
 
@@ -25,14 +26,9 @@ public class FelixLauncher {
         registerSystemBundleActivators(configMap);
 
         Framework framework = new Felix(configMap);
-        addShutdownHook(framework);
         framework.init();
-        FrameworkEvent event;
-        do {
-            framework.start();
-            event = framework.waitForStop(0);
-        } while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
-        System.exit(0);
+        addShutdownHook(framework);
+        waitForStop(framework);
     }
 
     public static void copySystemProperties(Map<String, Object> configMap) {
@@ -67,5 +63,14 @@ public class FelixLauncher {
                 }
             }
         });
+    }
+
+    private static void waitForStop(Framework framework) throws BundleException, InterruptedException {
+        FrameworkEvent event;
+        do {
+            framework.start();
+            event = framework.waitForStop(0);
+        } while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
+        System.exit(0);
     }
 }
