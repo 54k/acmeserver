@@ -1,11 +1,11 @@
 package com.acme.server.component;
 
-import com.acme.engine.ashley.component.CooldownComponent;
+import com.acme.engine.ashley.component.TimerComponent;
 import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;
 
-public class SpawnComponent extends CooldownComponent {
+public class SpawnComponent extends TimerComponent {
 
     private Position spawnPosition;
     private Area area;
@@ -26,7 +26,7 @@ public class SpawnComponent extends CooldownComponent {
         this.area = area;
     }
 
-    public void refreshCooldown() {
-        setCooldown(Rnd.between(10000, 40000));
+    public void refreshTimer() {
+        setTime(Rnd.between(10000, 40000));
     }
 }

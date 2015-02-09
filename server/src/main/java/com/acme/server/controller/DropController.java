@@ -59,7 +59,7 @@ public class DropController extends ManagerSystem implements CombatControllerEve
             Position dropPosition = PositionUtils.getRandomPositionInside(dropArea);
             pcm.get(dropEntity).setPosition(dropPosition);
             DecayComponent decayComponent = new DecayComponent();
-            decayComponent.setCooldown(spawnComponent.getCooldown());
+            decayComponent.setTime(spawnComponent.getTime());
             dropEntity.add(decayComponent);
             spawnDrop(dropEntity);
         }

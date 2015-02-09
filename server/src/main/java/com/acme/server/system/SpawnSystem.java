@@ -1,7 +1,7 @@
 package com.acme.server.system;
 
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.ashley.system.CooldownSystem;
+import com.acme.engine.ashley.system.TimerSystem;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.SpawnComponent;
 import com.acme.server.component.WorldComponent;
@@ -15,7 +15,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class SpawnSystem extends CooldownSystem<SpawnComponent> {
+public class SpawnSystem extends TimerSystem<SpawnComponent> {
 
     private ComponentMapper<WorldComponent> wcm;
     private ComponentMapper<SpawnComponent> scm;
@@ -30,12 +30,12 @@ public class SpawnSystem extends CooldownSystem<SpawnComponent> {
     }
 
     @Override
-    protected boolean shouldTickCooldown(Entity entity, float deltaTime) {
+    protected boolean shouldTickTimer(Entity entity, float deltaTime) {
         return !pcm.get(entity).isSpawned();
     }
 
     @Override
-    protected void cooldownReady(Entity entity, float deltaTime) {
+    protected void timerReady(Entity entity, float deltaTime) {
         if (StatsController.STATS_OWNERS_FAMILY.matches(entity)) {
             statsController.resetHitPoints(entity);
         }
@@ -44,7 +44,7 @@ public class SpawnSystem extends CooldownSystem<SpawnComponent> {
         Position spawnPosition = getRandomSpawnPosition(spawnComponent.getArea(), wcm.get(entity).getInstance());
         spawnComponent.setSpawnPosition(spawnPosition);
         positionComponent.setPosition(spawnPosition);
-        spawnComponent.refreshCooldown();
+        spawnComponent.refreshTimer();
         worldManager.spawn(entity);
     }
 
