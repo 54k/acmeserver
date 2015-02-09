@@ -2,7 +2,7 @@ package com.acme.engine.ashley.component;
 
 import com.badlogic.ashley.core.Component;
 
-public class TimerComponent extends Component {
+public abstract class TimerComponent extends Component {
 
     private float time;
     private float initialTime;
@@ -32,7 +32,8 @@ public class TimerComponent extends Component {
     }
 
     public void decreaseTime(float deltaTime) {
-        setTime(Math.max(0, time - deltaTime));
+        float time = Math.max(0, this.time - deltaTime);
+        setTime(time);
     }
 
     public void refreshTimer() {
