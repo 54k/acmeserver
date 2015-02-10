@@ -28,6 +28,10 @@ public class KnownListSystem extends IteratingSystem {
         super(KNOWN_LIST_OWNERS_FAMILY);
     }
 
+    public void clearKnownList(Entity entity) {
+        kcm.get(entity).getKnownEntities().clear();
+    }
+
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         if (pcm.get(entity).isSpawned()) {
