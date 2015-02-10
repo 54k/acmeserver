@@ -20,6 +20,10 @@ public class StatsController extends ManagerSystem {
 
     private PacketSystem packetSystem;
 
+    public int getMaxHitPoints(Entity entity) {
+        return scm.get(entity).getMaxHitPoints();
+    }
+
     public void addHitPoints(Entity entity, int amount) {
         addHitPoints(entity, amount, false);
     }

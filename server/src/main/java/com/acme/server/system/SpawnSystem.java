@@ -8,8 +8,10 @@ import com.acme.server.component.WorldComponent;
 import com.acme.server.controller.StatsController;
 import com.acme.server.manager.WorldManager;
 import com.acme.server.util.PositionUtils;
+import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
 import com.acme.server.world.Instance;
+import com.acme.server.world.Orientation;
 import com.acme.server.world.Position;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -40,6 +42,8 @@ public class SpawnSystem extends TimerSystem<SpawnComponent> {
             statsController.resetHitPoints(entity);
         }
         PositionComponent positionComponent = pcm.get(entity);
+        int randomOrientation = Rnd.between(0, Orientation.values().length - 1);
+        positionComponent.setOrientation(Orientation.values()[randomOrientation]);
         SpawnComponent spawnComponent = scm.get(entity);
         Position spawnPosition = getRandomSpawnPosition(spawnComponent.getArea(), wcm.get(entity).getInstance());
         spawnComponent.setSpawnPosition(spawnPosition);

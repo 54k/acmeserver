@@ -4,14 +4,14 @@ import com.acme.engine.ashley.Wired;
 import com.acme.engine.network.InboundPacket;
 import com.acme.server.manager.LoginManager;
 
+@Wired
 public class LoginPacket extends InboundPacket {
-
-    @Wired
-    private LoginManager loginManager;
 
     private String name;
     private int weapon;
     private int armor;
+
+    private LoginManager loginManager;
 
     @Override
     public void read() {

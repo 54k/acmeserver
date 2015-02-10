@@ -38,6 +38,7 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addSystem(new DecaySystem());
         engine.addSystem(new InvulnerabilitySystem());
         engine.addSystem(new CreatureBrainSystem());
+        engine.addSystem(new RegenerationSystem());
         engine.addSystem(new KnownListSystem());
 
         engine.addSystem(new PositionController());

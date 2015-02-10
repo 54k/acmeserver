@@ -7,6 +7,7 @@ import com.acme.server.component.*;
 import com.acme.server.controller.PositionController;
 import com.acme.server.packet.outbound.HitPointsPacket;
 import com.acme.server.packet.outbound.WelcomePacket;
+import com.acme.server.system.KnownListSystem;
 import com.acme.server.system.PacketSystem;
 import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
@@ -33,10 +34,17 @@ public class LoginManager extends ManagerSystem {
 
     private PositionController positionController;
     private WorldManager worldManager;
+    private KnownListSystem knownListSystem;
     private PacketSystem packetSystem;
 
     public void login(Entity entity, String name, int weapon, int armor) {
         PlayerComponent playerComponent = pcm.get(entity);
+
+        if (playerComponent.getState() == PlayerComponent.State.PLAYING) {
+            respawnPlayer(entity);
+            return;
+        }
+
         playerComponent.setName(name);
         playerComponent.setState(PlayerComponent.State.PLAYING);
 
@@ -46,7 +54,7 @@ public class LoginManager extends ManagerSystem {
         int i = Rnd.between(0, startingAreas.size() - 1);
         Area area = startingAreas.stream().skip(i).findFirst().get();
         Position position = PositionUtils.getRandomPositionInside(area);
-
+        playerComponent.setSpawnArea(area);
         positionComponent.setPosition(position);
         positionComponent.setOrientation(Orientation.BOTTOM);
 
@@ -54,9 +62,7 @@ public class LoginManager extends ManagerSystem {
         Instance instance = worldManager.getAvailableInstance();
         worldComponent.setInstance(instance);
 
-        KnownListComponent knownListComponent = kcm.get(entity);
-        knownListComponent.setDistanceToFindObject(60);
-        knownListComponent.setDistanceToForgetObject(60);
+
         InventoryComponent inventoryComponent = icm.get(entity);
         inventoryComponent.setWeapon(weapon);
         inventoryComponent.setArmor(armor);
@@ -69,7 +75,23 @@ public class LoginManager extends ManagerSystem {
         context.schedule(() -> spawnPlayer(entity, name, position, hitPoints));
     }
 
+    private void respawnPlayer(Entity entity) {
+        PlayerComponent playerComponent = pcm.get(entity);
+        Area spawnArea = playerComponent.getSpawnArea();
+        Position position = PositionUtils.getRandomPositionInside(spawnArea);
+        poscm.get(entity).setPosition(position);
+        StatsComponent statsComponent = scm.get(entity);
+        int maxHitPoints = statsComponent.getMaxHitPoints();
+        statsComponent.setHitPoints(maxHitPoints);
+        knownListSystem.clearKnownList(entity);
+        context.schedule(() -> spawnPlayer(entity, playerComponent.getName(), position, maxHitPoints));
+    }
+
     private void spawnPlayer(Entity entity, String name, Position position, int hitPoints) {
+        KnownListComponent knownListComponent = kcm.get(entity);
+        knownListComponent.setDistanceToFindObject(20);
+        knownListComponent.setDistanceToForgetObject(25);
+
         if (worldManager.getPlayerById(entity.getId()) == null) {
             worldManager.bringIntoWorld(entity);
         }
