@@ -91,29 +91,29 @@ public class Instance {
     }
 
     public void addEntity(Entity entity) {
-        if (entities.contains(entity)) {
+        if (entities.containsById(entity.getId())) {
             throw new IllegalArgumentException("Duplicate entity id " + entity.getId());
         }
-        entities.addEntity(entity);
+        entities.add(entity);
     }
 
     public void removeEntity(Entity entity) {
-        entities.removeEntity(entity);
+        entities.remove(entity);
     }
 
-    public Entity findEntityById(long id) {
-        return entities.findEntityById(id);
+    public Entity getEntityById(long id) {
+        return entities.getEntityById(id).orElse(null);
     }
 
-    public Map<Long, Entity> getPlayers() {
+    public EntityContainer getPlayers() {
         return entities.getPlayers();
     }
 
-    public Map<Long, Entity> getEntities() {
-        return entities.getEntities();
+    public EntityContainer getEntities() {
+        return entities;
     }
 
-    public Entity findPlayerById(long id) {
-        return entities.findPlayerById(id);
+    public Entity getPlayerById(long id) {
+        return entities.getPlayerById(id).orElse(null);
     }
 }

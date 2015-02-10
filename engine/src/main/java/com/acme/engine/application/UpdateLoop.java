@@ -209,7 +209,11 @@ final class UpdateLoop implements Context {
 
     @Override
     public void dispose() {
-        schedule(() -> state.set(STATE_DISPOSED));
+        schedule(() -> {
+            if (!isDisposed()) {
+                state.set(STATE_DISPOSED);
+            }
+        });
     }
 
     @Override

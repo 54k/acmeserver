@@ -1,31 +1,24 @@
 package com.acme.server.controller;
 
-import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
+import com.acme.engine.ashley.system.ManagerSystem;
 import com.acme.server.component.InvulnerableComponent;
 import com.acme.server.component.StatsComponent;
-import com.acme.server.event.CombatControllerEvent;
 import com.acme.server.packet.outbound.HealthPacket;
 import com.acme.server.system.PacketSystem;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 
 @Wired
-public class StatsController extends ManagerSystem implements CombatControllerEvent {
+public class StatsController extends ManagerSystem {
+
+    public static final Family STATS_OWNERS_FAMILY = Family.all(StatsComponent.class).get();
 
     private ComponentMapper<StatsComponent> scm;
     private ComponentMapper<InvulnerableComponent> icm;
 
     private PacketSystem packetSystem;
-
-    @Override
-    public void onEntityDamaged(Entity attacker, Entity victim, int damage) {
-    }
-
-    @Override
-    public void onEntityKilled(Entity killer, Entity victim) {
-        resetHitPoints(victim);
-    }
 
     public void addHitPoints(Entity entity, int amount) {
         addHitPoints(entity, amount, false);

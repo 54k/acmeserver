@@ -1,15 +1,14 @@
 package com.acme.server.component;
 
+import com.acme.engine.ashley.component.TimerComponent;
 import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;
-import com.badlogic.ashley.core.Component;
 
-public class SpawnComponent extends Component {
+public class SpawnComponent extends TimerComponent {
 
     private Position spawnPosition;
     private Area area;
-    private float cooldown;
 
     public Position getSpawnPosition() {
         return spawnPosition;
@@ -27,15 +26,7 @@ public class SpawnComponent extends Component {
         this.area = area;
     }
 
-    public float getCooldown() {
-        return cooldown;
-    }
-
-    public void setCooldown(float cooldown) {
-        this.cooldown = cooldown;
-    }
-
-    public void refreshCooldown() {
-        cooldown = Rnd.between(10000, 40000);
+    public void refreshTimer() {
+        setTime(Rnd.between(10000, 40000));
     }
 }

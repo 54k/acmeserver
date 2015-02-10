@@ -22,7 +22,7 @@ public class PlayerCommands {
 
     @Descriptor("kick player")
     public void kick(@Descriptor("player id") long id) {
-        getEngine().getSystem(WorldManager.class).findPlayerById(id)
+        getEngine().getSystem(WorldManager.class).getPlayerById(id)
                 .getComponent(SessionComponent.class)
                 .getSession().close();
     }

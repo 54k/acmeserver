@@ -1,64 +1,39 @@
 package com.acme.server.util;
 
+import com.acme.server.entity.Archetypes;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
-public final class EntityContainer {
+public class EntityContainer extends ArrayList<Entity> {
 
-    private final Map<Long, Entity> entitiesById = new HashMap<>();
-    private final Map<Long, Entity> playersById = new HashMap<>();
+    public static final Collector<Entity, ?, EntityContainer> ENTITY_CONTAINER_COLLECTOR = Collectors.toCollection(EntityContainer::new);
+    private static Family PLAYER_FAMILY = Archetypes.PLAYER_TYPE.getFamily();
 
-    public void addAll(Collection<Entity> entities) {
-        entities.forEach(this::addEntity);
+    public Optional<Entity> getEntityById(long id) {
+        return stream()
+                .filter(e -> e.getId() == id)
+                .findFirst();
     }
 
-    public Entity addEntity(Entity entity) {
-        if (TypeUtils.isPlayer(entity)) {
-            addPlayer(entity);
-        }
-        return entitiesById.put(entity.getId(), entity);
+    public EntityContainer getPlayers() {
+        return stream()
+                .filter(PLAYER_FAMILY::matches)
+                .collect(ENTITY_CONTAINER_COLLECTOR);
     }
 
-    private void addPlayer(Entity player) {
-        playersById.put(player.getId(), player);
+    public Optional<Entity> getPlayerById(long id) {
+        return stream()
+                .filter(PLAYER_FAMILY::matches)
+                .filter(e -> e.getId() == id)
+                .findFirst();
     }
 
-    public boolean removeEntity(Entity entity) {
-        if (TypeUtils.isPlayer(entity)) {
-            removePlayer(entity);
-        }
-        return entitiesById.remove(entity.getId(), entity);
-    }
-
-    private void removePlayer(Entity player) {
-        playersById.remove(player.getId());
-    }
-
-    public Entity findEntityById(long id) {
-        return entitiesById.get(id);
-    }
-
-    public Entity findPlayerById(long id) {
-        return playersById.get(id);
-    }
-
-    public Map<Long, Entity> getEntities() {
-        return Collections.unmodifiableMap(entitiesById);
-    }
-
-    public Map<Long, Entity> getPlayers() {
-        return Collections.unmodifiableMap(playersById);
-    }
-
-    public boolean contains(Entity entity) {
-        return entitiesById.containsKey(entity.getId());
-    }
-
-    public boolean isEmpty() {
-        return entitiesById.isEmpty();
+    public boolean containsById(long id) {
+        return getEntityById(id).isPresent();
     }
 }

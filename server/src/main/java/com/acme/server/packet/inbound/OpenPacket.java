@@ -21,6 +21,6 @@ public class OpenPacket extends InboundPacket {
 
     @Override
     public void run() {
-        chestManager.openChest(worldManager.findEntityById(chestId));
+        chestManager.openChest(worldManager.getEntityById(chestId));
     }
 }

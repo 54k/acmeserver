@@ -21,6 +21,6 @@ public class HurtPacket extends InboundPacket {
 
     @Override
     public void run() {
-        combatController.attack(worldManager.findEntityById(creatureId), getClient());
+        combatController.attack(worldManager.getEntityById(creatureId), getClient());
     }
 }

@@ -21,6 +21,6 @@ public class LootPacket extends InboundPacket {
 
     @Override
     public void run() {
-        pickupController.gatherPickup(getClient(), worldManager.findEntityById(itemId));
+        pickupController.gatherPickup(getClient(), worldManager.getEntityById(itemId));
     }
 }

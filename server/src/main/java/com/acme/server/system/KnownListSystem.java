@@ -6,33 +6,26 @@ import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.packet.outbound.DespawnPacket;
 import com.acme.server.packet.outbound.SpawnPacket;
+import com.acme.server.util.EntityContainer;
 import com.acme.server.util.PositionUtils;
-import com.acme.server.util.TypeUtils;
 import com.acme.server.world.Region;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
-import java.util.List;
-
 @Wired
 public class KnownListSystem extends IteratingSystem {
+
+    private static final Family KNOWN_LIST_OWNERS_FAMILY = Family.all(KnownListComponent.class, PositionComponent.class, WorldComponent.class).get();
 
     private ComponentMapper<KnownListComponent> kcm;
     private ComponentMapper<PositionComponent> pcm;
 
-    private PacketSystem networkSystem;
-
-    private Entity actor;
-    private List<Entity> knownEntities;
-    private List<Entity> knownPlayers;
-    private int distanceToFindEntity;
-    private int distanceToForgetEntity;
+    private PacketSystem packetSystem;
 
     public KnownListSystem() {
-        //noinspection unchecked
-        super(Family.all(KnownListComponent.class, PositionComponent.class, WorldComponent.class).get());
+        super(KNOWN_LIST_OWNERS_FAMILY);
     }
 
     @Override
@@ -42,74 +35,64 @@ public class KnownListSystem extends IteratingSystem {
         }
     }
 
-    private void processKnownList(Entity entity) {
-        actor = entity;
-        KnownListComponent knownListComponent = kcm.get(actor);
-        knownEntities = knownListComponent.getKnownEntities();
-        knownPlayers = knownListComponent.getKnownPlayers();
-        distanceToFindEntity = knownListComponent.getDistanceToFindEntity();
-        distanceToForgetEntity = knownListComponent.getDistanceToForgetEntity();
-
-        forgetEntities();
-        findEntities();
+    private void processKnownList(Entity owner) {
+        forgetEntities(owner);
+        findEntities(owner);
     }
 
-    private void forgetEntities() {
+    private void forgetEntities(Entity owner) {
+        EntityContainer knownEntities = kcm.get(owner).getKnownEntities();
         for (int i = knownEntities.size() - 1; i >= 0; i--) {
             Entity entity = knownEntities.get(i);
-            if (removeEntity(entity)) {
-                networkSystem.sendPacket(actor, new DespawnPacket(entity));
+            if (removeEntity(owner, entity)) {
+                packetSystem.sendPacket(owner, new DespawnPacket(entity));
             }
         }
     }
 
-    private boolean removeEntity(Entity entity) {
-        if (isKnownEntity(entity) && isOutOfRange(entity)) {
-            removeFromKnownList(entity);
+    private boolean removeEntity(Entity owner, Entity entity) {
+        if (isKnownEntity(owner, entity) && isOutOfRange(owner, entity)) {
+            removeFromKnownList(owner, entity);
             return true;
         }
         return false;
     }
 
-    private boolean isOutOfRange(Entity entity) {
-        return PositionUtils.isOutOfRange(entity, actor, distanceToForgetEntity) || !pcm.get(entity).isSpawned();
+    private boolean isOutOfRange(Entity owner, Entity entity) {
+        int distanceToForgetEntity = kcm.get(owner).getDistanceToForgetEntity();
+        return PositionUtils.isOutOfRange(entity, owner, distanceToForgetEntity) || !pcm.get(entity).isSpawned();
     }
 
-    private void removeFromKnownList(Entity entity) {
-        knownEntities.remove(entity);
-        if (TypeUtils.isPlayer(entity)) {
-            knownPlayers.remove(entity);
-        }
+    private void removeFromKnownList(Entity owner, Entity entity) {
+        kcm.get(owner).getKnownEntities().remove(entity);
     }
 
-    private void findEntities() {
-        Region region = pcm.get(actor).getRegion();
+    private void findEntities(Entity owner) {
+        Region region = pcm.get(owner).getRegion();
         region.getSurroundingRegions().stream()
-                .flatMap(r -> r.getEntities().values().stream())
-                .filter(this::addObject)
-                .forEach(o -> networkSystem.sendPacket(actor, new SpawnPacket(o)));
+                .flatMap(r -> r.getEntities().stream())
+                .filter(e -> addObject(owner, e))
+                .forEach(o -> packetSystem.sendPacket(owner, new SpawnPacket(o)));
     }
 
-    private boolean addObject(Entity entity) {
-        if (!isKnownEntity(entity) && isInRange(entity)) {
-            addToKnownList(entity);
+    private boolean addObject(Entity owner, Entity entity) {
+        if (!isKnownEntity(owner, entity) && isInRange(owner, entity)) {
+            addToKnownList(owner, entity);
             return true;
         }
         return false;
     }
 
-    private boolean isInRange(Entity entity) {
-        return PositionUtils.isInRange(entity, actor, distanceToFindEntity) && pcm.get(entity).isSpawned();
+    private boolean isInRange(Entity owner, Entity entity) {
+        int distanceToFindEntity = kcm.get(owner).getDistanceToFindEntity();
+        return PositionUtils.isInRange(entity, owner, distanceToFindEntity) && pcm.get(entity).isSpawned();
     }
 
-    private void addToKnownList(Entity entity) {
-        knownEntities.add(entity);
-        if (TypeUtils.isPlayer(entity)) {
-            knownPlayers.add(entity);
-        }
+    private void addToKnownList(Entity owner, Entity entity) {
+        kcm.get(owner).getKnownEntities().add(entity);
     }
 
-    private boolean isKnownEntity(Entity entity) {
-        return actor == entity || kcm.get(actor).getKnownEntities().contains(entity);
+    private boolean isKnownEntity(Entity owner, Entity entity) {
+        return owner == entity || kcm.get(owner).getKnownEntities().contains(entity);
     }
 }

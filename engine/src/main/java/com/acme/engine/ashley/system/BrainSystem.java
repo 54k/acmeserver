@@ -1,7 +1,9 @@
-package com.acme.engine.ai;
+package com.acme.engine.ashley.system;
 
+import com.acme.engine.ai.Brain;
 import com.acme.engine.ashley.EntityEngine;
 import com.acme.engine.ashley.EntityEngineListener;
+import com.acme.engine.ashley.component.BrainComponent;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;

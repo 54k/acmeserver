@@ -1,9 +1,9 @@
 package com.acme.server.manager;
 
 import com.acme.engine.ai.Brain;
-import com.acme.engine.ai.BrainComponent;
-import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
+import com.acme.engine.ashley.component.BrainComponent;
+import com.acme.engine.ashley.system.ManagerSystem;
 import com.acme.server.ai.PatrolBrainState;
 import com.acme.server.component.*;
 import com.acme.server.entity.Archetypes;
