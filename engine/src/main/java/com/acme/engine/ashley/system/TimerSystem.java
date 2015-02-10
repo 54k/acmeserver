@@ -40,12 +40,13 @@ public abstract class TimerSystem<T extends TimerComponent> extends IteratingSys
         return true;
     }
 
-    protected T getTimer(Entity entity) {
+    public T getTimer(Entity entity) {
         return ccm.get(entity);
     }
 
     protected void timerTicked(Entity entity, float deltaTime) {
     }
 
-    protected abstract void timerReady(Entity entity, float deltaTime);
+    protected void timerReady(Entity entity, float deltaTime) {
+    }
 }
