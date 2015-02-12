@@ -28,23 +28,23 @@ public class KnownListSystem extends IteratingSystem {
         super(KNOWN_LIST_OWNERS_FAMILY);
     }
 
-    public void clearKnownList(Entity entity) {
-        kcm.get(entity).getKnownEntities().clear();
-    }
-
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         if (pcm.get(entity).isSpawned()) {
-            processKnownList(entity);
+            updateKnownList(entity);
         }
     }
 
-    private void processKnownList(Entity owner) {
+    public void clearKnownList(Entity owner) {
+        kcm.get(owner).getKnownEntities().clear();
+    }
+
+    public void updateKnownList(Entity owner) {
         forgetEntities(owner);
         findEntities(owner);
     }
 
-    private void forgetEntities(Entity owner) {
+    public void forgetEntities(Entity owner) {
         EntityContainer knownEntities = kcm.get(owner).getKnownEntities();
         for (int i = knownEntities.size() - 1; i >= 0; i--) {
             Entity entity = knownEntities.get(i);
@@ -55,7 +55,7 @@ public class KnownListSystem extends IteratingSystem {
     }
 
     private boolean removeEntity(Entity owner, Entity entity) {
-        if (isKnownEntity(owner, entity) && isOutOfRange(owner, entity)) {
+        if (!pcm.get(entity).isSpawned() || (isKnownEntity(owner, entity) && isOutOfRange(owner, entity))) {
             removeFromKnownList(owner, entity);
             return true;
         }
@@ -64,14 +64,14 @@ public class KnownListSystem extends IteratingSystem {
 
     private boolean isOutOfRange(Entity owner, Entity entity) {
         int distanceToForgetEntity = kcm.get(owner).getDistanceToForgetEntity();
-        return PositionUtils.isOutOfRange(entity, owner, distanceToForgetEntity) || !pcm.get(entity).isSpawned();
+        return PositionUtils.isOutOfRange(entity, owner, distanceToForgetEntity);
     }
 
     private void removeFromKnownList(Entity owner, Entity entity) {
         kcm.get(owner).getKnownEntities().remove(entity);
     }
 
-    private void findEntities(Entity owner) {
+    public void findEntities(Entity owner) {
         Region region = pcm.get(owner).getRegion();
         region.getSurroundingRegions().stream()
                 .flatMap(r -> r.getEntities().stream())
@@ -80,7 +80,7 @@ public class KnownListSystem extends IteratingSystem {
     }
 
     private boolean addObject(Entity owner, Entity entity) {
-        if (!isKnownEntity(owner, entity) && isInRange(owner, entity)) {
+        if (pcm.get(entity).isSpawned() && !isKnownEntity(owner, entity) && isInRange(owner, entity)) {
             addToKnownList(owner, entity);
             return true;
         }
@@ -89,7 +89,7 @@ public class KnownListSystem extends IteratingSystem {
 
     private boolean isInRange(Entity owner, Entity entity) {
         int distanceToFindEntity = kcm.get(owner).getDistanceToFindEntity();
-        return PositionUtils.isInRange(entity, owner, distanceToFindEntity) && pcm.get(entity).isSpawned();
+        return PositionUtils.isInRange(entity, owner, distanceToFindEntity);
     }
 
     private void addToKnownList(Entity owner, Entity entity) {

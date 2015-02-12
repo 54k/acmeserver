@@ -3,7 +3,12 @@ package com.acme.server.manager;
 import com.acme.engine.application.Context;
 import com.acme.engine.ashley.Wired;
 import com.acme.engine.ashley.system.ManagerSystem;
-import com.acme.server.component.*;
+import com.acme.server.component.InventoryComponent;
+import com.acme.server.component.KnownListComponent;
+import com.acme.server.component.PlayerComponent;
+import com.acme.server.component.PositionComponent;
+import com.acme.server.component.StatsComponent;
+import com.acme.server.component.WorldComponent;
 import com.acme.server.controller.PositionController;
 import com.acme.server.packet.outbound.HitPointsPacket;
 import com.acme.server.packet.outbound.WelcomePacket;
@@ -62,13 +67,12 @@ public class LoginManager extends ManagerSystem {
         Instance instance = worldManager.getAvailableInstance();
         worldComponent.setInstance(instance);
 
-
         InventoryComponent inventoryComponent = icm.get(entity);
         inventoryComponent.setWeapon(weapon);
         inventoryComponent.setArmor(armor);
 
         StatsComponent statsComponent = scm.get(entity);
-        int hitPoints = 60;
+        int hitPoints = 200;
         statsComponent.setHitPoints(hitPoints);
         statsComponent.setMaxHitPoints(hitPoints);
 
@@ -89,8 +93,8 @@ public class LoginManager extends ManagerSystem {
 
     private void spawnPlayer(Entity entity, String name, Position position, int hitPoints) {
         KnownListComponent knownListComponent = kcm.get(entity);
-        knownListComponent.setDistanceToFindObject(20);
-        knownListComponent.setDistanceToForgetObject(25);
+        knownListComponent.setDistanceToFindObject(100);
+        knownListComponent.setDistanceToForgetObject(100);
 
         if (worldManager.getPlayerById(entity.getId()) == null) {
             worldManager.bringIntoWorld(entity);

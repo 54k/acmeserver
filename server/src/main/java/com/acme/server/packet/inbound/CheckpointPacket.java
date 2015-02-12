@@ -23,6 +23,8 @@ public class CheckpointPacket extends InboundPacket {
     @Override
     public void run() {
         Area spawnArea = worldManager.getWorld().getPlayerSpawnAreas().get(checkpointId);
-        pcm.get(getClient()).setSpawnArea(spawnArea);
+        if (spawnArea != null) {
+            pcm.get(getClient()).setSpawnArea(spawnArea);
+        }
     }
 }
