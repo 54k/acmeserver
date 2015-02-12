@@ -1,12 +1,12 @@
 package com.acme.engine.effect;
 
-import com.badlogic.ashley.core.Entity;
+public interface Effect<E> {
 
-public interface Effect {
+    boolean stack(E entity, Effect<E> effect);
 
-    void apply(Entity entity);
+    void apply(E entity);
 
-    void update(Entity entity, float deltaTime);
+    void update(E entity, float deltaTime);
 
-    void remove(Entity entity);
+    void remove(E entity);
 }

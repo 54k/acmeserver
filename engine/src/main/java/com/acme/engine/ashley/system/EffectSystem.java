@@ -31,7 +31,7 @@ public class EffectSystem extends IteratingSystem {
     }
 
     private void updateEffectList(Entity entity, float deltaTime) {
-        EffectList effectList = ecm.get(entity).getEffectList();
+        EffectList<Entity> effectList = ecm.get(entity).getEffectList();
         effectList.update(deltaTime);
     }
 }

@@ -1,6 +1,5 @@
 package com.acme.server.brain;
 
-import com.acme.engine.brain.BrainState;
 import com.acme.engine.ashley.Wired;
 import com.acme.engine.ashley.system.BrainStateController;
 import com.acme.server.component.PatrolComponent;
@@ -14,7 +13,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class PatrolBrainState extends BrainStateController implements BrainState {
+public class PatrolBrainState extends BrainStateController {
 
     private ComponentMapper<PatrolComponent> pcm;
     private ComponentMapper<SpawnComponent> scm;

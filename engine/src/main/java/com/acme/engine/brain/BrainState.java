@@ -1,12 +1,10 @@
 package com.acme.engine.brain;
 
-import com.badlogic.ashley.core.Entity;
+public interface BrainState<E> {
 
-public interface BrainState {
+    void enter(E entity);
 
-    void enter(Entity entity);
+    void update(E entity, float deltaTime);
 
-    void update(Entity entity, float deltaTime);
-
-    void exit(Entity entity);
+    void exit(E entity);
 }

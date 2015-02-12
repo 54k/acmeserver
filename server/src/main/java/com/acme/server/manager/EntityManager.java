@@ -7,11 +7,7 @@ import com.acme.engine.ashley.system.ManagerSystem;
 import com.acme.engine.brain.Brain;
 import com.acme.engine.effect.EffectList;
 import com.acme.server.brain.PatrolBrainState;
-import com.acme.server.component.DropComponent;
-import com.acme.server.component.InventoryComponent;
-import com.acme.server.component.PickupComponent;
-import com.acme.server.component.StatsComponent;
-import com.acme.server.component.TypeComponent;
+import com.acme.server.component.*;
 import com.acme.server.controller.RegenerationController;
 import com.acme.server.entity.Archetypes;
 import com.acme.server.entity.Type;
@@ -107,6 +103,7 @@ public class EntityManager extends ManagerSystem {
             default:
                 throw new IllegalArgumentException("Cannot set pickupType for instanceType " + type);
         }
+        ecm.get(entity).setEffectList(new EffectList<>(entity));
         return entity;
     }
 
@@ -126,8 +123,8 @@ public class EntityManager extends ManagerSystem {
                 .map(e -> new DropComponent.Drop(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
         dropComponent.getDrops().addAll(drops);
-        bcm.get(entity).setBrain(new Brain(entity, engine.getSystem(PatrolBrainState.class)));
-        ecm.get(entity).setEffectList(new EffectList(entity));
+        bcm.get(entity).setBrain(new Brain<>(entity, engine.getSystem(PatrolBrainState.class)));
+        ecm.get(entity).setEffectList(new EffectList<>(entity));
         regenerationController.applyEffect(entity);
         return entity;
     }

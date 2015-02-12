@@ -5,26 +5,10 @@ import com.acme.engine.application.Context;
 import com.acme.engine.ashley.EntityEngine;
 import com.acme.engine.ashley.system.EffectSystem;
 import com.acme.engine.network.NetworkServer;
-import com.acme.server.controller.CombatController;
-import com.acme.server.controller.DropController;
-import com.acme.server.controller.HateController;
-import com.acme.server.controller.InventoryController;
-import com.acme.server.controller.PickupController;
-import com.acme.server.controller.PositionController;
-import com.acme.server.controller.RegenerationController;
-import com.acme.server.controller.StatsController;
+import com.acme.server.controller.*;
 import com.acme.server.entity.Type;
-import com.acme.server.manager.ChatManager;
-import com.acme.server.manager.EntityManager;
-import com.acme.server.manager.LoginManager;
-import com.acme.server.manager.SpawnManager;
-import com.acme.server.manager.WorldManager;
-import com.acme.server.system.CreatureBrainSystem;
-import com.acme.server.system.DecaySystem;
-import com.acme.server.controller.InvulnerabilityController;
-import com.acme.server.system.KnownListSystem;
-import com.acme.server.system.PacketSystem;
-import com.acme.server.system.SpawnSystem;
+import com.acme.server.manager.*;
+import com.acme.server.system.*;
 import com.acme.server.template.CreatureTemplate;
 import com.acme.server.template.WorldTemplate;
 import com.acme.server.world.Instance;
@@ -53,7 +37,6 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addSystem(packetSystem);
         engine.addSystem(new SpawnSystem());
         engine.addSystem(new DecaySystem());
-        engine.addSystem(new InvulnerabilityController());
         engine.addSystem(new CreatureBrainSystem());
         engine.addSystem(new KnownListSystem());
         engine.addSystem(new EffectSystem());
@@ -66,6 +49,8 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addSystem(new CombatController());
         engine.addSystem(new HateController());
 
+        engine.addSystem(new BlinkController());
+        engine.addSystem(new InvulnerabilityController());
         engine.addSystem(new RegenerationController());
 
         WorldManager worldManager = createWorldManager();
