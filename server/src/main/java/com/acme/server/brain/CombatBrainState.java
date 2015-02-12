@@ -1,4 +1,4 @@
-package com.acme.server.ai;
+package com.acme.server.brain;
 
 import com.acme.engine.brain.BrainState;
 import com.acme.engine.ashley.Wired;

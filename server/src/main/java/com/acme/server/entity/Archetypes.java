@@ -2,7 +2,17 @@ package com.acme.server.entity;
 
 import com.acme.engine.ashley.Archetype;
 import com.acme.engine.ashley.component.BrainComponent;
-import com.acme.server.component.*;
+import com.acme.engine.ashley.component.EffectListComponent;
+import com.acme.server.component.DropComponent;
+import com.acme.server.component.HateComponent;
+import com.acme.server.component.InventoryComponent;
+import com.acme.server.component.KnownListComponent;
+import com.acme.server.component.PickupComponent;
+import com.acme.server.component.PlayerComponent;
+import com.acme.server.component.PositionComponent;
+import com.acme.server.component.StatsComponent;
+import com.acme.server.component.TypeComponent;
+import com.acme.server.component.WorldComponent;
 
 public final class Archetypes {
     private Archetypes() {
@@ -24,7 +34,8 @@ public final class Archetypes {
                 .add(PlayerComponent.class)
                 .add(KnownListComponent.class)
                 .add(InventoryComponent.class)
-                .add(StatsComponent.class);
+                .add(StatsComponent.class)
+                .add(EffectListComponent.class);
     }
 
     public static final Archetype CREATURE_TYPE = new Archetype(BASE_TYPE);
@@ -36,7 +47,8 @@ public final class Archetypes {
                 .add(StatsComponent.class)
                 .add(DropComponent.class)
                 .add(HateComponent.class)
-                .add(BrainComponent.class);
+                .add(BrainComponent.class)
+                .add(EffectListComponent.class);
     }
 
     public static final Archetype ITEM_TYPE = new Archetype(BASE_TYPE);
