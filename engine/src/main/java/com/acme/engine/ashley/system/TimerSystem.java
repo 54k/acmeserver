@@ -10,13 +10,13 @@ public abstract class TimerSystem<T extends TimerComponent> extends IteratingSys
 
     private ComponentMapper<T> ccm;
 
-    public TimerSystem(Class<T> cdClass) {
-        this(cdClass, 0);
+    public TimerSystem(Class<T> timerClass) {
+        this(timerClass, 0);
     }
 
-    public TimerSystem(Class<T> cdClass, int priority) {
-        super(Family.all(cdClass).get(), priority);
-        ccm = ComponentMapper.getFor(cdClass);
+    public TimerSystem(Class<T> timerClass, int priority) {
+        super(Family.all(timerClass).get(), priority);
+        ccm = ComponentMapper.getFor(timerClass);
     }
 
     @Override
