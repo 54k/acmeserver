@@ -1,6 +1,6 @@
 package com.acme.server.ai;
 
-import com.acme.engine.ai.BrainState;
+import com.acme.engine.brain.BrainState;
 import com.acme.engine.ashley.Wired;
 import com.acme.engine.ashley.system.BrainStateController;
 import com.acme.server.component.PatrolComponent;

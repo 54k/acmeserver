@@ -1,6 +1,6 @@
 package com.acme.engine.ashley.system;
 
-import com.acme.engine.ai.Brain;
+import com.acme.engine.brain.Brain;
 import com.acme.engine.ashley.EntityEngine;
 import com.acme.engine.ashley.EntityEngineListener;
 import com.acme.engine.ashley.component.BrainComponent;

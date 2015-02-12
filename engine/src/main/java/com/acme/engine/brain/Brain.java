@@ -1,4 +1,4 @@
-package com.acme.engine.ai;
+package com.acme.engine.brain;
 
 import com.badlogic.ashley.core.Entity;
 

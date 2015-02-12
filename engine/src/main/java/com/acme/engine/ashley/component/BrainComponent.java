@@ -1,6 +1,6 @@
 package com.acme.engine.ashley.component;
 
-import com.acme.engine.ai.Brain;
+import com.acme.engine.brain.Brain;
 import com.badlogic.ashley.core.Component;
 
 public class BrainComponent extends Component {

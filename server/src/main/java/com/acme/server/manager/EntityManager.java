@@ -1,6 +1,6 @@
 package com.acme.server.manager;
 
-import com.acme.engine.ai.Brain;
+import com.acme.engine.brain.Brain;
 import com.acme.engine.ashley.Wired;
 import com.acme.engine.ashley.component.BrainComponent;
 import com.acme.engine.ashley.system.ManagerSystem;
