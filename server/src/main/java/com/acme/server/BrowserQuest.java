@@ -3,6 +3,7 @@ package com.acme.server;
 import com.acme.engine.application.ApplicationAdapter;
 import com.acme.engine.application.Context;
 import com.acme.engine.ashley.EntityEngine;
+import com.acme.engine.ashley.system.EffectSystem;
 import com.acme.engine.network.NetworkServer;
 import com.acme.server.controller.*;
 import com.acme.server.entity.Type;
@@ -36,10 +37,9 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addSystem(packetSystem);
         engine.addSystem(new SpawnSystem());
         engine.addSystem(new DecaySystem());
-        engine.addSystem(new InvulnerabilitySystem());
         engine.addSystem(new CreatureBrainSystem());
-        engine.addSystem(new RegenerationSystem());
         engine.addSystem(new KnownListSystem());
+        engine.addSystem(new EffectSystem());
 
         engine.addSystem(new PositionController());
         engine.addSystem(new PickupController());
@@ -48,6 +48,10 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addSystem(new DropController());
         engine.addSystem(new CombatController());
         engine.addSystem(new HateController());
+
+        engine.addSystem(new BlinkController());
+        engine.addSystem(new InvulnerabilityController());
+        engine.addSystem(new RegenerationController());
 
         WorldManager worldManager = createWorldManager();
         engine.addSystem(worldManager);

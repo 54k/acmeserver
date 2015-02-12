@@ -1,16 +1,10 @@
 package com.acme.server.component;
 
-import com.badlogic.ashley.core.Component;
+import com.acme.engine.ashley.component.TimerComponent;
 
-public class InvulnerableComponent extends Component {
+public class InvulnerableComponent extends TimerComponent {
 
-    private float cooldown;
-
-    public float getCooldown() {
-        return cooldown;
-    }
-
-    public void setCooldown(float cooldown) {
-        this.cooldown = cooldown;
+    public InvulnerableComponent(float duration) {
+        setTime(duration);
     }
 }

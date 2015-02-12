@@ -1,15 +1,15 @@
 package com.acme.engine.ashley.system;
 
-import com.acme.engine.ai.Brain;
 import com.acme.engine.ashley.EntityEngine;
 import com.acme.engine.ashley.EntityEngineListener;
 import com.acme.engine.ashley.component.BrainComponent;
+import com.acme.engine.brain.Brain;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
-public abstract class BrainSystem extends IteratingSystem implements EntityEngineListener {
+public class BrainSystem extends IteratingSystem implements EntityEngineListener {
 
     private static final Family BRAIN_OWNERS_FAMILY = Family.all(BrainComponent.class).get();
     private static final ComponentMapper<BrainComponent> bcm = ComponentMapper.getFor(BrainComponent.class);
@@ -52,7 +52,9 @@ public abstract class BrainSystem extends IteratingSystem implements EntityEngin
         }
     }
 
-    protected abstract boolean shouldUpdateBrain(Entity entity, float deltaTime);
+    protected boolean shouldUpdateBrain(Entity entity, float deltaTime) {
+        return true;
+    }
 
     private void updateBrain(Entity entity, float deltaTime) {
         Brain brain = bcm.get(entity).getBrain();

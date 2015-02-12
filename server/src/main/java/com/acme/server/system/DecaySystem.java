@@ -4,8 +4,8 @@ import com.acme.engine.ashley.Wired;
 import com.acme.engine.ashley.system.TimerSystem;
 import com.acme.server.component.DecayComponent;
 import com.acme.server.component.PositionComponent;
+import com.acme.server.controller.BlinkController;
 import com.acme.server.manager.WorldManager;
-import com.acme.server.packet.outbound.BlinkPacket;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
@@ -16,6 +16,7 @@ public class DecaySystem extends TimerSystem<DecayComponent> {
     private ComponentMapper<PositionComponent> pcm;
 
     private Engine engine;
+    private BlinkController blinkController;
     private WorldManager worldManager;
     private PacketSystem packetSystem;
 
@@ -31,9 +32,9 @@ public class DecaySystem extends TimerSystem<DecayComponent> {
     @Override
     protected void timerTicked(Entity entity, float deltaTime) {
         DecayComponent decayComponent = getTimer(entity);
-        if (decayComponent.getTime() <= 3000.0 && !decayComponent.isBlinking()) {
-            packetSystem.sendToSelfAndRegion(entity, new BlinkPacket(entity.getId()));
-            decayComponent.setBlinking(true);
+        float time = decayComponent.getTime();
+        if (time <= 3000 && !blinkController.isBlinking(entity)) {
+            blinkController.addBlinkEffect(entity, time);
         }
     }
 

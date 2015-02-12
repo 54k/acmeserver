@@ -1,11 +1,14 @@
 package com.acme.server.manager;
 
-import com.acme.engine.ai.Brain;
 import com.acme.engine.ashley.Wired;
 import com.acme.engine.ashley.component.BrainComponent;
+import com.acme.engine.ashley.component.EffectListComponent;
 import com.acme.engine.ashley.system.ManagerSystem;
-import com.acme.server.ai.PatrolBrainState;
+import com.acme.engine.brain.Brain;
+import com.acme.engine.effect.EffectList;
+import com.acme.server.brain.PatrolBrainState;
 import com.acme.server.component.*;
+import com.acme.server.controller.RegenerationController;
 import com.acme.server.entity.Archetypes;
 import com.acme.server.entity.Type;
 import com.acme.server.template.CreatureTemplate;
@@ -26,8 +29,10 @@ public class EntityManager extends ManagerSystem {
     private ComponentMapper<PickupComponent> pcm;
     private ComponentMapper<DropComponent> dcm;
     private ComponentMapper<BrainComponent> bcm;
+    private ComponentMapper<EffectListComponent> ecm;
 
     private Engine engine;
+    private RegenerationController regenerationController;
 
     private final Map<Type, CreatureTemplate> creaturesByType;
 
@@ -40,7 +45,10 @@ public class EntityManager extends ManagerSystem {
     }
 
     public Entity createPlayer() {
-        return create(Type.WARRIOR);
+        Entity entity = create(Type.WARRIOR);
+        ecm.get(entity).setEffectList(new EffectList(entity));
+        regenerationController.applyEffect(entity);
+        return entity;
     }
 
     public Entity createEntity(Type type) {
@@ -95,7 +103,7 @@ public class EntityManager extends ManagerSystem {
             default:
                 throw new IllegalArgumentException("Cannot set pickupType for instanceType " + type);
         }
-        engine.addEntity(entity);
+        ecm.get(entity).setEffectList(new EffectList<>(entity));
         return entity;
     }
 
@@ -115,9 +123,9 @@ public class EntityManager extends ManagerSystem {
                 .map(e -> new DropComponent.Drop(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
         dropComponent.getDrops().addAll(drops);
-        bcm.get(entity).setBrain(new Brain(entity, engine.getSystem(PatrolBrainState.class)));
-
-        engine.addEntity(entity);
+        bcm.get(entity).setBrain(new Brain<>(entity, engine.getSystem(PatrolBrainState.class)));
+        ecm.get(entity).setEffectList(new EffectList<>(entity));
+        regenerationController.applyEffect(entity);
         return entity;
     }
 

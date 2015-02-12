@@ -1,6 +1,5 @@
-package com.acme.server.ai;
+package com.acme.server.brain;
 
-import com.acme.engine.ai.BrainState;
 import com.acme.engine.ashley.Wired;
 import com.acme.engine.ashley.system.BrainStateController;
 import com.acme.server.component.SpawnComponent;
@@ -16,7 +15,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class CombatBrainState extends BrainStateController implements BrainState, HateControllerEvent {
+public class CombatBrainState extends BrainStateController implements HateControllerEvent {
 
     private ComponentMapper<SpawnComponent> scm;
 

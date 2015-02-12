@@ -1,25 +1,23 @@
-package com.acme.engine.ai;
+package com.acme.engine.brain;
 
-import com.badlogic.ashley.core.Entity;
+public class Brain<E> {
 
-public class Brain {
+    private final E owner;
 
-    private final Entity owner;
+    private BrainState<E> globalState;
+    private BrainState<E> currentState;
 
-    private BrainState globalState;
-    private BrainState currentState;
-
-    public Brain(Entity owner, BrainState initialState) {
+    public Brain(E owner, BrainState<E> initialState) {
         this(owner, initialState, null);
     }
 
-    public Brain(Entity owner, BrainState initialState, BrainState globalState) {
+    public Brain(E owner, BrainState<E> initialState, BrainState<E> globalState) {
         this.owner = owner;
         setGlobalState(globalState);
         changeState(initialState);
     }
 
-    public void setGlobalState(BrainState globalState) {
+    public void setGlobalState(BrainState<E> globalState) {
         this.globalState = globalState;
     }
 
@@ -32,8 +30,8 @@ public class Brain {
         }
     }
 
-    public void changeState(BrainState state) {
-        BrainState prevState = currentState;
+    public void changeState(BrainState<E> state) {
+        BrainState<E> prevState = currentState;
         currentState = state;
         if (prevState != null) {
             prevState.exit(owner);
