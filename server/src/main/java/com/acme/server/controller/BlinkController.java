@@ -21,40 +21,28 @@ public class BlinkController extends EffectController implements CombatControlle
 
     private PacketSystem packetSystem;
 
-    private final Map<Entity, BlinkEffect> blinkers = new HashMap<>();
+    private final Map<Entity, BlinkEffectHandler> affected = new HashMap<>();
 
     public void addBlinkEffect(Entity entity, float duration) {
-        BlinkEffect e2 = new BlinkEffect(duration);
-        BlinkEffect e1 = blinkers.putIfAbsent(entity, e2);
-        if (e1 == null) {
-            getEffectList(entity).apply(this);
-        } else {
-            e1.stack(entity, e2);
-        }
+        BlinkEffectHandler blinkEffectHandler = new BlinkEffectHandler(duration);
+        affected.putIfAbsent(entity, blinkEffectHandler);
+        getEffectList(entity).apply(blinkEffectHandler);
     }
 
     public void removeBlinkEffect(Entity entity) {
-        getEffectList(entity).remove(this);
+        BlinkEffectHandler blinkEffectHandler = affected.get(entity);
+        if (blinkEffectHandler != null) {
+            getEffectList(entity).remove(blinkEffectHandler);
+        }
     }
 
     public boolean isBlinking(Entity entity) {
-        return blinkers.containsKey(entity);
-    }
-
-    @Override
-    public void apply(Entity entity) {
-        blinkers.get(entity).apply(entity);
-    }
-
-    @Override
-    public void update(Entity entity, float deltaTime) {
-        blinkers.get(entity).update(entity, deltaTime);
+        return affected.containsKey(entity);
     }
 
     @Override
     public void remove(Entity entity) {
-        blinkers.get(entity).remove(entity);
-        blinkers.remove(entity);
+        affected.remove(entity);
     }
 
     private void sendBlinkPacket(Entity entity) {
@@ -79,19 +67,19 @@ public class BlinkController extends EffectController implements CombatControlle
     public void onEntityDamaged(Entity attacker, Entity victim, int damage) {
     }
 
-    private final class BlinkEffect extends TimedEffect<Entity> {
+    private final class BlinkEffectHandler extends TimedEffect<Entity> {
 
-        BlinkEffect(float duration) {
+        BlinkEffectHandler(float duration) {
             super(duration);
         }
 
         @Override
         public boolean stack(Entity entity, Effect<Entity> effect) {
-            BlinkEffect blinkEffect = (BlinkEffect) effect;
-            float duration = blinkEffect.getDuration();
+            BlinkEffectHandler blinkEffectHandler = (BlinkEffectHandler) effect;
+            float duration = blinkEffectHandler.getDuration();
             if (duration > getDuration()) {
-                setTicks(blinkEffect.getTicks());
-                setStepTime(blinkEffect.getStepTime());
+                setTicks(blinkEffectHandler.getTicks());
+                setStepTime(blinkEffectHandler.getStepTime());
                 resetCurrentTime();
             }
             return true;
@@ -105,6 +93,11 @@ public class BlinkController extends EffectController implements CombatControlle
         @Override
         public void ready(Entity entity) {
             removeBlinkEffect(entity);
+        }
+
+        @Override
+        public void remove(Entity entity) {
+            BlinkController.this.remove(entity);
         }
     }
 }
