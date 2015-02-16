@@ -104,12 +104,12 @@ public final class EffectSystem extends IteratingSystem {
         }
     }
 
-    private void signalRemoved(Entity effect, Entity target) {
+    private void signalStacked(Entity effect, Entity target) {
         for (Component component : effect.getComponents()) {
             if (component instanceof Impact) {
                 Class<? extends Component> impactClass = component.getClass();
                 ImpactController impactListener = impactListeners.get(impactClass);
-                impactListener.removed(effect, target);
+                impactListener.stacked(effect, target);
             }
         }
     }
@@ -144,12 +144,12 @@ public final class EffectSystem extends IteratingSystem {
         }
     }
 
-    private void signalStacked(Entity effect, Entity target) {
+    private void signalRemoved(Entity effect, Entity target) {
         for (Component component : effect.getComponents()) {
             if (component instanceof Impact) {
                 Class<? extends Component> impactClass = component.getClass();
                 ImpactController impactListener = impactListeners.get(impactClass);
-                impactListener.stacked(effect, target);
+                impactListener.removed(effect, target);
             }
         }
     }

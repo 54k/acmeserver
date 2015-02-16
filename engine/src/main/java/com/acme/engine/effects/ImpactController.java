@@ -25,21 +25,21 @@ public abstract class ImpactController extends ManagerSystem {
         effectSystem = null;
     }
 
-    protected void updated(Entity effect, Entity target, float deltaTime) {
-    }
-
-    protected void ticked(Entity effect, Entity target) {
-    }
-
-    protected void ready(Entity effect, Entity target) {
-    }
-
     public void applied(Entity effect, Entity target) {
     }
 
-    public void removed(Entity effect, Entity target) {
+    public void stacked(Entity effect, Entity target) {
     }
 
-    public void stacked(Entity effect, Entity target) {
+    public void updated(Entity effect, Entity target, float deltaTime) {
+    }
+
+    public void ticked(Entity effect, Entity target) {
+    }
+
+    public void ready(Entity effect, Entity target) {
+    }
+
+    public void removed(Entity effect, Entity target) {
     }
 }
