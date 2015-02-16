@@ -25,14 +25,13 @@ public abstract class ManagerSystem extends EntitySystem implements EntityEngine
     @Override
     public void addedToEngine(EntityEngine engine) {
         this.engine = engine;
-        engine.addEntityListener(family, this);
         engine.addEntityListener(this);
     }
 
     @Override
     public void removedFromEngine(EntityEngine engine) {
-        engine.removeEntityListener(this);
         this.engine = null;
+        engine.removeEntityListener(this);
     }
 
     public <T extends Event> T post(Class<T> type) {
@@ -40,10 +39,22 @@ public abstract class ManagerSystem extends EntitySystem implements EntityEngine
     }
 
     @Override
-    public void entityAdded(Entity entity) {
+    public final void entityAdded(Entity entity) {
+        if (family.matches(entity)) {
+            entityAdded0(entity);
+        }
+    }
+
+    protected void entityAdded0(Entity entity) {
     }
 
     @Override
-    public void entityRemoved(Entity entity) {
+    public final void entityRemoved(Entity entity) {
+        if (family.matches(entity)) {
+            entityRemoved0(entity);
+        }
+    }
+
+    protected void entityRemoved0(Entity entity) {
     }
 }

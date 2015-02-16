@@ -1,9 +1,11 @@
 package com.acme.server.effects;
 
+import com.acme.engine.ashley.Wired;
 import com.acme.engine.ashley.system.ManagerSystem;
 import com.acme.engine.effects.Effect;
 import com.badlogic.ashley.core.Entity;
 
+@Wired
 public final class EffectFactory extends ManagerSystem {
 
     public static String GLOBAL_REGEN_EFFECT = "global_regen_effect";

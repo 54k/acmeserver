@@ -53,7 +53,7 @@ public class HateController extends ManagerSystem implements CombatControllerEve
     }
 
     @Override
-    public void entityRemoved(Entity entity) {
+    public void entityRemoved0(Entity entity) {
         removeHater(entity);
     }
 

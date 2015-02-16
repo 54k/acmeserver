@@ -125,7 +125,7 @@ public class WorldManager extends ManagerSystem {
     }
 
     @Override
-    public void entityRemoved(Entity entity) {
+    public void entityRemoved0(Entity entity) {
         removeFromWorld(entity);
     }
 }

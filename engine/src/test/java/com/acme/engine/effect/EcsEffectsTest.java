@@ -34,13 +34,11 @@ public class EcsEffectsTest extends Assert {
         bjorn = new Entity()
                 .add(new EffectList());
 
-        Effect effect = new Effect(1, 0);
         fireEffect = new Entity()
-                .add(effect)
+                .add(new Effect())
                 .add(new FireImpact());
 
         entityEngine.addEntity(bjorn);
-        entityEngine.addEntity(fireEffect);
 
         fcm = ComponentMapper.getFor(FireImpact.class);
     }
@@ -49,6 +47,7 @@ public class EcsEffectsTest extends Assert {
     public void testName() throws Exception {
         effectSystem.applyEffect(fireEffect, bjorn);
         assertTrue(fcm.has(bjorn));
+        entityEngine.update(0);
         entityEngine.update(0);
         assertFalse(fcm.has(bjorn));
     }

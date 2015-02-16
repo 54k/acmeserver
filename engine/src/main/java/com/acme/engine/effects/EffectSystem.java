@@ -2,39 +2,63 @@ package com.acme.engine.effects;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-public final class EffectSystem extends IteratingSystem {
+public final class EffectSystem extends IteratingSystem implements EntityListener {
 
-    static final Family effectListFamily = Family.all(EffectList.class).get();
+    static final Family effectFamily = Family.all(Effect.class).get();
     static final ComponentMapper<EffectList> effectListCm = ComponentMapper.getFor(EffectList.class);
     static final ComponentMapper<Effect> effectCm = ComponentMapper.getFor(Effect.class);
 
     Map<Class<? extends Component>, ImpactController> impactListeners = new HashMap<>();
+    private Engine engine;
 
     public EffectSystem() {
         this(0);
     }
 
     public EffectSystem(int priority) {
-        super(effectListFamily, priority);
+        super(effectFamily, priority);
     }
 
     @Override
-    protected void processEntity(Entity entity, float deltaTime) {
-        processEffectList(entity, deltaTime);
+    public void addedToEngine(Engine engine) {
+        super.addedToEngine(engine);
+        this.engine = engine;
+        engine.addEntityListener(this);
     }
 
-    private void processEffectList(Entity entity, float deltaTime) {
-        Set<Entity> effects = new HashSet<>(effectListCm.get(entity).effectsByIdentity.values());
-        effects.stream().forEach(effect -> processEffect(effect, entity, deltaTime));
+    @Override
+    public void removedFromEngine(Engine engine) {
+        super.removedFromEngine(engine);
+        this.engine = null;
+        engine.removeEntityListener(this);
+    }
+
+    @Override
+    public void entityAdded(Entity effect) {
+        if (effectFamily.matches(effect)) {
+            signalApplied(effect, effectCm.get(effect).target);
+        }
+    }
+
+    @Override
+    public void entityRemoved(Entity effect) {
+        if (effectFamily.matches(effect)) {
+            signalRemoved(effect, effectCm.get(effect).target);
+        }
+    }
+
+    @Override
+    protected void processEntity(Entity effect, float deltaTime) {
+        processEffect(effect, effectCm.get(effect).target, deltaTime);
     }
 
     private void processEffect(Entity effect, Entity target, float deltaTime) {
@@ -64,19 +88,21 @@ public final class EffectSystem extends IteratingSystem {
     }
 
     public void applyEffect(Entity effect, Entity target) {
-        String identity = effectCm.get(effect).identity;
+        Effect effectCmp = effectCm.get(effect);
+        String identity = effectCmp.identity;
         if (hasEffect(identity, target)) {
             signalStacked(effect, target);
         } else {
             effectListCm.get(target).effectsByIdentity.put(identity, effect);
-            signalApplied(effect, target);
+            effectCmp.target = target;
+            engine.addEntity(effect);
         }
     }
 
     public void removeEffect(String identity, Entity target) {
         Entity effect = effectListCm.get(target).effectsByIdentity.remove(identity);
         if (effect != null) {
-            signalRemoved(effect, target);
+            engine.removeEntity(effect);
         }
     }
 

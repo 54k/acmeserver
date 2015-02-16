@@ -1,6 +1,7 @@
 package com.acme.engine.effects;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -12,6 +13,8 @@ public final class Effect extends Component {
     int remainingTicks;
     float tickInterval;
     float timeToNextTick;
+
+    Entity target;
 
     /**
      * Immediate effect ctor
@@ -61,6 +64,10 @@ public final class Effect extends Component {
 
     public void setTimeToNextTick(float timeToNextTick) {
         this.timeToNextTick = timeToNextTick;
+    }
+
+    public Entity getTarget() {
+        return target;
     }
 
     public boolean isReady() {

@@ -62,7 +62,7 @@ public class BlinkController extends EffectController implements CombatControlle
     }
 
     @Override
-    public void entityRemoved(Entity entity) {
+    public void entityRemoved0(Entity entity) {
         if (isBlinking(entity)) {
             removeBlinkEffect(entity);
         }
