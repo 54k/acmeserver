@@ -19,7 +19,6 @@ import com.badlogic.ashley.core.Entity;
 @Wired
 public class CombatController extends ManagerSystem {
 
-    @Wired
     private ComponentMapper<Combat> combatCm;
 
     private PositionController positionController;
