@@ -30,7 +30,6 @@ public final class EffectSystem extends IteratingSystem {
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         processEffectList(entity, deltaTime);
-        removeReadyEffects(entity);
     }
 
     private void processEffectList(Entity entity, float deltaTime) {
@@ -55,26 +54,13 @@ public final class EffectSystem extends IteratingSystem {
         if (effect.remainingTicks > 0) {
             effect.remainingTicks--;
         }
-        if (effect.tickInterval > 0) {
-            effect.timeToNextTick += effect.tickInterval;
-        }
     }
 
     private void signalIfReady(Effect effectComponent, Entity effect, Entity target) {
         if (effectComponent.remainingTicks == 0) {
             signalReady(effect, target);
+            removeEffect(effectComponent.identity, target);
         }
-    }
-
-    private void removeReadyEffects(Entity entity) {
-        Set<Entity> effects = new HashSet<>(effectListCm.get(entity).effectsByIdentity.values());
-        effects.stream()
-                .filter(EffectSystem::isReady)
-                .forEach(effect -> removeEffect(effectCm.get(effect).identity, entity));
-    }
-
-    private static boolean isReady(Entity effect) {
-        return effectCm.get(effect).isReady();
     }
 
     public void applyEffect(Entity effect, Entity target) {

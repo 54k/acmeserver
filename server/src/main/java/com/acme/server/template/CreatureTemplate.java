@@ -1,6 +1,6 @@
 package com.acme.server.template;
 
-import com.acme.server.entity.Type;
+import com.acme.server.entities.Type;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -6,7 +6,7 @@ import com.acme.server.controller.StatsController;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public final class RegenImpactController extends ImpactController {
+public class RegenImpactController extends ImpactController {
 
     private StatsController statsController;
 
@@ -15,7 +15,7 @@ public final class RegenImpactController extends ImpactController {
     }
 
     @Override
-    protected void ticked(Entity effect, Entity target) {
+    public void ticked(Entity effect, Entity target) {
         if (!statsController.isDead(target)) {
             int maxHitPoints = statsController.getMaxHitPoints(target);
             statsController.addHitPoints(target, (int) (maxHitPoints * 0.02), true);

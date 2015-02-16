@@ -1,8 +1,8 @@
-package com.acme.server.component;
+package com.acme.server.pickups;
 
 import com.badlogic.ashley.core.Component;
 
-public class PickupComponent extends Component {
+public class Pickup extends Component {
 
     private PickupType pickupType;
     private int amount;

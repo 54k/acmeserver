@@ -7,7 +7,8 @@ import com.acme.server.component.DropComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.SpawnComponent;
 import com.acme.server.component.WorldComponent;
-import com.acme.server.entity.Type;
+import com.acme.server.entities.EntityFactory;
+import com.acme.server.entities.Type;
 import com.acme.server.template.RoamingAreaTemplate;
 import com.acme.server.template.StaticChestTemplate;
 import com.acme.server.world.Area;
@@ -27,7 +28,7 @@ public class SpawnManager extends ManagerSystem {
     private ComponentMapper<DropComponent> dcm;
 
     private Context context;
-    private EntityManager entityManager;
+    private EntityFactory entityFactory;
     private WorldManager worldManager;
 
     public void spawnInstanceEntities(Instance instance) {
@@ -43,7 +44,7 @@ public class SpawnManager extends ManagerSystem {
 
     private void spawnCreatures(Instance instance, RoamingAreaTemplate roamingAreaTemplate) {
         for (int i = 0; i < roamingAreaTemplate.getNb(); i++) {
-            Entity entity = entityManager.createEntity(roamingAreaTemplate.getType());
+            Entity entity = entityFactory.createEntity(roamingAreaTemplate.getType());
             WorldComponent worldComponent = wcm.get(entity);
             worldComponent.setInstance(instance);
             SpawnComponent spawnComponent = new SpawnComponent();
@@ -62,7 +63,7 @@ public class SpawnManager extends ManagerSystem {
     }
 
     private void spawnStaticObject(Instance instance, Position position, Type type) {
-        Entity entity = entityManager.createEntity(type);
+        Entity entity = entityFactory.createEntity(type);
         WorldComponent worldComponent = wcm.get(entity);
         worldComponent.setInstance(instance);
         SpawnComponent spawnComponent = new SpawnComponent();
@@ -76,7 +77,7 @@ public class SpawnManager extends ManagerSystem {
     }
 
     private void spawnStaticChest(StaticChestTemplate ct, Instance instance) {
-        Entity entity = entityManager.createEntity(Type.CHEST);
+        Entity entity = entityFactory.createEntity(Type.CHEST);
         WorldComponent worldComponent = wcm.get(entity);
         worldComponent.setInstance(instance);
         SpawnComponent spawnComponent = new SpawnComponent();

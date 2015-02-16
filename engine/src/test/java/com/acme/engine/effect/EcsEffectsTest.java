@@ -63,7 +63,7 @@ public class EcsEffectsTest extends Assert {
         }
 
         @Override
-        protected void ready(Entity effect, Entity target) {
+        public void ready(Entity effect, Entity target) {
             System.out.println("Ready");
             //            removeEffect(effect, target);
         }

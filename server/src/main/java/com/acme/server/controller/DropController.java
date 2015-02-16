@@ -3,10 +3,14 @@ package com.acme.server.controller;
 import com.acme.engine.application.Context;
 import com.acme.engine.ashley.Wired;
 import com.acme.engine.ashley.system.ManagerSystem;
-import com.acme.server.component.*;
+import com.acme.server.component.DecayComponent;
+import com.acme.server.component.DropComponent;
 import com.acme.server.component.DropComponent.Drop;
+import com.acme.server.component.PositionComponent;
+import com.acme.server.component.SpawnComponent;
+import com.acme.server.component.WorldComponent;
+import com.acme.server.entities.EntityFactory;
 import com.acme.server.event.CombatControllerEvent;
-import com.acme.server.manager.EntityManager;
 import com.acme.server.manager.WorldManager;
 import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
@@ -31,7 +35,7 @@ public class DropController extends ManagerSystem implements CombatControllerEve
 
     private Context context;
 
-    private EntityManager entityManager;
+    private EntityFactory entityFactory;
     private WorldManager worldManager;
 
     @Override
@@ -54,7 +58,7 @@ public class DropController extends ManagerSystem implements CombatControllerEve
         Area dropArea = new Area(positionComponent.getX() - 1, positionComponent.getY() - 1, 2, 2);
 
         for (DropComponent.Drop drop : drops) {
-            Entity dropEntity = entityManager.createEntity(drop.getType());
+            Entity dropEntity = entityFactory.createEntity(drop.getType());
             wcm.get(dropEntity).setInstance(worldComponent.getInstance());
             Position dropPosition = PositionUtils.getRandomPositionInside(dropArea);
             pcm.get(dropEntity).setPosition(dropPosition);

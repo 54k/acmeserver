@@ -1,4 +1,4 @@
-package com.acme.server.entity;
+package com.acme.server.entities;
 
 import com.acme.engine.ashley.Archetype;
 import com.acme.engine.ashley.component.BrainComponent;
@@ -8,12 +8,12 @@ import com.acme.server.component.DropComponent;
 import com.acme.server.component.HateComponent;
 import com.acme.server.component.InventoryComponent;
 import com.acme.server.component.KnownListComponent;
-import com.acme.server.component.PickupComponent;
 import com.acme.server.component.PlayerComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.StatsComponent;
 import com.acme.server.component.TypeComponent;
 import com.acme.server.component.WorldComponent;
+import com.acme.server.pickups.Pickup;
 
 public final class Archetypes {
     private Archetypes() {
@@ -58,7 +58,7 @@ public final class Archetypes {
 
     static {
         ITEM_TYPE
-                .add(PickupComponent.class)
+                .add(Pickup.class)
                 .add(EffectListComponent.class);
     }
 

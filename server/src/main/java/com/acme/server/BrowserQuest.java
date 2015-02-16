@@ -10,19 +10,19 @@ import com.acme.server.controller.CombatController;
 import com.acme.server.controller.DropController;
 import com.acme.server.controller.HateController;
 import com.acme.server.controller.InventoryController;
-import com.acme.server.controller.InvulnerabilityController;
-import com.acme.server.controller.PickupController;
 import com.acme.server.controller.PositionController;
 import com.acme.server.controller.StatsController;
 import com.acme.server.effects.EffectFactory;
+import com.acme.server.effects.HealImpactController;
 import com.acme.server.effects.InvulImpactController;
 import com.acme.server.effects.RegenImpactController;
-import com.acme.server.entity.Type;
+import com.acme.server.entities.EntityFactory;
+import com.acme.server.entities.Type;
 import com.acme.server.manager.ChatManager;
-import com.acme.server.manager.EntityManager;
 import com.acme.server.manager.LoginManager;
 import com.acme.server.manager.SpawnManager;
 import com.acme.server.manager.WorldManager;
+import com.acme.server.pickups.PickupController;
 import com.acme.server.system.CreatureBrainSystem;
 import com.acme.server.system.DecaySystem;
 import com.acme.server.system.KnownListSystem;
@@ -71,6 +71,7 @@ public class BrowserQuest extends EngineApplication {
         engine.addSystem(new BlinkController());
 
         engine.addSystem(new RegenImpactController());
+        engine.addSystem(new HealImpactController());
         engine.addSystem(new InvulImpactController());
 
         WorldManager worldManager = createWorldManager();
@@ -112,12 +113,12 @@ public class BrowserQuest extends EngineApplication {
         }
     }
 
-    private EntityManager createEntityManager() {
+    private EntityFactory createEntityManager() {
         try {
             ObjectMapper objectMapper = getContext().get(ObjectMapper.class);
             MapType mapType = objectMapper.getTypeFactory().constructMapType(HashMap.class, Type.class, CreatureTemplate.class);
             Map<Type, CreatureTemplate> creaturesByType = objectMapper.readValue(getResourceAsStream("creatures.json"), mapType);
-            return new EntityManager(creaturesByType);
+            return new EntityFactory(creaturesByType);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

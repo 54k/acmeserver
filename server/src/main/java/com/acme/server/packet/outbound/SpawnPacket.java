@@ -6,7 +6,7 @@ import com.acme.server.component.InventoryComponent;
 import com.acme.server.component.PlayerComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.TypeComponent;
-import com.acme.server.entity.Type;
+import com.acme.server.entities.Type;
 import com.acme.server.packet.OpCodes;
 import com.acme.server.util.TypeUtils;
 import com.badlogic.ashley.core.ComponentMapper;

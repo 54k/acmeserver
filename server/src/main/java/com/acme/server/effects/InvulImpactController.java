@@ -7,13 +7,13 @@ import com.acme.engine.effects.ImpactController;
 import com.acme.server.component.InvulnerableComponent;
 import com.acme.server.controller.InventoryController;
 import com.acme.server.controller.StatsController;
-import com.acme.server.entity.Type;
+import com.acme.server.entities.Type;
 import com.acme.server.packet.outbound.EquipPacket;
 import com.acme.server.system.PacketSystem;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public final class InvulImpactController extends ImpactController {
+public class InvulImpactController extends ImpactController {
 
     private InventoryController inventoryController;
     private StatsController statsController;

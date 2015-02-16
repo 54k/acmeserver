@@ -6,7 +6,7 @@ import com.acme.server.brain.CombatBrainState;
 import com.acme.server.brain.PatrolBrainState;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.controller.HateController;
-import com.acme.server.entity.Archetypes;
+import com.acme.server.entities.Archetypes;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 

@@ -1,4 +1,4 @@
-package com.acme.server.entity;
+package com.acme.server.entities;
 
 import com.acme.engine.ashley.Archetype;
 import com.fasterxml.jackson.annotation.JsonCreator;

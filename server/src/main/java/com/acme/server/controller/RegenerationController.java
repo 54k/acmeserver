@@ -4,7 +4,6 @@ import com.acme.engine.application.Context;
 import com.acme.engine.ashley.Wired;
 import com.acme.engine.ashley.system.EffectController;
 import com.acme.server.component.RegenerationComponent;
-import com.acme.server.controller.StatsController;
 import com.acme.server.event.CombatControllerEvent;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;

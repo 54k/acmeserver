@@ -1,6 +1,6 @@
 package com.acme.server.component;
 
-import com.acme.server.entity.Type;
+import com.acme.server.entities.Type;
 import com.badlogic.ashley.core.Component;
 
 import java.util.ArrayList;

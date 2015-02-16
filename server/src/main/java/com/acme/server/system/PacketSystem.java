@@ -9,7 +9,7 @@ import com.acme.engine.network.Session;
 import com.acme.engine.network.SessionComponent;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PositionComponent;
-import com.acme.server.manager.EntityManager;
+import com.acme.server.entities.EntityFactory;
 import com.acme.server.packet.OpCodes;
 import com.acme.server.packet.PacketReader;
 import com.acme.server.packet.inbound.AggroPacket;
@@ -39,7 +39,7 @@ public class PacketSystem extends NetworkSystem {
     private ComponentMapper<PositionComponent> pcm;
 
     private EntityEngine engine;
-    private EntityManager entityManager;
+    private EntityFactory entityFactory;
 
     private ObjectMapper objectMapper;
 
@@ -63,7 +63,7 @@ public class PacketSystem extends NetworkSystem {
 
     @Override
     public Entity createEntity(Session session) {
-        return entityManager.createPlayer();
+        return entityFactory.createPlayer();
     }
 
     @Override
