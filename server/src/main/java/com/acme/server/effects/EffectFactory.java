@@ -9,6 +9,8 @@ import com.badlogic.ashley.core.Entity;
 public final class EffectFactory extends ManagerSystem {
 
     public static String GLOBAL_REGEN_EFFECT = "global_regen_effect";
+    public static String GLOBAL_BLINK_EFFECT = "global_blink_effect";
+
     public static String HEALTH_POTION_EFFECT = "health_potion_effect";
     public static String FIREFOX_POTION_EFFECT = "firefox_potion_effect";
 
@@ -16,6 +18,12 @@ public final class EffectFactory extends ManagerSystem {
         return new Entity()
                 .add(new Effect(GLOBAL_REGEN_EFFECT, -1, 5000))
                 .add(new RegenImpact());
+    }
+
+    public Entity createGlobalBlinkEffect() {
+        return new Entity()
+                .add(new Effect(GLOBAL_BLINK_EFFECT, -1, 0))
+                .add(new BlinkImpact());
     }
 
     public Entity createHealthPotionEffect(int amount) {

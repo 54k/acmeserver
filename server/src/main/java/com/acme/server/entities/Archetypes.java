@@ -2,7 +2,6 @@ package com.acme.server.entities;
 
 import com.acme.engine.ashley.Archetype;
 import com.acme.engine.ashley.component.BrainComponent;
-import com.acme.engine.ashley.component.EffectListComponent;
 import com.acme.engine.effects.EffectList;
 import com.acme.server.component.DropComponent;
 import com.acme.server.component.HateComponent;
@@ -36,7 +35,6 @@ public final class Archetypes {
                 .add(KnownListComponent.class)
                 .add(InventoryComponent.class)
                 .add(StatsComponent.class)
-                .add(EffectListComponent.class)
                 .add(EffectList.class);
     }
 
@@ -50,7 +48,6 @@ public final class Archetypes {
                 .add(DropComponent.class)
                 .add(HateComponent.class)
                 .add(BrainComponent.class)
-                .add(EffectListComponent.class)
                 .add(EffectList.class);
     }
 
@@ -59,7 +56,8 @@ public final class Archetypes {
     static {
         ITEM_TYPE
                 .add(Pickup.class)
-                .add(EffectListComponent.class);
+                .add(EffectList.class);
+
     }
 
     public static final Archetype CHEST_TYPE = new Archetype(BASE_TYPE);

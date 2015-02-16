@@ -5,13 +5,13 @@ import com.acme.engine.application.EngineApplication;
 import com.acme.engine.ashley.EntityEngine;
 import com.acme.engine.effects.EffectSystem;
 import com.acme.engine.network.NetworkServer;
-import com.acme.server.controller.BlinkController;
 import com.acme.server.controller.CombatController;
 import com.acme.server.controller.DropController;
 import com.acme.server.controller.HateController;
 import com.acme.server.controller.InventoryController;
 import com.acme.server.controller.PositionController;
 import com.acme.server.controller.StatsController;
+import com.acme.server.effects.BlinkImpactController;
 import com.acme.server.effects.EffectFactory;
 import com.acme.server.effects.HealImpactController;
 import com.acme.server.effects.InvulImpactController;
@@ -68,9 +68,8 @@ public class BrowserQuest extends EngineApplication {
         engine.addSystem(new CombatController());
         engine.addSystem(new HateController());
 
-        engine.addSystem(new BlinkController());
-
         engine.addSystem(new RegenImpactController());
+        engine.addSystem(new BlinkImpactController());
         engine.addSystem(new HealImpactController());
         engine.addSystem(new InvulImpactController());
 

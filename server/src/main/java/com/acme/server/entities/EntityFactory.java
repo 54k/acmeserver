@@ -51,7 +51,6 @@ public final class EntityFactory extends ManagerSystem {
 
     public Entity createPlayer() {
         Entity entity = create(Type.WARRIOR);
-        effectListCm.get(entity).setEffectList(new EffectList<>(entity));
         effectSystem.applyEffect(effectFactory.createGlobalRegenEffect(), entity);
         return entity;
     }
@@ -108,7 +107,6 @@ public final class EntityFactory extends ManagerSystem {
             default:
                 throw new IllegalArgumentException("Cannot set pickupType for instanceType " + type);
         }
-        effectListCm.get(entity).setEffectList(new EffectList<>(entity));
         return entity;
     }
 
@@ -129,7 +127,6 @@ public final class EntityFactory extends ManagerSystem {
                 .collect(Collectors.toList());
         dropComponent.getDrops().addAll(drops);
         brainCm.get(entity).setBrain(new Brain<>(entity, engine.getSystem(PatrolBrainState.class)));
-        effectListCm.get(entity).setEffectList(new EffectList<>(entity));
         effectSystem.applyEffect(effectFactory.createGlobalRegenEffect(), entity);
         return entity;
     }

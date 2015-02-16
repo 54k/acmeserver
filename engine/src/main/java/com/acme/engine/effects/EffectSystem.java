@@ -8,12 +8,17 @@ import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public final class EffectSystem extends IteratingSystem implements EntityListener {
 
+    static final Family effectListFamily = Family.all(EffectList.class).get();
     static final Family effectFamily = Family.all(Effect.class).get();
+
     static final ComponentMapper<EffectList> effectListCm = ComponentMapper.getFor(EffectList.class);
     static final ComponentMapper<Effect> effectCm = ComponentMapper.getFor(Effect.class);
 
@@ -43,17 +48,27 @@ public final class EffectSystem extends IteratingSystem implements EntityListene
     }
 
     @Override
-    public void entityAdded(Entity effect) {
-        if (effectFamily.matches(effect)) {
-            signalApplied(effect, effectCm.get(effect).target);
+    public void entityAdded(Entity entity) {
+        if (effectFamily.matches(entity)) {
+            signalApplied(entity, effectCm.get(entity).target);
         }
     }
 
     @Override
-    public void entityRemoved(Entity effect) {
-        if (effectFamily.matches(effect)) {
-            signalRemoved(effect, effectCm.get(effect).target);
+    public void entityRemoved(Entity entity) {
+        if (effectFamily.matches(entity)) {
+            if (isEntityExists(effectCm.get(entity).target)) {
+                signalRemoved(entity, effectCm.get(entity).target);
+            }
         }
+        if (effectListFamily.matches(entity)) {
+            HashSet<Entity> effects = new HashSet<>(effectListCm.get(entity).effectsByIdentity.values());
+            effects.forEach(engine::removeEntity);
+        }
+    }
+
+    private boolean isEntityExists(Entity entity) {
+        return engine.getEntity(entity.getId()) != null;
     }
 
     @Override
@@ -127,43 +142,31 @@ public final class EffectSystem extends IteratingSystem implements EntityListene
     }
 
     private void signalUpdated(Entity effect, Entity target, float deltaTime) {
-        for (Component component : effect.getComponents()) {
-            if (component instanceof Impact) {
-                Class<? extends Component> impactClass = component.getClass();
-                ImpactController impactListener = impactListeners.get(impactClass);
-                impactListener.updated(effect, target, deltaTime);
-            }
-        }
+        getImpactControllers(effect).forEach(c -> c.updated(effect, target, deltaTime));
     }
 
     private void signalTicked(Entity effect, Entity target) {
-        for (Component component : effect.getComponents()) {
-            if (component instanceof Impact) {
-                Class<? extends Component> impactClass = component.getClass();
-                ImpactController impactListener = impactListeners.get(impactClass);
-                impactListener.ticked(effect, target);
-            }
-        }
+        getImpactControllers(effect).forEach(c -> c.ticked(effect, target));
     }
 
     private void signalReady(Entity effect, Entity target) {
-        for (Component component : effect.getComponents()) {
-            if (component instanceof Impact) {
-                Class<? extends Component> impactClass = component.getClass();
-                ImpactController impactListener = impactListeners.get(impactClass);
-                impactListener.ready(effect, target);
-            }
-        }
+        getImpactControllers(effect).forEach(c -> c.ready(effect, target));
     }
 
     private void signalRemoved(Entity effect, Entity target) {
+        getImpactControllers(effect).forEach(c -> c.removed(effect, target));
+    }
+
+    private Collection<ImpactController> getImpactControllers(Entity effect) {
+        Set<ImpactController> controllers = new HashSet<>();
         for (Component component : effect.getComponents()) {
             if (component instanceof Impact) {
                 Class<? extends Component> impactClass = component.getClass();
                 ImpactController impactListener = impactListeners.get(impactClass);
-                impactListener.removed(effect, target);
+                controllers.add(impactListener);
             }
         }
+        return controllers;
     }
 
     public Entity getEffect(String identity, Entity target) {

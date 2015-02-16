@@ -15,11 +15,14 @@ import com.acme.server.world.Region;
 import com.acme.server.world.World;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 
 import java.util.Collection;
 
 @Wired
 public class WorldManager extends ManagerSystem {
+
+    private static final Family worldEntitiesFamily = Family.all(PositionComponent.class, WorldComponent.class).get();
 
     private ComponentMapper<PositionComponent> pcm;
     private ComponentMapper<WorldComponent> wcm;
@@ -31,6 +34,7 @@ public class WorldManager extends ManagerSystem {
     private final World world;
 
     public WorldManager(WorldTemplate template) {
+        super(worldEntitiesFamily);
         this.world = new World(template);
     }
 
