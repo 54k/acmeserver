@@ -1,11 +1,11 @@
 package com.acme.server.system;
 
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.ashley.system.TimerSystem;
+import com.acme.engine.timer.TimerSystem;
+import com.acme.server.combat.StatsController;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.SpawnComponent;
 import com.acme.server.component.WorldComponent;
-import com.acme.server.controller.StatsController;
 import com.acme.server.manager.WorldManager;
 import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
@@ -38,7 +38,7 @@ public class SpawnSystem extends TimerSystem<SpawnComponent> {
 
     @Override
     protected void timerReady(Entity entity, float deltaTime) {
-        if (StatsController.STATS_OWNERS_FAMILY.matches(entity)) {
+        if (StatsController.statsFamily.matches(entity)) {
             statsController.resetHitPoints(entity);
         }
         PositionComponent positionComponent = pcm.get(entity);

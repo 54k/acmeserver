@@ -1,11 +1,11 @@
 package com.acme.server.system;
 
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.ashley.system.TimerSystem;
-import com.acme.engine.effects.EffectSystem;
+import com.acme.engine.timer.TimerSystem;
 import com.acme.server.component.DecayComponent;
 import com.acme.server.component.PositionComponent;
-import com.acme.server.effects.EffectFactory;
+import com.acme.server.impact.BlinkImpact;
+import com.acme.server.impact.BlinkImpactController;
 import com.acme.server.manager.WorldManager;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
@@ -17,11 +17,8 @@ public class DecaySystem extends TimerSystem<DecayComponent> {
     private ComponentMapper<PositionComponent> positionCm;
 
     private Engine engine;
-
-    private EffectFactory effectFactory;
+    private BlinkImpactController blinkImpactController;
     private WorldManager worldManager;
-
-    private EffectSystem effectSystem;
     private PacketSystem packetSystem;
 
     public DecaySystem() {
@@ -37,9 +34,8 @@ public class DecaySystem extends TimerSystem<DecayComponent> {
     protected void timerTicked(Entity entity, float deltaTime) {
         DecayComponent decayComponent = getTimer(entity);
         float time = decayComponent.getTime();
-        if (time <= 3000 && !effectSystem.hasEffect(EffectFactory.GLOBAL_BLINK_EFFECT, entity)) {
-            Entity globalBlinkEffect = effectFactory.createGlobalBlinkEffect();
-            effectSystem.applyEffect(globalBlinkEffect, entity);
+        if (time <= 3000 && !blinkImpactController.hasImpact(entity)) {
+            entity.add(new BlinkImpact());
         }
     }
 

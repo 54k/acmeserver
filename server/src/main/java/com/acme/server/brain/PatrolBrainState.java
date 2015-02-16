@@ -1,7 +1,7 @@
 package com.acme.server.brain;
 
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.ashley.system.BrainStateController;
+import com.acme.engine.brain.BrainStateController;
 import com.acme.server.component.PatrolComponent;
 import com.acme.server.component.SpawnComponent;
 import com.acme.server.controller.PositionController;

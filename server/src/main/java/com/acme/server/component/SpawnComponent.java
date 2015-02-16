@@ -1,6 +1,6 @@
 package com.acme.server.component;
 
-import com.acme.engine.ashley.component.TimerComponent;
+import com.acme.engine.timer.TimerComponent;
 import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;

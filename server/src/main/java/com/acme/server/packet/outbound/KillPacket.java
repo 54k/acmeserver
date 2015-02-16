@@ -1,7 +1,7 @@
 package com.acme.server.packet.outbound;
 
 import com.acme.engine.network.OutboundPacket;
-import com.acme.server.entities.Type;
+import com.acme.server.entity.Type;
 import com.acme.server.packet.OpCodes;
 
 public class KillPacket extends OutboundPacket {

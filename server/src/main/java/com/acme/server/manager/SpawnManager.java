@@ -1,14 +1,14 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
+import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.ashley.system.ManagerSystem;
-import com.acme.server.component.DropComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.SpawnComponent;
 import com.acme.server.component.WorldComponent;
-import com.acme.server.entities.EntityFactory;
-import com.acme.server.entities.Type;
+import com.acme.server.entity.EntityFactory;
+import com.acme.server.entity.Type;
+import com.acme.server.inventory.DropList;
 import com.acme.server.template.RoamingAreaTemplate;
 import com.acme.server.template.StaticChestTemplate;
 import com.acme.server.world.Area;
@@ -25,7 +25,7 @@ public class SpawnManager extends ManagerSystem {
 
     private ComponentMapper<WorldComponent> wcm;
     private ComponentMapper<PositionComponent> pcm;
-    private ComponentMapper<DropComponent> dcm;
+    private ComponentMapper<DropList> dcm;
 
     private Context context;
     private EntityFactory entityFactory;
@@ -83,11 +83,11 @@ public class SpawnManager extends ManagerSystem {
         SpawnComponent spawnComponent = new SpawnComponent();
         spawnComponent.setArea(new Area(ct.getX(), ct.getY(), 0, 0));
         entity.add(spawnComponent);
-        DropComponent dropComponent = dcm.get(entity);
-        List<DropComponent.Drop> drops = ct.getI().stream()
-                .map(i -> new DropComponent.Drop(Type.fromId(i), 100))
+        DropList dropList = dcm.get(entity);
+        List<DropList.Drop> drops = ct.getI().stream()
+                .map(i -> new DropList.Drop(Type.fromId(i), 100))
                 .collect(Collectors.toList());
-        dropComponent.getDrops().addAll(drops);
+        dropList.getDrops().addAll(drops);
         worldManager.bringIntoWorld(entity);
     }
 }

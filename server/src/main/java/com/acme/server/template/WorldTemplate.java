@@ -1,6 +1,6 @@
 package com.acme.server.template;
 
-import com.acme.server.entities.Type;
+import com.acme.server.entity.Type;
 
 import java.util.List;
 import java.util.Map;

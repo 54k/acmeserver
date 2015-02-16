@@ -1,8 +1,8 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
+import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.ashley.system.ManagerSystem;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.event.WorldManagerEvent;

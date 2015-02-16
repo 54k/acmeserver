@@ -3,7 +3,7 @@ package com.acme.server.packet.inbound;
 import com.acme.engine.ashley.Wired;
 import com.acme.engine.network.InboundPacket;
 import com.acme.server.manager.WorldManager;
-import com.acme.server.pickups.PickupController;
+import com.acme.server.pickup.PickupController;
 
 @Wired
 public class OpenPacket extends InboundPacket {

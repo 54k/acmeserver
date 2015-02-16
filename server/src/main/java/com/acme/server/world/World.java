@@ -1,6 +1,6 @@
 package com.acme.server.world;
 
-import com.acme.server.entities.Type;
+import com.acme.server.entity.Type;
 import com.acme.server.template.CheckpointTemplate;
 import com.acme.server.template.WorldTemplate;
 
