@@ -6,9 +6,14 @@ import com.acme.engine.ashley.component.EffectListComponent;
 import com.acme.engine.ashley.system.ManagerSystem;
 import com.acme.engine.brain.Brain;
 import com.acme.engine.effect.EffectList;
+import com.acme.engine.effects.EffectSystem;
 import com.acme.server.brain.PatrolBrainState;
-import com.acme.server.component.*;
-import com.acme.server.controller.RegenerationController;
+import com.acme.server.component.DropComponent;
+import com.acme.server.component.InventoryComponent;
+import com.acme.server.component.PickupComponent;
+import com.acme.server.component.StatsComponent;
+import com.acme.server.component.TypeComponent;
+import com.acme.server.effects.EffectFactory;
 import com.acme.server.entity.Archetypes;
 import com.acme.server.entity.Type;
 import com.acme.server.template.CreatureTemplate;
@@ -32,7 +37,9 @@ public class EntityManager extends ManagerSystem {
     private ComponentMapper<EffectListComponent> ecm;
 
     private Engine engine;
-    private RegenerationController regenerationController;
+
+    private EffectFactory effectFactory;
+    private EffectSystem effectSystem;
 
     private final Map<Type, CreatureTemplate> creaturesByType;
 
@@ -46,8 +53,8 @@ public class EntityManager extends ManagerSystem {
 
     public Entity createPlayer() {
         Entity entity = create(Type.WARRIOR);
-        ecm.get(entity).setEffectList(new EffectList(entity));
-        regenerationController.applyEffect(entity);
+        ecm.get(entity).setEffectList(new EffectList<>(entity));
+        effectSystem.applyEffect(effectFactory.createRegenEffect(), entity);
         return entity;
     }
 
@@ -125,7 +132,7 @@ public class EntityManager extends ManagerSystem {
         dropComponent.getDrops().addAll(drops);
         bcm.get(entity).setBrain(new Brain<>(entity, engine.getSystem(PatrolBrainState.class)));
         ecm.get(entity).setEffectList(new EffectList<>(entity));
-        regenerationController.applyEffect(entity);
+        effectSystem.applyEffect(effectFactory.createRegenEffect(), entity);
         return entity;
     }
 

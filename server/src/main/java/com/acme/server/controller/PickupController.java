@@ -2,7 +2,9 @@ package com.acme.server.controller;
 
 import com.acme.engine.ashley.Wired;
 import com.acme.engine.ashley.system.ManagerSystem;
+import com.acme.engine.effects.EffectSystem;
 import com.acme.server.component.PickupComponent;
+import com.acme.server.effects.EffectFactory;
 import com.acme.server.entity.Type;
 import com.acme.server.manager.EntityManager;
 import com.acme.server.manager.WorldManager;
@@ -17,10 +19,12 @@ public class PickupController extends ManagerSystem {
     private InventoryController inventoryController;
     private StatsController statsController;
     private DropController dropController;
-    private InvulnerabilityController invulnerabilityController;
 
     private EntityManager entityManager;
     private WorldManager worldManager;
+    private EffectFactory effectFactory;
+
+    private EffectSystem effectSystem;
 
     public void gatherPickup(Entity entity, Entity item) {
         PickupComponent pickupComponent = pcm.get(item);
@@ -40,7 +44,7 @@ public class PickupController extends ManagerSystem {
                 break;
             case FIREFOX_POTION:
                 shouldDecayPickup = true;
-                invulnerabilityController.applyEffect(entity, 10000);
+                effectSystem.applyEffect(effectFactory.createInvulEffect(10000), entity);
                 break;
         }
         if (shouldDecayPickup) {
