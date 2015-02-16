@@ -1,7 +1,7 @@
 package com.acme.server;
 
-import com.acme.engine.application.ApplicationAdapter;
 import com.acme.engine.application.Context;
+import com.acme.engine.application.EngineApplication;
 import com.acme.engine.ashley.EntityEngine;
 import com.acme.engine.ashley.system.EffectSystem;
 import com.acme.engine.network.NetworkServer;
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BrowserQuest extends ApplicationAdapter {
+public class BrowserQuest extends EngineApplication {
 
     private static final Logger LOG = Logger.getAnonymousLogger();
 
