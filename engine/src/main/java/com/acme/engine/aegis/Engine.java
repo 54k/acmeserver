@@ -1,5 +1,10 @@
 package com.acme.engine.aegis;
 
+import com.acme.engine.event.Listener;
+import com.acme.engine.event.Signal;
+
+import java.util.Comparator;
+
 public class Engine {
     private static SystemComparator comparator = new SystemComparator();
 
