@@ -5,9 +5,9 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
-public abstract class TimerSystem<T extends TimerComponent> extends IteratingSystem {
+public abstract class TimerSystem<T extends Timer> extends IteratingSystem {
 
-    private ComponentMapper<T> ccm;
+    private ComponentMapper<T> timerCm;
 
     public TimerSystem(Class<T> timerClass) {
         this(timerClass, 0);
@@ -15,7 +15,7 @@ public abstract class TimerSystem<T extends TimerComponent> extends IteratingSys
 
     public TimerSystem(Class<T> timerClass, int priority) {
         super(Family.all(timerClass).get(), priority);
-        ccm = ComponentMapper.getFor(timerClass);
+        timerCm = ComponentMapper.getFor(timerClass);
     }
 
     @Override
@@ -26,12 +26,12 @@ public abstract class TimerSystem<T extends TimerComponent> extends IteratingSys
     }
 
     private void processEntity0(Entity entity, float deltaTime) {
-        TimerComponent timerComponent = getTimer(entity);
-        timerComponent.decreaseTime(deltaTime);
+        Timer timer = getTimer(entity);
+        timer.decreaseTime(deltaTime);
         timerTicked(entity, deltaTime);
-        if (timerComponent.isReady()) {
+        if (timer.isReady()) {
             timerReady(entity, deltaTime);
-            timerComponent.refreshTimer();
+            timer.refreshTimer();
         }
     }
 
@@ -40,7 +40,7 @@ public abstract class TimerSystem<T extends TimerComponent> extends IteratingSys
     }
 
     public T getTimer(Entity entity) {
-        return ccm.get(entity);
+        return timerCm.get(entity);
     }
 
     protected void timerTicked(Entity entity, float deltaTime) {

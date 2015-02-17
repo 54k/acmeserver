@@ -4,9 +4,9 @@ import com.acme.engine.application.Context;
 import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
 import com.acme.server.combat.CombatListener;
-import com.acme.server.component.DecayComponent;
+import com.acme.server.component.Decay;
 import com.acme.server.component.PositionComponent;
-import com.acme.server.component.SpawnComponent;
+import com.acme.server.component.Spawn;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.entity.EntityFactory;
 import com.acme.server.inventory.DropList.Drop;
@@ -30,7 +30,7 @@ public class DropListController extends ManagerSystem implements CombatListener 
     private ComponentMapper<WorldComponent> wcm;
     private ComponentMapper<DropList> dropListCm;
     private ComponentMapper<PositionComponent> pcm;
-    private ComponentMapper<SpawnComponent> scm;
+    private ComponentMapper<Spawn> scm;
 
     private Context context;
 
@@ -53,7 +53,7 @@ public class DropListController extends ManagerSystem implements CombatListener 
 
         WorldComponent worldComponent = wcm.get(entity);
         PositionComponent positionComponent = pcm.get(entity);
-        SpawnComponent spawnComponent = scm.get(entity);
+        Spawn spawnComponent = scm.get(entity);
         Area dropArea = new Area(positionComponent.getX() - 1, positionComponent.getY() - 1, 2, 2);
 
         for (DropList.Drop drop : drops) {
@@ -61,7 +61,7 @@ public class DropListController extends ManagerSystem implements CombatListener 
             wcm.get(dropEntity).setInstance(worldComponent.getInstance());
             Position dropPosition = PositionUtils.getRandomPositionInside(dropArea);
             pcm.get(dropEntity).setPosition(dropPosition);
-            DecayComponent decayComponent = new DecayComponent();
+            Decay decayComponent = new Decay();
             decayComponent.setTime(spawnComponent.getTime());
             dropEntity.add(decayComponent);
             spawnDrop(dropEntity);

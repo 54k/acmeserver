@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Array;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class ImpactController<I extends Impact> extends EntitySystem implements EntityListener {
+public abstract class ImpactSystem<I extends Impact> extends EntitySystem implements EntityListener {
 
     private Family impactFamily;
     private ComponentMapper<I> impactCm;
@@ -19,11 +19,11 @@ public abstract class ImpactController<I extends Impact> extends EntitySystem im
     private Array<Entity> prevTargets = new Array<>();
     private ImmutableArray<Entity> targets;
 
-    public ImpactController(Class<I> impactClass) {
+    public ImpactSystem(Class<I> impactClass) {
         this(impactClass, 0);
     }
 
-    public ImpactController(Class<I> impactClass, int priority) {
+    public ImpactSystem(Class<I> impactClass, int priority) {
         super(priority);
         impactFamily = Family.all(impactClass).get();
         impactCm = ComponentMapper.getFor(impactClass);

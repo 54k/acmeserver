@@ -3,7 +3,7 @@ package com.acme.server.brain;
 import com.acme.engine.ashley.Wired;
 import com.acme.engine.brain.BrainStateController;
 import com.acme.server.component.PatrolComponent;
-import com.acme.server.component.SpawnComponent;
+import com.acme.server.component.Spawn;
 import com.acme.server.controller.PositionController;
 import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
@@ -16,7 +16,7 @@ import com.badlogic.ashley.core.Entity;
 public class PatrolBrainState extends BrainStateController {
 
     private ComponentMapper<PatrolComponent> pcm;
-    private ComponentMapper<SpawnComponent> scm;
+    private ComponentMapper<Spawn> scm;
 
     private PositionController positionController;
 
@@ -43,7 +43,7 @@ public class PatrolBrainState extends BrainStateController {
     }
 
     private void moveCreature(Entity entity) {
-        SpawnComponent spawnComponent = scm.get(entity);
+        Spawn spawnComponent = scm.get(entity);
         Area spawnArea = spawnComponent.getArea();
         Position rndPos = PositionUtils.getRandomPositionInside(spawnArea);
         positionController.moveEntity(entity, rndPos);

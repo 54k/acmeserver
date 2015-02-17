@@ -4,7 +4,7 @@ import com.acme.engine.application.Context;
 import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
 import com.acme.server.component.PositionComponent;
-import com.acme.server.component.SpawnComponent;
+import com.acme.server.component.Spawn;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.entity.EntityFactory;
 import com.acme.server.entity.Type;
@@ -47,7 +47,7 @@ public class SpawnManager extends ManagerSystem {
             Entity entity = entityFactory.createEntity(roamingAreaTemplate.getType());
             WorldComponent worldComponent = wcm.get(entity);
             worldComponent.setInstance(instance);
-            SpawnComponent spawnComponent = new SpawnComponent();
+            Spawn spawnComponent = new Spawn();
             spawnComponent.setArea(new Area(roamingAreaTemplate.getX(),
                     roamingAreaTemplate.getY(),
                     roamingAreaTemplate.getWidth(),
@@ -66,7 +66,7 @@ public class SpawnManager extends ManagerSystem {
         Entity entity = entityFactory.createEntity(type);
         WorldComponent worldComponent = wcm.get(entity);
         worldComponent.setInstance(instance);
-        SpawnComponent spawnComponent = new SpawnComponent();
+        Spawn spawnComponent = new Spawn();
         spawnComponent.setArea(new Area(position.getX(), position.getY(), 0, 0));
         entity.add(spawnComponent);
         worldManager.bringIntoWorld(entity);
@@ -80,7 +80,7 @@ public class SpawnManager extends ManagerSystem {
         Entity entity = entityFactory.createEntity(Type.CHEST);
         WorldComponent worldComponent = wcm.get(entity);
         worldComponent.setInstance(instance);
-        SpawnComponent spawnComponent = new SpawnComponent();
+        Spawn spawnComponent = new Spawn();
         spawnComponent.setArea(new Area(ct.getX(), ct.getY(), 0, 0));
         entity.add(spawnComponent);
         DropList dropList = dcm.get(entity);

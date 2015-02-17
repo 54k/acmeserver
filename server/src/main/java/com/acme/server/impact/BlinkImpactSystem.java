@@ -1,17 +1,17 @@
 package com.acme.server.impact;
 
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.impact.ImpactController;
+import com.acme.engine.impact.ImpactSystem;
 import com.acme.server.packet.outbound.BlinkPacket;
 import com.acme.server.system.PacketSystem;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class BlinkImpactController extends ImpactController<BlinkImpact> {
+public class BlinkImpactSystem extends ImpactSystem<BlinkImpact> {
 
     private PacketSystem packetSystem;
 
-    public BlinkImpactController() {
+    public BlinkImpactSystem() {
         super(BlinkImpact.class);
     }
 

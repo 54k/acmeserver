@@ -2,15 +2,15 @@ package com.acme.engine.timer;
 
 import com.badlogic.ashley.core.Component;
 
-public abstract class TimerComponent extends Component {
+public abstract class Timer extends Component {
 
     private float time;
     private float initialTime;
 
-    public TimerComponent() {
+    public Timer() {
     }
 
-    public TimerComponent(float time, float initialTime) {
+    public Timer(float time, float initialTime) {
         this.time = time;
         this.initialTime = initialTime;
     }

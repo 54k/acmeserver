@@ -1,7 +1,7 @@
 package com.acme.server.impact;
 
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.impact.ImpactController;
+import com.acme.engine.impact.ImpactSystem;
 import com.acme.server.combat.StatsController;
 import com.acme.server.entity.Type;
 import com.acme.server.inventory.InventoryController;
@@ -11,13 +11,13 @@ import com.acme.server.system.PacketSystem;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class InvulImpactController extends ImpactController<InvulImpact> {
+public class InvulImpactSystem extends ImpactSystem<InvulImpact> {
 
     private StatsController statsController;
     private InventoryController inventoryController;
     private PacketSystem packetSystem;
 
-    public InvulImpactController() {
+    public InvulImpactSystem() {
         super(InvulImpact.class);
     }
 

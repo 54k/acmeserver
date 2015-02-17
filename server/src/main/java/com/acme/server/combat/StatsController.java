@@ -2,7 +2,7 @@ package com.acme.server.combat;
 
 import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
-import com.acme.server.impact.InvulImpactController;
+import com.acme.server.impact.InvulImpactSystem;
 import com.acme.server.packet.outbound.HealthPacket;
 import com.acme.server.system.PacketSystem;
 import com.badlogic.ashley.core.ComponentMapper;
@@ -15,7 +15,7 @@ public class StatsController extends ManagerSystem {
     public static final Family statsFamily = Family.all(Stats.class).get();
 
     private ComponentMapper<Stats> statsCm;
-    private InvulImpactController invulImpactController;
+    private InvulImpactSystem invulImpactSystem;
     private PacketSystem packetSystem;
 
     public int getMaxHitPoints(Entity entity) {
@@ -39,7 +39,7 @@ public class StatsController extends ManagerSystem {
     }
 
     private int adjustAmount(Entity entity, int amount) {
-        return invulImpactController.hasImpact(entity) ? Math.max(0, amount) : amount;
+        return invulImpactSystem.hasImpact(entity) ? Math.max(0, amount) : amount;
     }
 
     public void resetHitPoints(Entity entity) {

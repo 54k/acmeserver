@@ -1,16 +1,16 @@
 package com.acme.server.impact;
 
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.impact.ImpactController;
+import com.acme.engine.impact.ImpactSystem;
 import com.acme.server.combat.StatsController;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class RegenImpactController extends ImpactController<RegenImpact> {
+public class RegenImpactSystem extends ImpactSystem<RegenImpact> {
 
     private StatsController statsController;
 
-    public RegenImpactController() {
+    public RegenImpactSystem() {
         super(RegenImpact.class);
     }
 

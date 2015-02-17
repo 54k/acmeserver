@@ -10,10 +10,10 @@ import com.acme.server.combat.StatsController;
 import com.acme.server.controller.PositionController;
 import com.acme.server.entity.EntityFactory;
 import com.acme.server.entity.Type;
-import com.acme.server.impact.BlinkImpactController;
-import com.acme.server.impact.HealImpactController;
-import com.acme.server.impact.InvulImpactController;
-import com.acme.server.impact.RegenImpactController;
+import com.acme.server.impact.BlinkImpactSystem;
+import com.acme.server.impact.HealImpactSystem;
+import com.acme.server.impact.InvulImpactSystem;
+import com.acme.server.impact.RegenImpactSystem;
 import com.acme.server.inventory.DropListController;
 import com.acme.server.inventory.InventoryController;
 import com.acme.server.manager.ChatManager;
@@ -61,10 +61,10 @@ public class BrowserQuest extends EngineApplication {
         engine.addSystem(new CombatController());
         engine.addSystem(new HateListController());
 
-        engine.addSystem(new RegenImpactController());
-        engine.addSystem(new BlinkImpactController());
-        engine.addSystem(new HealImpactController());
-        engine.addSystem(new InvulImpactController());
+        engine.addSystem(new RegenImpactSystem());
+        engine.addSystem(new BlinkImpactSystem());
+        engine.addSystem(new HealImpactSystem());
+        engine.addSystem(new InvulImpactSystem());
 
         WorldManager worldManager = createWorldManager();
         engine.addSystem(worldManager);

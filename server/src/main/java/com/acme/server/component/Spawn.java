@@ -1,11 +1,11 @@
 package com.acme.server.component;
 
-import com.acme.engine.timer.TimerComponent;
+import com.acme.engine.timer.Timer;
 import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;
 
-public class SpawnComponent extends TimerComponent {
+public class Spawn extends Timer {
 
     private Position spawnPosition;
     private Area area;
