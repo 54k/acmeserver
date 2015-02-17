@@ -1,15 +1,15 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
+import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.ashley.system.ManagerSystem;
-import com.acme.server.component.InventoryComponent;
+import com.acme.server.combat.StatsController;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PlayerComponent;
 import com.acme.server.component.PositionComponent;
-import com.acme.server.component.StatsComponent;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.controller.PositionController;
+import com.acme.server.inventory.Inventory;
 import com.acme.server.packet.outbound.HitPointsPacket;
 import com.acme.server.packet.outbound.WelcomePacket;
 import com.acme.server.system.KnownListSystem;
@@ -28,16 +28,16 @@ import java.util.Collection;
 @Wired
 public class LoginManager extends ManagerSystem {
 
-    private ComponentMapper<InventoryComponent> icm;
+    private ComponentMapper<Inventory> icm;
     private ComponentMapper<PlayerComponent> pcm;
     private ComponentMapper<PositionComponent> poscm;
     private ComponentMapper<WorldComponent> wcm;
     private ComponentMapper<KnownListComponent> kcm;
-    private ComponentMapper<StatsComponent> scm;
 
     private Context context;
 
     private PositionController positionController;
+    private StatsController statsController;
     private WorldManager worldManager;
     private KnownListSystem knownListSystem;
     private PacketSystem packetSystem;
@@ -67,15 +67,12 @@ public class LoginManager extends ManagerSystem {
         Instance instance = worldManager.getAvailableInstance();
         worldComponent.setInstance(instance);
 
-        InventoryComponent inventoryComponent = icm.get(entity);
-        inventoryComponent.setWeapon(weapon);
-        inventoryComponent.setArmor(armor);
+        Inventory inventory = icm.get(entity);
+        inventory.setWeapon(weapon);
+        inventory.setArmor(armor);
 
-        StatsComponent statsComponent = scm.get(entity);
         int hitPoints = 200;
-        statsComponent.setHitPoints(hitPoints);
-        statsComponent.setMaxHitPoints(hitPoints);
-
+        statsController.setMaxHitPointsAndReset(entity, hitPoints);
         context.schedule(() -> spawnPlayer(entity, name, position, hitPoints));
     }
 
@@ -84,11 +81,9 @@ public class LoginManager extends ManagerSystem {
         Area spawnArea = playerComponent.getSpawnArea();
         Position position = PositionUtils.getRandomPositionInside(spawnArea);
         poscm.get(entity).setPosition(position);
-        StatsComponent statsComponent = scm.get(entity);
-        int maxHitPoints = statsComponent.getMaxHitPoints();
-        statsComponent.setHitPoints(maxHitPoints);
+        statsController.resetHitPoints(entity);
         knownListSystem.clearKnownList(entity);
-        context.schedule(() -> spawnPlayer(entity, playerComponent.getName(), position, maxHitPoints));
+        context.schedule(() -> spawnPlayer(entity, playerComponent.getName(), position, statsController.getMaxHitPoints(entity)));
     }
 
     private void spawnPlayer(Entity entity, String name, Position position, int hitPoints) {

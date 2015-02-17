@@ -1,9 +1,14 @@
 package com.acme.server.entity;
 
 import com.acme.engine.ashley.Archetype;
-import com.acme.engine.ashley.component.BrainComponent;
-import com.acme.engine.ashley.component.EffectListComponent;
+import com.acme.engine.brain.BrainComponent;
+import com.acme.server.combat.Combat;
+import com.acme.server.combat.HateList;
+import com.acme.server.combat.Stats;
 import com.acme.server.component.*;
+import com.acme.server.inventory.DropList;
+import com.acme.server.inventory.Inventory;
+import com.acme.server.pickup.Pickup;
 
 public final class Archetypes {
     private Archetypes() {
@@ -24,9 +29,8 @@ public final class Archetypes {
         PLAYER_TYPE
                 .add(PlayerComponent.class)
                 .add(KnownListComponent.class)
-                .add(InventoryComponent.class)
-                .add(StatsComponent.class)
-                .add(EffectListComponent.class);
+                .add(Inventory.class)
+                .add(Stats.class);
     }
 
     public static final Archetype CREATURE_TYPE = new Archetype(BASE_TYPE);
@@ -34,26 +38,26 @@ public final class Archetypes {
     static {
         CREATURE_TYPE
                 .add(KnownListComponent.class)
-                .add(InventoryComponent.class)
-                .add(StatsComponent.class)
-                .add(DropComponent.class)
-                .add(HateComponent.class)
+                .add(Inventory.class)
+                .add(Stats.class)
+                .add(DropList.class)
+                .add(HateList.class)
                 .add(BrainComponent.class)
-                .add(EffectListComponent.class);
+                .add(Combat.class);
     }
 
     public static final Archetype ITEM_TYPE = new Archetype(BASE_TYPE);
 
     static {
         ITEM_TYPE
-                .add(PickupComponent.class)
-                .add(EffectListComponent.class);
+                .add(Pickup.class);
+
     }
 
     public static final Archetype CHEST_TYPE = new Archetype(BASE_TYPE);
 
     static {
         CHEST_TYPE
-                .add(DropComponent.class);
+                .add(DropList.class);
     }
 }

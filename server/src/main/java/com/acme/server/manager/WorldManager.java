@@ -1,8 +1,8 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
+import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.ashley.system.ManagerSystem;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.event.WorldManagerEvent;
@@ -15,11 +15,14 @@ import com.acme.server.world.Region;
 import com.acme.server.world.World;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 
 import java.util.Collection;
 
 @Wired
 public class WorldManager extends ManagerSystem {
+
+    private static final Family worldEntitiesFamily = Family.all(PositionComponent.class, WorldComponent.class).get();
 
     private ComponentMapper<PositionComponent> pcm;
     private ComponentMapper<WorldComponent> wcm;
@@ -31,6 +34,7 @@ public class WorldManager extends ManagerSystem {
     private final World world;
 
     public WorldManager(WorldTemplate template) {
+        super(worldEntitiesFamily);
         this.world = new World(template);
     }
 
@@ -125,7 +129,7 @@ public class WorldManager extends ManagerSystem {
     }
 
     @Override
-    public void entityRemoved(Entity entity) {
+    public void entityRemoved0(Entity entity) {
         removeFromWorld(entity);
     }
 }

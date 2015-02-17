@@ -1,13 +1,13 @@
 package com.acme.server.brain;
 
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.ashley.system.BrainStateController;
-import com.acme.server.component.SpawnComponent;
-import com.acme.server.controller.CombatController;
-import com.acme.server.controller.HateController;
+import com.acme.engine.brain.BrainStateController;
+import com.acme.server.combat.CombatController;
+import com.acme.server.combat.HateListController;
+import com.acme.server.combat.HateListListener;
+import com.acme.server.combat.StatsController;
+import com.acme.server.component.Spawn;
 import com.acme.server.controller.PositionController;
-import com.acme.server.controller.StatsController;
-import com.acme.server.event.HateControllerEvent;
 import com.acme.server.packet.outbound.MovePacket;
 import com.acme.server.system.PacketSystem;
 import com.acme.server.world.Position;
@@ -15,14 +15,14 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class CombatBrainState extends BrainStateController implements HateControllerEvent {
+public class CombatBrainState extends BrainStateController implements HateListListener {
 
-    private ComponentMapper<SpawnComponent> scm;
+    private ComponentMapper<Spawn> scm;
 
     private StatsController statsController;
     private PositionController positionController;
     private CombatController combatController;
-    private HateController hateController;
+    private HateListController hateListController;
 
     private PatrolBrainState patrolBrainState;
 
@@ -44,16 +44,16 @@ public class CombatBrainState extends BrainStateController implements HateContro
             startPatrol(entity);
             // TODO remove this hack later
             MovePacket movePacket = new MovePacket(entity);
-            hateController.getHaters(entity).getPlayers()
+            hateListController.getHaters(entity).getPlayers()
                     .forEach(p -> packetSystem.sendPacket(p, movePacket));
             return;
         }
 
-        Entity target = hateController.getTarget(entity);
-        Entity mostHated = hateController.getMostHated(entity);
+        Entity target = combatController.getTarget(entity);
+        Entity mostHated = hateListController.getMostHated(entity);
 
         if (target != mostHated) {
-            hateController.setTarget(entity, mostHated);
+            combatController.setTarget(entity, mostHated);
             combatController.engage(entity, mostHated);
         } else {
             Position targetPosition = positionController.getPosition(target);
@@ -63,8 +63,8 @@ public class CombatBrainState extends BrainStateController implements HateContro
 
     @Override
     public void exit(Entity entity) {
-        if (!hateController.getHaters(entity).isEmpty()) {
-            hateController.clearHaters(entity);
+        if (!hateListController.getHaters(entity).isEmpty()) {
+            hateListController.clearHaters(entity);
         }
     }
 
@@ -87,7 +87,7 @@ public class CombatBrainState extends BrainStateController implements HateContro
     }
 
     private void startPatrol(Entity entity) {
-        SpawnComponent spawnComponent = scm.get(entity);
+        Spawn spawnComponent = scm.get(entity);
         Position spawnPosition = spawnComponent.getSpawnPosition();
         positionController.moveEntity(entity, spawnPosition);
         changeState(entity, patrolBrainState);

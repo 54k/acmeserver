@@ -1,11 +1,11 @@
 package com.acme.server.system;
 
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.ashley.system.TimerSystem;
+import com.acme.engine.timer.TimerSystem;
+import com.acme.server.combat.StatsController;
 import com.acme.server.component.PositionComponent;
-import com.acme.server.component.SpawnComponent;
+import com.acme.server.component.Spawn;
 import com.acme.server.component.WorldComponent;
-import com.acme.server.controller.StatsController;
 import com.acme.server.manager.WorldManager;
 import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
@@ -17,10 +17,10 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class SpawnSystem extends TimerSystem<SpawnComponent> {
+public class SpawnSystem extends TimerSystem<Spawn> {
 
     private ComponentMapper<WorldComponent> wcm;
-    private ComponentMapper<SpawnComponent> scm;
+    private ComponentMapper<Spawn> scm;
     private ComponentMapper<PositionComponent> pcm;
 
     private StatsController statsController;
@@ -28,7 +28,7 @@ public class SpawnSystem extends TimerSystem<SpawnComponent> {
     private WorldManager worldManager;
 
     public SpawnSystem() {
-        super(SpawnComponent.class);
+        super(Spawn.class);
     }
 
     @Override
@@ -38,13 +38,13 @@ public class SpawnSystem extends TimerSystem<SpawnComponent> {
 
     @Override
     protected void timerReady(Entity entity, float deltaTime) {
-        if (StatsController.STATS_OWNERS_FAMILY.matches(entity)) {
+        if (StatsController.statsFamily.matches(entity)) {
             statsController.resetHitPoints(entity);
         }
         PositionComponent positionComponent = pcm.get(entity);
         int randomOrientation = Rnd.between(0, Orientation.values().length - 1);
         positionComponent.setOrientation(Orientation.values()[randomOrientation]);
-        SpawnComponent spawnComponent = scm.get(entity);
+        Spawn spawnComponent = scm.get(entity);
         Position spawnPosition = getRandomSpawnPosition(spawnComponent.getArea(), wcm.get(entity).getInstance());
         spawnComponent.setSpawnPosition(spawnPosition);
         positionComponent.setPosition(spawnPosition);

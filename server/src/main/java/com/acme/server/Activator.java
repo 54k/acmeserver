@@ -1,7 +1,5 @@
 package com.acme.server;
 
-import com.acme.engine.application.Context;
-import com.acme.engine.application.ContextBuilder;
 import com.acme.server.console.PlayerCommands;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -10,16 +8,12 @@ import java.util.Hashtable;
 
 public class Activator implements BundleActivator {
 
-    private Context application;
+    private BrowserQuest browserQuest;
 
     @Override
     public void start(BundleContext context) throws Exception {
-        BrowserQuest browserQuest = new BrowserQuest();
-        application = new ContextBuilder(browserQuest)
-                .setApplicationName("BrowserQuest Server")
-                .setUpdateInterval(1000 / 60)
-                .build();
-        application.waitForStart(0);
+        browserQuest = new BrowserQuest();
+        browserQuest.start();
 
         Hashtable<String, Object> props = new Hashtable<>();
         props.put("osgi.command.scope", "server.players");
@@ -29,7 +23,6 @@ public class Activator implements BundleActivator {
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        application.dispose();
-        application.waitForDispose(0);
+        browserQuest.stop();
     }
 }

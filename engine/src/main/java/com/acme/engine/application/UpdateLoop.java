@@ -85,28 +85,32 @@ final class UpdateLoop implements Context {
     }
 
     private void loop() {
-        application.create(this);
-        signalStarted();
-        contextListeners.forEach(ContextListener::created);
+        try {
+            application.create(this);
+            signalStarted();
+            contextListeners.forEach(ContextListener::created);
 
-        while (!isDisposed()) {
-            if (updateIntervalNanos > 0) {
-                waitForUpdate();
+            while (!isDisposed()) {
+                if (updateIntervalNanos > 0) {
+                    waitForUpdate();
+                }
+                updateDelta();
+                executeTasks();
+                if (isDisposed()) {
+                    break;
+                }
+                try {
+                    application.update();
+                } catch (Throwable t) {
+                    application.handleError(t);
+                }
             }
-            updateDelta();
-            executeTasks();
-            if (isDisposed()) {
-                break;
-            }
-            try {
-                application.update();
-            } catch (Throwable t) {
-                application.handleError(t);
-            }
+        } catch (Throwable t) {
+            application.handleError(t);
+        } finally {
+            application.dispose();
+            contextListeners.forEach(ContextListener::disposed);
         }
-
-        application.dispose();
-        contextListeners.forEach(ContextListener::disposed);
     }
 
     private void signalStarted() {

@@ -2,28 +2,13 @@ package com.acme.server.system;
 
 import com.acme.engine.ashley.EntityEngine;
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.network.InboundPacket;
-import com.acme.engine.network.NetworkSystem;
-import com.acme.engine.network.OutboundPacket;
-import com.acme.engine.network.Session;
-import com.acme.engine.network.SessionComponent;
+import com.acme.engine.network.*;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PositionComponent;
-import com.acme.server.manager.EntityManager;
+import com.acme.server.entity.EntityFactory;
 import com.acme.server.packet.OpCodes;
 import com.acme.server.packet.PacketReader;
-import com.acme.server.packet.inbound.AggroPacket;
-import com.acme.server.packet.inbound.AttackPacket;
-import com.acme.server.packet.inbound.ChatPacket;
-import com.acme.server.packet.inbound.CheckpointPacket;
-import com.acme.server.packet.inbound.HitPacket;
-import com.acme.server.packet.inbound.HurtPacket;
-import com.acme.server.packet.inbound.LoginPacket;
-import com.acme.server.packet.inbound.LootMovePacket;
-import com.acme.server.packet.inbound.LootPacket;
-import com.acme.server.packet.inbound.MovePacket;
-import com.acme.server.packet.inbound.OpenPacket;
-import com.acme.server.packet.inbound.TeleportPacket;
+import com.acme.server.packet.inbound.*;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,7 +24,7 @@ public class PacketSystem extends NetworkSystem {
     private ComponentMapper<PositionComponent> pcm;
 
     private EntityEngine engine;
-    private EntityManager entityManager;
+    private EntityFactory entityFactory;
 
     private ObjectMapper objectMapper;
 
@@ -63,7 +48,7 @@ public class PacketSystem extends NetworkSystem {
 
     @Override
     public Entity createEntity(Session session) {
-        return entityManager.createPlayer();
+        return entityFactory.createPlayer();
     }
 
     @Override

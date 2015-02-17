@@ -1,13 +1,26 @@
 package com.acme.server;
 
-import com.acme.engine.application.ApplicationAdapter;
 import com.acme.engine.application.Context;
+import com.acme.engine.application.EngineApplication;
 import com.acme.engine.ashley.EntityEngine;
-import com.acme.engine.ashley.system.EffectSystem;
 import com.acme.engine.network.NetworkServer;
-import com.acme.server.controller.*;
+import com.acme.server.combat.CombatController;
+import com.acme.server.combat.HateListController;
+import com.acme.server.combat.StatsController;
+import com.acme.server.controller.PositionController;
+import com.acme.server.entity.EntityFactory;
 import com.acme.server.entity.Type;
-import com.acme.server.manager.*;
+import com.acme.server.impact.BlinkImpactSystem;
+import com.acme.server.impact.HealImpactSystem;
+import com.acme.server.impact.InvulImpactSystem;
+import com.acme.server.impact.RegenImpactSystem;
+import com.acme.server.inventory.DropListController;
+import com.acme.server.inventory.InventoryController;
+import com.acme.server.manager.ChatManager;
+import com.acme.server.manager.LoginManager;
+import com.acme.server.manager.SpawnManager;
+import com.acme.server.manager.WorldManager;
+import com.acme.server.pickup.PickupController;
 import com.acme.server.system.*;
 import com.acme.server.template.CreatureTemplate;
 import com.acme.server.template.WorldTemplate;
@@ -22,7 +35,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BrowserQuest extends ApplicationAdapter {
+public class BrowserQuest extends EngineApplication {
 
     private static final Logger LOG = Logger.getAnonymousLogger();
 
@@ -39,19 +52,19 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addSystem(new DecaySystem());
         engine.addSystem(new CreatureBrainSystem());
         engine.addSystem(new KnownListSystem());
-        engine.addSystem(new EffectSystem());
 
         engine.addSystem(new PositionController());
         engine.addSystem(new PickupController());
         engine.addSystem(new InventoryController());
         engine.addSystem(new StatsController());
-        engine.addSystem(new DropController());
+        engine.addSystem(new DropListController());
         engine.addSystem(new CombatController());
-        engine.addSystem(new HateController());
+        engine.addSystem(new HateListController());
 
-        engine.addSystem(new BlinkController());
-        engine.addSystem(new InvulnerabilityController());
-        engine.addSystem(new RegenerationController());
+        engine.addSystem(new RegenImpactSystem());
+        engine.addSystem(new BlinkImpactSystem());
+        engine.addSystem(new HealImpactSystem());
+        engine.addSystem(new InvulImpactSystem());
 
         WorldManager worldManager = createWorldManager();
         engine.addSystem(worldManager);
@@ -91,12 +104,12 @@ public class BrowserQuest extends ApplicationAdapter {
         }
     }
 
-    private EntityManager createEntityManager() {
+    private EntityFactory createEntityManager() {
         try {
             ObjectMapper objectMapper = getContext().get(ObjectMapper.class);
             MapType mapType = objectMapper.getTypeFactory().constructMapType(HashMap.class, Type.class, CreatureTemplate.class);
             Map<Type, CreatureTemplate> creaturesByType = objectMapper.readValue(getResourceAsStream("creatures.json"), mapType);
-            return new EntityManager(creaturesByType);
+            return new EntityFactory(creaturesByType);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,13 +1,14 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
+import com.acme.engine.ashley.ManagerSystem;
 import com.acme.engine.ashley.Wired;
-import com.acme.engine.ashley.system.ManagerSystem;
-import com.acme.server.component.DropComponent;
 import com.acme.server.component.PositionComponent;
-import com.acme.server.component.SpawnComponent;
+import com.acme.server.component.Spawn;
 import com.acme.server.component.WorldComponent;
+import com.acme.server.entity.EntityFactory;
 import com.acme.server.entity.Type;
+import com.acme.server.inventory.DropList;
 import com.acme.server.template.RoamingAreaTemplate;
 import com.acme.server.template.StaticChestTemplate;
 import com.acme.server.world.Area;
@@ -24,10 +25,10 @@ public class SpawnManager extends ManagerSystem {
 
     private ComponentMapper<WorldComponent> wcm;
     private ComponentMapper<PositionComponent> pcm;
-    private ComponentMapper<DropComponent> dcm;
+    private ComponentMapper<DropList> dcm;
 
     private Context context;
-    private EntityManager entityManager;
+    private EntityFactory entityFactory;
     private WorldManager worldManager;
 
     public void spawnInstanceEntities(Instance instance) {
@@ -43,10 +44,10 @@ public class SpawnManager extends ManagerSystem {
 
     private void spawnCreatures(Instance instance, RoamingAreaTemplate roamingAreaTemplate) {
         for (int i = 0; i < roamingAreaTemplate.getNb(); i++) {
-            Entity entity = entityManager.createEntity(roamingAreaTemplate.getType());
+            Entity entity = entityFactory.createEntity(roamingAreaTemplate.getType());
             WorldComponent worldComponent = wcm.get(entity);
             worldComponent.setInstance(instance);
-            SpawnComponent spawnComponent = new SpawnComponent();
+            Spawn spawnComponent = new Spawn();
             spawnComponent.setArea(new Area(roamingAreaTemplate.getX(),
                     roamingAreaTemplate.getY(),
                     roamingAreaTemplate.getWidth(),
@@ -62,10 +63,10 @@ public class SpawnManager extends ManagerSystem {
     }
 
     private void spawnStaticObject(Instance instance, Position position, Type type) {
-        Entity entity = entityManager.createEntity(type);
+        Entity entity = entityFactory.createEntity(type);
         WorldComponent worldComponent = wcm.get(entity);
         worldComponent.setInstance(instance);
-        SpawnComponent spawnComponent = new SpawnComponent();
+        Spawn spawnComponent = new Spawn();
         spawnComponent.setArea(new Area(position.getX(), position.getY(), 0, 0));
         entity.add(spawnComponent);
         worldManager.bringIntoWorld(entity);
@@ -76,17 +77,17 @@ public class SpawnManager extends ManagerSystem {
     }
 
     private void spawnStaticChest(StaticChestTemplate ct, Instance instance) {
-        Entity entity = entityManager.createEntity(Type.CHEST);
+        Entity entity = entityFactory.createEntity(Type.CHEST);
         WorldComponent worldComponent = wcm.get(entity);
         worldComponent.setInstance(instance);
-        SpawnComponent spawnComponent = new SpawnComponent();
+        Spawn spawnComponent = new Spawn();
         spawnComponent.setArea(new Area(ct.getX(), ct.getY(), 0, 0));
         entity.add(spawnComponent);
-        DropComponent dropComponent = dcm.get(entity);
-        List<DropComponent.Drop> drops = ct.getI().stream()
-                .map(i -> new DropComponent.Drop(Type.fromId(i), 100))
+        DropList dropList = dcm.get(entity);
+        List<DropList.Drop> drops = ct.getI().stream()
+                .map(i -> new DropList.Drop(Type.fromId(i), 100))
                 .collect(Collectors.toList());
-        dropComponent.getDrops().addAll(drops);
+        dropList.getDrops().addAll(drops);
         worldManager.bringIntoWorld(entity);
     }
 }
