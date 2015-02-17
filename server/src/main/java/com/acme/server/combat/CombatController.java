@@ -20,7 +20,6 @@ import com.badlogic.ashley.core.Entity;
 public class CombatController extends ManagerSystem {
 
     private ComponentMapper<Combat> combatCm;
-
     private PositionController positionController;
     private StatsController statsController;
     private InventoryController inventoryController;

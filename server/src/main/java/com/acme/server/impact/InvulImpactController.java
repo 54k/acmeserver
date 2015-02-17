@@ -13,9 +13,8 @@ import com.badlogic.ashley.core.Entity;
 @Wired
 public class InvulImpactController extends ImpactController<InvulImpact> {
 
-    private InventoryController inventoryController;
     private StatsController statsController;
-
+    private InventoryController inventoryController;
     private PacketSystem packetSystem;
 
     public InvulImpactController() {
