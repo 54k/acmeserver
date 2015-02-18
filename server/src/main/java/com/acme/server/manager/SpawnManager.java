@@ -1,8 +1,8 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
-import com.acme.engine.systems.ManagerSystem;
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.systems.PassiveSystem;
+import com.acme.engine.processors.Wired;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.Spawn;
 import com.acme.server.component.WorldComponent;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Wired
-public class SpawnManager extends ManagerSystem {
+public class SpawnManager extends PassiveSystem {
 
     private ComponentMapper<WorldComponent> wcm;
     private ComponentMapper<PositionComponent> pcm;

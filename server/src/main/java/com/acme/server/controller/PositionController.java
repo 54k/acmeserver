@@ -1,7 +1,7 @@
 package com.acme.server.controller;
 
-import com.acme.engine.systems.ManagerSystem;
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.systems.PassiveSystem;
+import com.acme.engine.processors.Wired;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.packet.outbound.MovePacket;
@@ -12,7 +12,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class PositionController extends ManagerSystem {
+public class PositionController extends PassiveSystem {
 
     private ComponentMapper<PositionComponent> pcm;
     private ComponentMapper<WorldComponent> wcm;

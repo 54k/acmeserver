@@ -1,6 +1,6 @@
 package com.acme.server.brain;
 
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.processors.Wired;
 import com.acme.engine.brain.BrainStateController;
 import com.acme.server.component.PatrolComponent;
 import com.acme.server.component.Spawn;

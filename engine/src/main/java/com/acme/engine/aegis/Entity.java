@@ -1,6 +1,8 @@
 package com.acme.engine.aegis;
 
-import com.acme.engine.event.Signal;
+import com.acme.engine.events.Signal;
+import com.acme.engine.utils.Bag;
+import com.acme.engine.utils.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.BitSet;

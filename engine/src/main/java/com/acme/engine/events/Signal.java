@@ -1,11 +1,11 @@
-package com.acme.engine.event;
+package com.acme.engine.events;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class Signal<T> {
 
-    private List<Listener<T>> listeners;
+    private List<SignalListener<T>> listeners;
 
     public Signal() {
         listeners = new ArrayList<>();
@@ -16,7 +16,7 @@ public final class Signal<T> {
      *
      * @param listener The Listener to be added
      */
-    public void add(Listener<T> listener) {
+    public void add(SignalListener<T> listener) {
         listeners.add(listener);
     }
 
@@ -25,7 +25,7 @@ public final class Signal<T> {
      *
      * @param listener The Listener to remove
      */
-    public void remove(Listener<T> listener) {
+    public void remove(SignalListener<T> listener) {
         listeners.remove(listener);
     }
 
@@ -42,7 +42,7 @@ public final class Signal<T> {
      * @param object The object to send off
      */
     public void dispatch(T object) {
-        for (Listener<T> listener : new ArrayList<>(listeners)) {
+        for (SignalListener<T> listener : new ArrayList<>(listeners)) {
             listener.receive(this, object);
         }
     }

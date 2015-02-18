@@ -1,8 +1,8 @@
 package com.acme.server.combat;
 
 import com.acme.engine.ashley.EntityEngine;
-import com.acme.engine.systems.ManagerSystem;
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.systems.PassiveSystem;
+import com.acme.engine.processors.Wired;
 import com.acme.server.util.EntityContainer;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Wired
-public class HateListController extends ManagerSystem implements CombatListener {
+public class HateListController extends PassiveSystem implements CombatListener {
 
     private static final Family hateListFamily = Family.all(HateList.class).get();
 
@@ -57,7 +57,7 @@ public class HateListController extends ManagerSystem implements CombatListener 
         HateList hateList = hateListCm.get(entity);
         Map<Entity, Integer> haters = hateList.haters;
         if (haters.putIfAbsent(hater, 0) == null) {
-            post(HateListListener.class).onHaterAdded(entity, hater);
+            dispatch(HateListListener.class).onHaterAdded(entity, hater);
         }
         haters.compute(hater, (e, hate) -> hate + amount);
     }
@@ -70,10 +70,10 @@ public class HateListController extends ManagerSystem implements CombatListener 
         HateList hateList = hateListCm.get(entity);
         Map<Entity, Integer> haters = hateList.haters;
         if (haters.remove(hater) != null) {
-            post(HateListListener.class).onHaterRemoved(entity, hater);
+            dispatch(HateListListener.class).onHaterRemoved(entity, hater);
         }
         if (haters.isEmpty()) {
-            post(HateListListener.class).onHatersEmpty(entity);
+            dispatch(HateListListener.class).onHatersEmpty(entity);
         }
     }
 
@@ -85,7 +85,7 @@ public class HateListController extends ManagerSystem implements CombatListener 
 
         haters.clear();
 
-        HateListListener hateListListener = post(HateListListener.class);
+        HateListListener hateListListener = dispatch(HateListListener.class);
         h.forEach(hater -> hateListListener.onHaterRemoved(entity, hater));
         hateListListener.onHatersEmpty(entity);
     }

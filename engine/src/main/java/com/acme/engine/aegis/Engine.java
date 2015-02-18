@@ -1,24 +1,22 @@
 package com.acme.engine.aegis;
 
-import com.acme.engine.aegis.Pool.Disposable;
-import com.acme.engine.event.Event;
-import com.acme.engine.event.EventBus;
-import com.acme.engine.event.Listener;
-import com.acme.engine.event.Signal;
+import com.acme.engine.events.Event;
+import com.acme.engine.events.EventListener;
+import com.acme.engine.events.Signal;
+import com.acme.engine.events.SignalListener;
+import com.acme.engine.utils.ImmutableList;
+import com.acme.engine.utils.Pool;
+import com.acme.engine.utils.Pool.Disposable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.Queue;
 
 public class Engine {
 
@@ -28,7 +26,7 @@ public class Engine {
     private ImmutableList<Entity> immutableEntities;
     private Map<Long, Entity> entitiesById;
 
-    private List<EntityOperation> entityOperations;
+    private Queue<EntityOperation> entityOperations;
     private EntityOperationPool entityOperationPool;
 
     private List<EntitySystem> systems;
@@ -38,11 +36,11 @@ public class Engine {
     private Map<Family, List<Entity>> families;
     private Map<Family, ImmutableList<Entity>> immutableFamilies;
 
-    private List<EntityListener> listeners;
+    private List<EntityListener> entityListeners;
     private Map<Family, List<EntityListener>> familyListeners;
 
-    private Listener<Entity> componentAdded;
-    private Listener<Entity> componentRemoved;
+    private SignalListener<Entity> componentAdded;
+    private SignalListener<Entity> componentRemoved;
 
     private boolean updating;
     private boolean notifying;
@@ -51,17 +49,15 @@ public class Engine {
      * Mechanism to delay component addition/removal to avoid affecting system processing
      */
     private ComponentOperationPool componentOperationsPool;
-    private List<ComponentOperation> componentOperations;
+    private Queue<ComponentOperation> componentOperations;
     private ComponentOperationHandler componentOperationHandler;
 
     private long nextEntityId = 1;
 
     private Map<Class<?>, Signal<?>> signals;
-    private EventBus eventBus;
+    private Map<Class<? extends EventListener>, Event<? extends EventListener>> events;
 
-    private Injector injector;
-    private Signal<Void> injectSignal;
-    private Map<EntitySystem, Listener<Void>> injectionListeners;
+    private List<SystemProcessor> processors;
 
     private boolean initialized;
 
@@ -69,14 +65,16 @@ public class Engine {
         entities = new ArrayList<>();
         immutableEntities = new ImmutableList<>(entities);
         entitiesById = new HashMap<>();
-        entityOperations = new ArrayList<>();
+        entityOperations = new LinkedList<>();
         entityOperationPool = new EntityOperationPool();
+
         systems = new ArrayList<>(16);
         immutableSystems = new ImmutableList<>(systems);
         systemsByClass = new HashMap<>();
+
         families = new HashMap<>();
         immutableFamilies = new HashMap<>();
-        listeners = new ArrayList<>(16);
+        entityListeners = new ArrayList<>(16);
         familyListeners = new HashMap<>();
 
         componentAdded = new ComponentListener(this);
@@ -86,16 +84,13 @@ public class Engine {
         notifying = false;
 
         componentOperationsPool = new ComponentOperationPool();
-        componentOperations = new ArrayList<>();
+        componentOperations = new LinkedList<>();
         componentOperationHandler = new ComponentOperationHandler(this);
 
         signals = new HashMap<>();
-        eventBus = new EventBus();
+        events = new HashMap<>();
 
-        injector = new Injector(this);
-        injectSignal = new Signal<>();
-        injectionListeners = new HashMap<>();
-
+        processors = new ArrayList<>();
         initialized = false;
     }
 
@@ -104,7 +99,7 @@ public class Engine {
     }
 
     /**
-     * Adds an entity to this Engine.
+     * Adds an entity to this Engine
      */
     public void addEntity(Entity entity) {
         entity.uuid = obtainEntityId();
@@ -119,7 +114,7 @@ public class Engine {
     }
 
     /**
-     * Removes an entity from this Engine.
+     * Removes an entity from this Engine
      */
     public void removeEntity(Entity entity) {
         if (updating || notifying) {
@@ -137,7 +132,7 @@ public class Engine {
     }
 
     /**
-     * Removes all entities registered with this Engine.
+     * Removes all entities registered with this Engine
      */
     public void removeAllEntities() {
         if (updating || notifying) {
@@ -163,25 +158,31 @@ public class Engine {
     }
 
     /**
-     * Adds the {@link EntitySystem} to this Engine.
+     * Adds the {@link EntitySystem} to this Engine
      */
     public void addSystem(EntitySystem system) {
         Class<? extends EntitySystem> systemType = system.getClass();
-
         if (!systemsByClass.containsKey(systemType)) {
             systems.add(system);
             systemsByClass.put(systemType, system);
+            system.engine = this;
             system.addedToEngine(this);
             Collections.sort(systems, systemsComparator);
+
+            if (initialized) {
+                processSystems(new ImmutableList<>(Collections.singletonList(system)));
+                system.initialized();
+            }
         }
     }
 
     /**
-     * Removes the {@link EntitySystem} from this Engine.
+     * Removes the {@link EntitySystem} from this Engine
      */
     public void removeSystem(EntitySystem system) {
         if (systems.remove(system)) {
             systemsByClass.remove(system.getClass());
+            system.engine = null;
             system.removedFromEngine(this);
         }
     }
@@ -195,32 +196,32 @@ public class Engine {
     }
 
     /**
-     * @return immutable array of all entity systems managed by the {@link Engine}.
+     * @return immutable array of all entity systems managed by the {@link Engine}
      */
     public ImmutableList<EntitySystem> getSystems() {
         return immutableSystems;
     }
 
     /**
-     * Returns immutable collection of entities for the specified {@link Family}. Will return the same instance every time.
+     * Returns immutable collection of entities for the specified {@link Family}. Will return the same instance every time
      */
     public ImmutableList<Entity> getEntitiesFor(Family family) {
         return registerFamily(family);
     }
 
     /**
-     * Adds an {@link EntityListener}.
+     * Adds an {@link EntityListener}
      * <p/>
-     * The listener will be notified every time an entity is added/removed to/from the engine.
+     * The listener will be notified every time an entity is added/removed to/from the engine
      */
     public void addEntityListener(EntityListener listener) {
-        listeners.add(listener);
+        entityListeners.add(listener);
     }
 
     /**
-     * Adds an {@link EntityListener} for a specific {@link Family}.
+     * Adds an {@link EntityListener} for a specific {@link Family}
      * <p/>
-     * The listener will be notified every time an entity is added/removed to/from the given family.
+     * The listener will be notified every time an entity is added/removed to/from the given family
      */
     public void addEntityListener(Family family, EntityListener listener) {
         registerFamily(family);
@@ -238,7 +239,7 @@ public class Engine {
      * Removes an {@link EntityListener}
      */
     public void removeEntityListener(EntityListener listener) {
-        listeners.remove(listener);
+        entityListeners.remove(listener);
 
         for (List<EntityListener> familyListenerArray : familyListeners.values()) {
             familyListenerArray.remove(listener);
@@ -246,7 +247,7 @@ public class Engine {
     }
 
     /**
-     * Removes an {@link EntityListener} for a specific {@link Family}.
+     * Removes an {@link EntityListener} for a specific {@link Family}
      */
     public void removeEntityListener(Family family, EntityListener listener) {
         List<EntityListener> listeners = familyListeners.get(family);
@@ -256,31 +257,115 @@ public class Engine {
     }
 
     /**
-     * Updates all the systems in this Engine.
+     * Adds the {@link SystemProcessor} to this Engine
+     */
+    public void addSystemProcessor(SystemProcessor processor) {
+        processors.add(processor);
+        if (initialized) {
+            processor.processSystems(immutableSystems, this);
+        }
+    }
+
+    /**
+     * Removes the {@link SystemProcessor} from this Engine
+     */
+    public void removeSystemProcessor(SystemProcessor processor) {
+        processors.remove(processor);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Signal<T> signal(Class<T> type) {
+        Signal<?> signal = signals.get(type);
+        if (signal == null) {
+            signal = new Signal<>();
+            signals.put(type, signal);
+        }
+        return (Signal<T>) signal;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends EventListener> Event<T> event(Class<T> listenerType) {
+        Event<? extends EventListener> event = events.get(listenerType);
+        if (event == null) {
+            event = new Event<>(listenerType);
+            events.put(listenerType, event);
+        }
+        return (Event<T>) event;
+    }
+
+    /**
+     * Updates all the systems in this Engine
      *
-     * @param deltaTime The time passed since the last frame.
+     * @param deltaTime The time passed since the last frame
      */
     public void update(float deltaTime) {
         initialize();
         updating = true;
         for (EntitySystem system : systems) {
-            if (system.checkProcessing()) {
+            if (system.isDisabled()) {
                 system.update(deltaTime);
             }
-
             processComponentOperations();
             processPendingEntityOperations();
         }
-
         updating = false;
     }
 
+    /**
+     * Initializes this Engine
+     */
     public void initialize() {
-        if (!initialized) {
-            initialized = true;
-            injectSignal.dispatch(null);
-            initListeners.forEach(WiredListener::wired);
-            initListeners.clear();
+        if (initialized) {
+            return;
+        }
+
+        initialized = true;
+        processSystems(immutableSystems);
+        for (EntitySystem system : systems) {
+            system.initialized();
+        }
+    }
+
+    private void processSystems(ImmutableList<EntitySystem> systems) {
+        for (SystemProcessor processor : processors) {
+            processor.processSystems(systems, this);
+        }
+    }
+
+    private void processComponentOperations() {
+        for (ComponentOperation operation : componentOperations) {
+            switch (operation.type) {
+                case Add:
+                    operation.entity.addInternal(operation.component);
+                    break;
+                case Remove:
+                    operation.entity.removeInternal(operation.componentClass);
+                    break;
+            }
+            componentOperationsPool.free(operation);
+        }
+        componentOperations.clear();
+    }
+
+    private void processPendingEntityOperations() {
+        while (!entityOperations.isEmpty()) {
+            EntityOperation operation = entityOperations.poll();
+            Entity entity = operation.entity;
+
+            switch (operation.type) {
+                case Add:
+                    addEntityInternal(entity);
+                    break;
+                case Remove:
+                    removeEntityInternal(entity);
+                    break;
+                case RemoveAll:
+                    while (entities.size() > 0) {
+                        removeEntityInternal(entities.get(0));
+                    }
+                    break;
+            }
+            entityOperationPool.free(operation);
         }
     }
 
@@ -330,7 +415,7 @@ public class Engine {
         entity.componentOperationHandler = null;
 
         notifying = true;
-        for (EntityListener listener : new ArrayList<>(listeners)) {
+        for (EntityListener listener : new ArrayList<>(entityListeners)) {
             listener.entityRemoved(entity);
         }
         notifying = false;
@@ -347,7 +432,7 @@ public class Engine {
         entity.componentOperationHandler = componentOperationHandler;
 
         notifying = true;
-        for (EntityListener listener : new ArrayList<>(listeners)) {
+        for (EntityListener listener : new ArrayList<>(entityListeners)) {
             listener.entityAdded(entity);
         }
         notifying = false;
@@ -397,78 +482,14 @@ public class Engine {
         return immutableEntities;
     }
 
-    private void processPendingEntityOperations() {
-        while (entityOperations.size() > 0) {
-            EntityOperation operation = entityOperations.remove(entityOperations.size() - 1);
-
-            switch (operation.type) {
-                case Add:
-                    addEntityInternal(operation.entity);
-                    break;
-                case Remove:
-                    removeEntityInternal(operation.entity);
-                    break;
-                case RemoveAll:
-                    while (entities.size() > 0) {
-                        removeEntityInternal(entities.get(0));
-                    }
-                    break;
-            }
-
-            entityOperationPool.free(operation);
+    private static class SystemComparator implements Comparator<EntitySystem> {
+        @Override
+        public int compare(EntitySystem a, EntitySystem b) {
+            return a.priority > b.priority ? 1 : (a.priority == b.priority) ? 0 : -1;
         }
-
-        entityOperations.clear();
     }
 
-    private void processComponentOperations() {
-        for (ComponentOperation operation : componentOperations) {
-            switch (operation.type) {
-                case Add:
-                    operation.entity.addInternal(operation.component);
-                    break;
-                case Remove:
-                    operation.entity.removeInternal(operation.componentClass);
-                    break;
-            }
-
-            componentOperationsPool.free(operation);
-        }
-
-        componentOperations.clear();
-    }
-
-    public <T extends Event> T post(Class<T> type) {
-        return eventBus.post(type);
-    }
-
-    public void register(Object listener) {
-        eventBus.register(listener);
-    }
-
-    public <T extends Event> void register(Class<T> type, T listener) {
-        eventBus.register(type, listener);
-    }
-
-    public void unregister(Object listener) {
-        eventBus.unregister(listener);
-    }
-
-    public <T extends Event> void unregister(Class<T> type, T listener) {
-        eventBus.unregister(type, listener);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> Signal<T> signal(Class<T> type) {
-        Signal<?> signal = signals.get(type);
-        if (signal == null) {
-            signal = new Signal<>();
-            signals.put(type, signal);
-        }
-        return (Signal<T>) signal;
-    }
-
-    private static class ComponentListener implements Listener<Entity> {
+    private static class ComponentListener implements SignalListener<Entity> {
         private Engine engine;
 
         public ComponentListener(Engine engine) {
@@ -484,11 +505,11 @@ public class Engine {
     static class ComponentOperationHandler {
         private Engine engine;
 
-        public ComponentOperationHandler(Engine engine) {
+        private ComponentOperationHandler(Engine engine) {
             this.engine = engine;
         }
 
-        public void add(Entity entity, Component component) {
+        void add(Entity entity, Component component) {
             if (engine.updating) {
                 ComponentOperation operation = engine.componentOperationsPool.obtain();
                 operation.makeAdd(entity, component);
@@ -498,7 +519,7 @@ public class Engine {
             }
         }
 
-        public void remove(Entity entity, Class<? extends Component> componentClass) {
+        void remove(Entity entity, Class<? extends Component> componentClass) {
             if (engine.updating) {
                 ComponentOperation operation = engine.componentOperationsPool.obtain();
                 operation.makeRemove(entity, componentClass);
@@ -515,19 +536,19 @@ public class Engine {
             Remove,
         }
 
-        public Type type;
-        public Entity entity;
-        public Component component;
-        public Class<? extends Component> componentClass;
+        Type type;
+        Entity entity;
+        Component component;
+        Class<? extends Component> componentClass;
 
-        public void makeAdd(Entity entity, Component component) {
+        void makeAdd(Entity entity, Component component) {
             this.type = Type.Add;
             this.entity = entity;
             this.component = component;
             this.componentClass = null;
         }
 
-        public void makeRemove(Entity entity, Class<? extends Component> componentClass) {
+        void makeRemove(Entity entity, Class<? extends Component> componentClass) {
             this.type = Type.Remove;
             this.entity = entity;
             this.component = null;
@@ -536,8 +557,10 @@ public class Engine {
 
         @Override
         public void dispose() {
+            type = null;
             entity = null;
             component = null;
+            componentClass = null;
         }
     }
 
@@ -548,25 +571,19 @@ public class Engine {
         }
     }
 
-    private static class SystemComparator implements Comparator<EntitySystem> {
-        @Override
-        public int compare(EntitySystem a, EntitySystem b) {
-            return a.priority > b.priority ? 1 : (a.priority == b.priority) ? 0 : -1;
-        }
-    }
-
     private static class EntityOperation implements Disposable {
-        public enum Type {
+        enum Type {
             Add,
             Remove,
             RemoveAll
         }
 
-        public Type type;
-        public Entity entity;
+        Type type;
+        Entity entity;
 
         @Override
         public void dispose() {
+            type = null;
             entity = null;
         }
     }
@@ -575,80 +592,6 @@ public class Engine {
         @Override
         protected EntityOperation newObject() {
             return new EntityOperation();
-        }
-    }
-
-    private static class Injector {
-
-        //        private final Context context;
-        private Engine engine;
-
-        Injector(/*Context context, */Engine engine) {
-            //            this.context = context;
-            this.engine = engine;
-        }
-
-        public void wireObject(Object o) {
-            getFieldsForWire(o).forEach(field -> {
-                Object value = getComponentForField(field);
-                if (value != null) {
-                    setFieldValue(o, field, value);
-                }
-            });
-        }
-
-        private Object getComponentForField(Field field) {
-            Class type = field.getType();
-            if (EntitySystem.class.isAssignableFrom(type)) {
-                return engine.getSystem(type);
-            } else if (ComponentMapper.class.isAssignableFrom(type)) {
-                Type genericType = field.getGenericType();
-                if (genericType instanceof ParameterizedType) {
-                    Type componentType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
-                    //noinspection unchecked
-                    return ComponentMapper.getFor((Class<? extends Component>) componentType);
-                }
-            } else if (Engine.class.isAssignableFrom(type)) {
-                return engine;
-            }// else if (Context.class.isAssignableFrom(type)) {
-            //                return context;
-            //            }
-            //            Wired wired = field.getAnnotation(Wired.class);
-            //            if (wired != null) {
-            //                return context.get(type, wired.name());
-            //            }
-            //            return context.get(type);
-            return null;
-        }
-
-        public void cleanObject(Object o) {
-            getFieldsForWire(o)
-                    .forEach(field -> setFieldValue(o, field, null));
-        }
-
-        private static Stream<Field> getFieldsForWire(Object o) {
-            Class<?> c = o.getClass();
-            return Stream.of(c.getDeclaredFields()).filter(getFieldsFilter(c));
-        }
-
-        private static Predicate<? super Field> getFieldsFilter(Class<?> o) {
-            if (o.isAnnotationPresent(Wired.class)) {
-                return Injector::isNotFinal;
-            } else {
-                return f -> f.isAnnotationPresent(Wired.class) && isNotFinal(f);
-            }
-        }
-
-        private static boolean isNotFinal(Field f) {
-            return !Modifier.isFinal(f.getModifiers());
-        }
-
-        private static void setFieldValue(Object o, Field field, Object value) {
-            try {
-                field.setAccessible(true);
-                field.set(o, value);
-            } catch (IllegalAccessException ignore) {
-            }
         }
     }
 }

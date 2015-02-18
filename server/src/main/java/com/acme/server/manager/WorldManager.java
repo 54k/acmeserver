@@ -1,11 +1,11 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
-import com.acme.engine.systems.ManagerSystem;
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.systems.PassiveSystem;
+import com.acme.engine.processors.Wired;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
-import com.acme.server.event.WorldManagerEvent;
+import com.acme.server.event.WorldManagerEventListener;
 import com.acme.server.packet.outbound.PopulationPacket;
 import com.acme.server.system.PacketSystem;
 import com.acme.server.template.WorldTemplate;
@@ -20,7 +20,7 @@ import com.badlogic.ashley.core.Family;
 import java.util.Collection;
 
 @Wired
-public class WorldManager extends ManagerSystem {
+public class WorldManager extends PassiveSystem {
 
     private static final Family worldEntitiesFamily = Family.all(PositionComponent.class, WorldComponent.class).get();
 
@@ -58,7 +58,7 @@ public class WorldManager extends ManagerSystem {
         newRegion.addEntity(entity);
         positionComponent.setRegion(newRegion);
         positionComponent.setSpawned(true);
-        post(WorldManagerEvent.class).onEntitySpawned(entity);
+        dispatch(WorldManagerEventListener.class).onEntitySpawned(entity);
     }
 
     public void removeFromWorld(Entity entity) {
@@ -75,7 +75,7 @@ public class WorldManager extends ManagerSystem {
         Region region = positionComponent.getRegion();
         region.removeEntity(entity);
         positionComponent.setSpawned(false);
-        post(WorldManagerEvent.class).onEntityDecayed(entity);
+        dispatch(WorldManagerEventListener.class).onEntityDecayed(entity);
     }
 
     public Instance getAvailableInstance() {

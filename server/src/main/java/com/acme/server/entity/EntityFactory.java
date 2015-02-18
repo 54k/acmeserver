@@ -1,7 +1,7 @@
 package com.acme.server.entity;
 
-import com.acme.engine.systems.ManagerSystem;
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.systems.PassiveSystem;
+import com.acme.engine.processors.Wired;
 import com.acme.engine.brain.Brain;
 import com.acme.engine.brain.BrainComponent;
 import com.acme.server.brain.PatrolBrainState;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Wired
-public final class EntityFactory extends ManagerSystem {
+public final class EntityFactory extends PassiveSystem {
 
     private ComponentMapper<Inventory> inventoryCm;
     private ComponentMapper<TypeComponent> typeCm;

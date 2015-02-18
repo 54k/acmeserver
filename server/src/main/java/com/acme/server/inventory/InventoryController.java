@@ -1,14 +1,14 @@
 package com.acme.server.inventory;
 
-import com.acme.engine.systems.ManagerSystem;
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.systems.PassiveSystem;
+import com.acme.engine.processors.Wired;
 import com.acme.server.packet.outbound.EquipPacket;
 import com.acme.server.system.PacketSystem;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class InventoryController extends ManagerSystem {
+public class InventoryController extends PassiveSystem {
 
     private ComponentMapper<Inventory> inventoryCm;
 

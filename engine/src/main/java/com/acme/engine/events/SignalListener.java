@@ -1,6 +1,6 @@
-package com.acme.engine.event;
+package com.acme.engine.events;
 
-public interface Listener<T> {
+public interface SignalListener<T> {
     /**
      * @param signal The Signal that triggered event
      * @param object The object passed on dispatch

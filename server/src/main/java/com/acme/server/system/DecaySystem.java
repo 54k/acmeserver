@@ -1,6 +1,6 @@
 package com.acme.server.system;
 
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.processors.Wired;
 import com.acme.engine.timer.TimerSystem;
 import com.acme.server.component.Decay;
 import com.acme.server.component.PositionComponent;

@@ -1,6 +1,6 @@
 package com.acme.server.packet.outbound;
 
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.processors.Wired;
 import com.acme.engine.network.OutboundPacket;
 import com.acme.server.component.PlayerComponent;
 import com.acme.server.component.PositionComponent;

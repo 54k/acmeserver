@@ -1,7 +1,7 @@
 package com.acme.server.pickup;
 
-import com.acme.engine.systems.ManagerSystem;
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.systems.PassiveSystem;
+import com.acme.engine.processors.Wired;
 import com.acme.server.combat.StatsController;
 import com.acme.server.entity.EntityFactory;
 import com.acme.server.entity.Type;
@@ -14,7 +14,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
 @Wired
-public class PickupController extends ManagerSystem {
+public class PickupController extends PassiveSystem {
 
     private ComponentMapper<Pickup> pickupCm;
 

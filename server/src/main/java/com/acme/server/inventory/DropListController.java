@@ -1,8 +1,8 @@
 package com.acme.server.inventory;
 
 import com.acme.engine.application.Context;
-import com.acme.engine.systems.ManagerSystem;
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.systems.PassiveSystem;
+import com.acme.engine.processors.Wired;
 import com.acme.server.combat.CombatListener;
 import com.acme.server.component.Decay;
 import com.acme.server.component.PositionComponent;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Wired
-public class DropListController extends ManagerSystem implements CombatListener {
+public class DropListController extends PassiveSystem implements CombatListener {
 
     private static final Family dropListFamily = Family.all(DropList.class).get();
 

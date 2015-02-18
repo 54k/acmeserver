@@ -1,4 +1,4 @@
-package com.acme.engine.aegis;
+package com.acme.engine.utils;
 
 /**
  * Fast collection similar to Array that grows on demand as elements are accessed. It does not preserve order of elements.

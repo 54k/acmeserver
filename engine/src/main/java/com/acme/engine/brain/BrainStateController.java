@@ -1,10 +1,10 @@
 package com.acme.engine.brain;
 
-import com.acme.engine.systems.ManagerSystem;
+import com.acme.engine.systems.PassiveSystem;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 
-public abstract class BrainStateController extends ManagerSystem implements BrainState<Entity> {
+public abstract class BrainStateController extends PassiveSystem implements BrainState<Entity> {
 
     private static final ComponentMapper<BrainComponent> bcm = ComponentMapper.getFor(BrainComponent.class);
 

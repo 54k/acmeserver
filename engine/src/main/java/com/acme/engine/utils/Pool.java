@@ -1,4 +1,4 @@
-package com.acme.engine.aegis;
+package com.acme.engine.utils;
 
 import java.util.LinkedList;
 import java.util.Queue;

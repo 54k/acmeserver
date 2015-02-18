@@ -11,6 +11,7 @@ import java.util.Map;
  * ), this is to avoid duplicate families that describe the same components.
  */
 public class Family {
+
     private static Map<String, Family> families = new HashMap<>();
     private static int familyIndex = 0;
     private static final Builder builder = new Builder();

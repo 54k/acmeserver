@@ -1,9 +1,9 @@
 package com.acme.server.combat;
 
-import com.acme.engine.event.Event;
+import com.acme.engine.events.EventListener;
 import com.badlogic.ashley.core.Entity;
 
-public interface CombatListener extends Event {
+public interface CombatListener extends EventListener {
 
     void onEntityDamaged(Entity attacker, Entity victim, int damage);
 

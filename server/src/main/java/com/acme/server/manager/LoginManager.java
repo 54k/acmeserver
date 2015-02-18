@@ -1,8 +1,8 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
-import com.acme.engine.systems.ManagerSystem;
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.systems.PassiveSystem;
+import com.acme.engine.processors.Wired;
 import com.acme.server.combat.StatsController;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PlayerComponent;
@@ -26,7 +26,7 @@ import com.badlogic.ashley.core.Entity;
 import java.util.Collection;
 
 @Wired
-public class LoginManager extends ManagerSystem {
+public class LoginManager extends PassiveSystem {
 
     private ComponentMapper<Inventory> icm;
     private ComponentMapper<PlayerComponent> pcm;

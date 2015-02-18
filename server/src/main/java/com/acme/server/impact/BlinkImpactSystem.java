@@ -1,6 +1,6 @@
 package com.acme.server.impact;
 
-import com.acme.engine.aegis.Wired;
+import com.acme.engine.processors.Wired;
 import com.acme.engine.impact.ImpactSystem;
 import com.acme.server.packet.outbound.BlinkPacket;
 import com.acme.server.system.PacketSystem;

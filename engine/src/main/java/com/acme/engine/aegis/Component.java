@@ -1,4 +1,4 @@
 package com.acme.engine.aegis;
 
-public interface Component {
+public abstract class Component {
 }

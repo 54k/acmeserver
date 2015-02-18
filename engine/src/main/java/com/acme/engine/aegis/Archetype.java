@@ -1,8 +1,4 @@
-package com.acme.engine.ashley;
-
-import com.acme.engine.aegis.Component;
-import com.acme.engine.aegis.Entity;
-import com.acme.engine.aegis.Family;
+package com.acme.engine.aegis;
 
 import java.lang.reflect.Array;
 import java.util.HashSet;
@@ -17,7 +13,7 @@ public class Archetype {
     }
 
     public Archetype(Archetype archetype) {
-        components = new HashSet<>();
+        this();
         components.addAll(archetype.components);
     }
 
