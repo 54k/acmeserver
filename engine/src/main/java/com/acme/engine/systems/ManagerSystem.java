@@ -1,15 +1,16 @@
-package com.acme.engine.ashley;
+package com.acme.engine.systems;
 
+import com.acme.engine.aegis.Engine;
+import com.acme.engine.aegis.Entity;
+import com.acme.engine.aegis.EntityListener;
+import com.acme.engine.aegis.EntitySystem;
+import com.acme.engine.aegis.Family;
 import com.acme.engine.event.Event;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.EntityListener;
-import com.badlogic.ashley.core.EntitySystem;
-import com.badlogic.ashley.core.Family;
 
-public abstract class ManagerSystem extends EntitySystem implements EntityEngineListener, EntityListener {
+public abstract class ManagerSystem extends EntitySystem implements EntityListener {
 
     private Family family;
-    private EntityEngine engine;
+    private Engine engine;
 
     public ManagerSystem() {
         this(Family.all().get());
@@ -21,13 +22,13 @@ public abstract class ManagerSystem extends EntitySystem implements EntityEngine
     }
 
     @Override
-    public void addedToEngine(EntityEngine engine) {
+    public void addedToEngine(Engine engine) {
         this.engine = engine;
         engine.addEntityListener(this);
     }
 
     @Override
-    public void removedFromEngine(EntityEngine engine) {
+    public void removedFromEngine(Engine engine) {
         this.engine = null;
         engine.removeEntityListener(this);
     }

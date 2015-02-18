@@ -1,6 +1,6 @@
 package com.acme.server.brain;
 
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.aegis.Wired;
 import com.acme.engine.brain.BrainStateController;
 import com.acme.server.combat.CombatController;
 import com.acme.server.combat.HateListController;

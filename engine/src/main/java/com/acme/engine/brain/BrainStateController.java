@@ -1,6 +1,6 @@
 package com.acme.engine.brain;
 
-import com.acme.engine.ashley.ManagerSystem;
+import com.acme.engine.systems.ManagerSystem;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 

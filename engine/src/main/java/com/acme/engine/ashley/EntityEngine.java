@@ -1,5 +1,7 @@
 package com.acme.engine.ashley;
 
+import com.acme.engine.aegis.Wired;
+import com.acme.engine.aegis.WiredListener;
 import com.acme.engine.application.Context;
 import com.acme.engine.event.Event;
 import com.acme.engine.event.EventBus;
@@ -18,10 +20,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -34,7 +36,7 @@ public class EntityEngine extends Engine {
     private final Engine engine;
 
     private final EventBus eventBus = new EventBus();
-    private final Set<WiredListener> initListeners = new LinkedHashSet<>();
+    private final List<WiredListener> initListeners = new ArrayList<>(16);
     private boolean initialized;
 
     public EntityEngine(Context context, Engine engine) {

@@ -1,6 +1,6 @@
 package com.acme.server.system;
 
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.aegis.Wired;
 import com.acme.engine.brain.BrainSystem;
 import com.acme.server.brain.CombatBrainState;
 import com.acme.server.brain.PatrolBrainState;

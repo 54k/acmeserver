@@ -2,7 +2,9 @@ package com.acme.engine.aegis;
 
 import com.acme.engine.event.Signal;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 
 public class Entity {
     /**
@@ -20,11 +22,11 @@ public class Entity {
 
     long uuid;
     boolean scheduledForRemoval;
-    ComponentOperationHandler componentOperationHandler;
+    Engine.ComponentOperationHandler componentOperationHandler;
 
     private Bag<Component> components;
-    private Array<Component> componentsArray;
-    private ImmutableArray<Component> immutableComponentsArray;
+    private List<Component> componentsArray;
+    private ImmutableList<Component> immutableComponentsArray;
     private BitSet componentBits;
     private BitSet familyBits;
 
@@ -32,15 +34,15 @@ public class Entity {
      * Creates an empty Entity.
      */
     public Entity() {
-        components = new Bag<Component>();
-        componentsArray = new Array<Component>(false, 16);
-        immutableComponentsArray = new ImmutableArray<Component>(componentsArray);
+        components = new Bag<>();
+        componentsArray = new ArrayList<>(16);
+        immutableComponentsArray = new ImmutableList<>(componentsArray);
         componentBits = new BitSet();
         familyBits = new BitSet();
         flags = 0;
 
-        componentAdded = new Signal<Entity>();
-        componentRemoved = new Signal<Entity>();
+        componentAdded = new Signal<>();
+        componentRemoved = new Signal<>();
     }
 
     /**
@@ -88,7 +90,7 @@ public class Entity {
      * Removes all the {@link Component}'s from the Entity.
      */
     public void removeAll() {
-        while (componentsArray.size > 0) {
+        while (componentsArray.size() > 0) {
             removeInternal(componentsArray.get(0).getClass());
         }
     }
@@ -96,7 +98,7 @@ public class Entity {
     /**
      * @return immutable collection with all the Entity {@link Component}s.
      */
-    public ImmutableArray<Component> getComponents() {
+    public ImmutableList<Component> getComponents() {
         return immutableComponentsArray;
     }
 
@@ -185,7 +187,7 @@ public class Entity {
 
         if (removeComponent != null) {
             components.set(componentTypeIndex, null);
-            componentsArray.removeValue(removeComponent, true);
+            componentsArray.remove(removeComponent);
             componentBits.clear(componentTypeIndex);
 
             componentRemoved.dispatch(this);

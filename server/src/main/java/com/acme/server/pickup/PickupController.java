@@ -1,7 +1,7 @@
 package com.acme.server.pickup;
 
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.systems.ManagerSystem;
+import com.acme.engine.aegis.Wired;
 import com.acme.server.combat.StatsController;
 import com.acme.server.entity.EntityFactory;
 import com.acme.server.entity.Type;

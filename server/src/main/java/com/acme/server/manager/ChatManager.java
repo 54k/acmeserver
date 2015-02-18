@@ -1,7 +1,7 @@
 package com.acme.server.manager;
 
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.systems.ManagerSystem;
+import com.acme.engine.aegis.Wired;
 import com.acme.server.packet.outbound.ChatPacket;
 import com.acme.server.system.PacketSystem;
 import com.badlogic.ashley.core.Entity;

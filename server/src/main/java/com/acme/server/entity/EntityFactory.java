@@ -1,7 +1,7 @@
 package com.acme.server.entity;
 
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.systems.ManagerSystem;
+import com.acme.engine.aegis.Wired;
 import com.acme.engine.brain.Brain;
 import com.acme.engine.brain.BrainComponent;
 import com.acme.server.brain.PatrolBrainState;

@@ -1,8 +1,8 @@
 package com.acme.server.inventory;
 
 import com.acme.engine.application.Context;
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.systems.ManagerSystem;
+import com.acme.engine.aegis.Wired;
 import com.acme.server.combat.CombatListener;
 import com.acme.server.component.Decay;
 import com.acme.server.component.PositionComponent;

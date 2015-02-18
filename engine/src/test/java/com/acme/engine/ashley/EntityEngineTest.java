@@ -1,5 +1,6 @@
 package com.acme.engine.ashley;
 
+import com.acme.engine.aegis.WiredListener;
 import com.acme.engine.application.Context;
 import com.acme.engine.event.Event;
 import com.badlogic.ashley.core.Engine;

@@ -1,4 +1,4 @@
-package com.acme.engine.ashley;
+package com.acme.engine.aegis;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

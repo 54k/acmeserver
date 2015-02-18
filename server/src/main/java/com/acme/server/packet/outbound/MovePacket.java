@@ -1,6 +1,6 @@
 package com.acme.server.packet.outbound;
 
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.aegis.Wired;
 import com.acme.engine.network.OutboundPacket;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.packet.OpCodes;

@@ -1,8 +1,8 @@
 package com.acme.server.combat;
 
 import com.acme.engine.ashley.EntityEngine;
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.systems.ManagerSystem;
+import com.acme.engine.aegis.Wired;
 import com.acme.server.util.EntityContainer;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;

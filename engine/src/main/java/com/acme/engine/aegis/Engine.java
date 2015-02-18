@@ -1,58 +1,82 @@
 package com.acme.engine.aegis;
 
+import com.acme.engine.aegis.Pool.Disposable;
+import com.acme.engine.event.EventBus;
 import com.acme.engine.event.Listener;
 import com.acme.engine.event.Signal;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class Engine {
-    private static SystemComparator comparator = new SystemComparator();
 
-    private Array<Entity> entities;
-    private ImmutableArray<Entity> immutableEntities;
-    private LongMap<Entity> entitiesById;
+    private static final SystemComparator systemsComparator = new SystemComparator();
 
-    private Array<EntityOperation> entityOperations;
+    private List<Entity> entities;
+    private ImmutableList<Entity> immutableEntities;
+    private Map<Long, Entity> entitiesById;
+
+    private List<EntityOperation> entityOperations;
     private EntityOperationPool entityOperationPool;
 
-    private Array<EntitySystem> systems;
-    private ImmutableArray<EntitySystem> immutableSystems;
-    private ObjectMap<Class<?>, EntitySystem> systemsByClass;
+    private List<EntitySystem> systems;
+    private ImmutableList<EntitySystem> immutableSystems;
+    private Map<Class<? extends EntitySystem>, EntitySystem> systemsByClass;
 
-    private ObjectMap<Family, Array<Entity>> families;
-    private ObjectMap<Family, ImmutableArray<Entity>> immutableFamilies;
+    private Map<Family, List<Entity>> families;
+    private Map<Family, ImmutableList<Entity>> immutableFamilies;
 
-    private SnapshotArray<EntityListener> listeners;
-    private ObjectMap<Family, SnapshotArray<EntityListener>> familyListeners;
+    private List<EntityListener> listeners;
+    private Map<Family, List<EntityListener>> familyListeners;
 
-    private final Listener<Entity> componentAdded;
-    private final Listener<Entity> componentRemoved;
+    private Listener<Entity> componentAdded;
+    private Listener<Entity> componentRemoved;
 
     private boolean updating;
-
     private boolean notifying;
-    private long nextEntityId = 1;
 
     /**
      * Mechanism to delay component addition/removal to avoid affecting system processing
      */
     private ComponentOperationPool componentOperationsPool;
-    private Array<ComponentOperation> componentOperations;
+    private List<ComponentOperation> componentOperations;
     private ComponentOperationHandler componentOperationHandler;
 
+    private long nextEntityId = 1;
+
+    private Map<Class<?>, Signal<?>> signals;
+    private EventBus eventBus = new EventBus();
+
+    private Injector injector;
+    private Signal<Void> injectSignal;
+    private Map<EntitySystem, Listener<Void>> injectionListeners;
+    private List<WiredListener> initListeners = new ArrayList<>(16);
+    private boolean initialized;
+
     public Engine() {
-        entities = new Array<Entity>(false, 16);
-        immutableEntities = new ImmutableArray<Entity>(entities);
-        entitiesById = new LongMap<Entity>();
-        entityOperations = new Array<EntityOperation>(false, 16);
+        entities = new ArrayList<>();
+        immutableEntities = new ImmutableList<>(entities);
+        entitiesById = new HashMap<>();
+        entityOperations = new ArrayList<>();
         entityOperationPool = new EntityOperationPool();
-        systems = new Array<EntitySystem>(false, 16);
-        immutableSystems = new ImmutableArray<EntitySystem>(systems);
-        systemsByClass = new ObjectMap<Class<?>, EntitySystem>();
-        families = new ObjectMap<Family, Array<Entity>>();
-        immutableFamilies = new ObjectMap<Family, ImmutableArray<Entity>>();
-        listeners = new SnapshotArray<EntityListener>(false, 16);
-        familyListeners = new ObjectMap<Family, SnapshotArray<EntityListener>>();
+        systems = new ArrayList<>(16);
+        immutableSystems = new ImmutableList<>(systems);
+        systemsByClass = new HashMap<>();
+        families = new HashMap<>();
+        immutableFamilies = new HashMap<>();
+        listeners = new ArrayList<>(16);
+        familyListeners = new HashMap<>();
 
         componentAdded = new ComponentListener(this);
         componentRemoved = new ComponentListener(this);
@@ -61,8 +85,10 @@ public class Engine {
         notifying = false;
 
         componentOperationsPool = new ComponentOperationPool();
-        componentOperations = new Array<ComponentOperation>();
+        componentOperations = new ArrayList<>();
         componentOperationHandler = new ComponentOperationHandler(this);
+
+        injector = new Injector(this);
     }
 
     private long obtainEntityId() {
@@ -114,8 +140,8 @@ public class Engine {
             operation.type = EntityOperation.Type.RemoveAll;
             entityOperations.add(operation);
         } else {
-            while (entities.size > 0) {
-                removeEntity(entities.first());
+            while (entities.size() > 0) {
+                removeEntity(entities.get(0));
             }
         }
     }
@@ -124,7 +150,7 @@ public class Engine {
         return entitiesById.get(id);
     }
 
-    public ImmutableArray<Entity> getEntities() {
+    public ImmutableList<Entity> getEntities() {
         return immutableEntities;
     }
 
@@ -138,8 +164,7 @@ public class Engine {
             systems.add(system);
             systemsByClass.put(systemType, system);
             system.addedToEngine(this);
-
-            systems.sort(comparator);
+            Collections.sort(systems, systemsComparator);
         }
     }
 
@@ -147,7 +172,7 @@ public class Engine {
      * Removes the {@link EntitySystem} from this Engine.
      */
     public void removeSystem(EntitySystem system) {
-        if (systems.removeValue(system, true)) {
+        if (systems.remove(system)) {
             systemsByClass.remove(system.getClass());
             system.removedFromEngine(this);
         }
@@ -164,14 +189,14 @@ public class Engine {
     /**
      * @return immutable array of all entity systems managed by the {@link Engine}.
      */
-    public ImmutableArray<EntitySystem> getSystems() {
+    public ImmutableList<EntitySystem> getSystems() {
         return immutableSystems;
     }
 
     /**
      * Returns immutable collection of entities for the specified {@link Family}. Will return the same instance every time.
      */
-    public ImmutableArray<Entity> getEntitiesFor(Family family) {
+    public ImmutableList<Entity> getEntitiesFor(Family family) {
         return registerFamily(family);
     }
 
@@ -191,10 +216,10 @@ public class Engine {
      */
     public void addEntityListener(Family family, EntityListener listener) {
         registerFamily(family);
-        SnapshotArray<EntityListener> listeners = familyListeners.get(family);
+        List<EntityListener> listeners = familyListeners.get(family);
 
         if (listeners == null) {
-            listeners = new SnapshotArray<EntityListener>(false, 16);
+            listeners = new ArrayList<>(16);
             familyListeners.put(family, listeners);
         }
 
@@ -205,10 +230,20 @@ public class Engine {
      * Removes an {@link EntityListener}
      */
     public void removeEntityListener(EntityListener listener) {
-        listeners.removeValue(listener, true);
+        listeners.remove(listener);
 
-        for (SnapshotArray<EntityListener> familyListenerArray : familyListeners.values()) {
-            familyListenerArray.removeValue(listener, true);
+        for (List<EntityListener> familyListenerArray : familyListeners.values()) {
+            familyListenerArray.remove(listener);
+        }
+    }
+
+    /**
+     * Removes an {@link EntityListener} for a specific {@link Family}.
+     */
+    public void removeEntityListener(Family family, EntityListener listener) {
+        List<EntityListener> listeners = familyListeners.get(family);
+        if (listeners != null) {
+            listeners.remove(listener);
         }
     }
 
@@ -219,8 +254,7 @@ public class Engine {
      */
     public void update(float deltaTime) {
         updating = true;
-        for (int i = 0; i < systems.size; i++) {
-            EntitySystem system = systems.get(i);
+        for (EntitySystem system : systems) {
             if (system.checkProcessing()) {
                 system.update(deltaTime);
             }
@@ -233,9 +267,9 @@ public class Engine {
     }
 
     private void updateFamilyMembership(Entity entity) {
-        for (Entry<Family, Array<Entity>> entry : families.entries()) {
-            Family family = entry.key;
-            Array<Entity> familyEntities = entry.value;
+        for (Entry<Family, List<Entity>> entry : families.entrySet()) {
+            Family family = entry.getKey();
+            List<Entity> familyEntities = entry.getValue();
             int familyIndex = family.getIndex();
 
             boolean belongsToFamily = entity.getFamilyBits().get(familyIndex);
@@ -247,7 +281,7 @@ public class Engine {
 
                 notifyFamilyListenersAdd(family, entity);
             } else if (belongsToFamily && !matches) {
-                familyEntities.removeValue(entity, true);
+                familyEntities.remove(entity);
                 entity.getFamilyBits().clear(familyIndex);
 
                 notifyFamilyListenersRemove(family, entity);
@@ -257,16 +291,16 @@ public class Engine {
 
     protected void removeEntityInternal(Entity entity) {
         entity.scheduledForRemoval = false;
-        entities.removeValue(entity, true);
+        entities.remove(entity);
         entitiesById.remove(entity.getId());
 
         if (!entity.getFamilyBits().isEmpty()) {
-            for (Entry<Family, Array<Entity>> entry : families.entries()) {
-                Family family = entry.key;
-                Array<Entity> familyEntities = entry.value;
+            for (Entry<Family, List<Entity>> entry : families.entrySet()) {
+                Family family = entry.getKey();
+                List<Entity> familyEntities = entry.getValue();
 
                 if (family.matches(entity)) {
-                    familyEntities.removeValue(entity, true);
+                    familyEntities.remove(entity);
                     entity.getFamilyBits().clear(family.getIndex());
                     notifyFamilyListenersRemove(family, entity);
                 }
@@ -278,12 +312,9 @@ public class Engine {
         entity.componentOperationHandler = null;
 
         notifying = true;
-        Object[] items = listeners.begin();
-        for (int i = 0, n = listeners.size; i < n; i++) {
-            EntityListener listener = (EntityListener) items[i];
+        for (EntityListener listener : new ArrayList<>(listeners)) {
             listener.entityRemoved(entity);
         }
-        listeners.end();
         notifying = false;
     }
 
@@ -298,51 +329,42 @@ public class Engine {
         entity.componentOperationHandler = componentOperationHandler;
 
         notifying = true;
-        Object[] items = listeners.begin();
-        for (int i = 0, n = listeners.size; i < n; i++) {
-            EntityListener listener = (EntityListener) items[i];
+        for (EntityListener listener : new ArrayList<>(listeners)) {
             listener.entityAdded(entity);
         }
-        listeners.end();
         notifying = false;
     }
 
     private void notifyFamilyListenersAdd(Family family, Entity entity) {
-        SnapshotArray<EntityListener> listeners = familyListeners.get(family);
+        List<EntityListener> listeners = familyListeners.get(family);
 
         if (listeners != null) {
             notifying = true;
-            Object[] items = listeners.begin();
-            for (int i = 0, n = listeners.size; i < n; i++) {
-                EntityListener listener = (EntityListener) items[i];
+            for (EntityListener listener : new ArrayList<>(listeners)) {
                 listener.entityAdded(entity);
             }
-            listeners.end();
             notifying = false;
         }
     }
 
     private void notifyFamilyListenersRemove(Family family, Entity entity) {
-        SnapshotArray<EntityListener> listeners = familyListeners.get(family);
+        List<EntityListener> listeners = familyListeners.get(family);
 
         if (listeners != null) {
             notifying = true;
-            Object[] items = listeners.begin();
-            for (int i = 0, n = listeners.size; i < n; i++) {
-                EntityListener listener = (EntityListener) items[i];
+            for (EntityListener listener : new ArrayList<>(listeners)) {
                 listener.entityRemoved(entity);
             }
-            listeners.end();
             notifying = false;
         }
     }
 
-    private ImmutableArray<Entity> registerFamily(Family family) {
-        ImmutableArray<Entity> immutableEntities = immutableFamilies.get(family);
+    private ImmutableList<Entity> registerFamily(Family family) {
+        ImmutableList<Entity> immutableEntities = immutableFamilies.get(family);
 
         if (immutableEntities == null) {
-            Array<Entity> familyEntities = new Array<Entity>(false, 16);
-            immutableEntities = new ImmutableArray<Entity>(familyEntities);
+            List<Entity> familyEntities = new ArrayList<>(16);
+            immutableEntities = new ImmutableList<>(familyEntities);
             families.put(family, familyEntities);
             immutableFamilies.put(family, immutableEntities);
 
@@ -358,8 +380,8 @@ public class Engine {
     }
 
     private void processPendingEntityOperations() {
-        while (entityOperations.size > 0) {
-            EntityOperation operation = entityOperations.removeIndex(entityOperations.size - 1);
+        while (entityOperations.size() > 0) {
+            EntityOperation operation = entityOperations.remove(entityOperations.size() - 1);
 
             switch (operation.type) {
                 case Add:
@@ -369,8 +391,8 @@ public class Engine {
                     removeEntityInternal(operation.entity);
                     break;
                 case RemoveAll:
-                    while (entities.size > 0) {
-                        removeEntityInternal(entities.first());
+                    while (entities.size() > 0) {
+                        removeEntityInternal(entities.get(0));
                     }
                     break;
             }
@@ -382,9 +404,7 @@ public class Engine {
     }
 
     private void processComponentOperations() {
-        for (int i = 0; i < componentOperations.size; ++i) {
-            ComponentOperation operation = componentOperations.get(i);
-
+        for (ComponentOperation operation : componentOperations) {
             switch (operation.type) {
                 case Add:
                     operation.entity.addInternal(operation.component);
@@ -441,7 +461,7 @@ public class Engine {
         }
     }
 
-    private static class ComponentOperation implements Pool.Poolable {
+    private static class ComponentOperation implements Disposable {
         public enum Type {
             Add,
             Remove,
@@ -467,7 +487,7 @@ public class Engine {
         }
 
         @Override
-        public void reset() {
+        public void dispose() {
             entity = null;
             component = null;
         }
@@ -487,7 +507,7 @@ public class Engine {
         }
     }
 
-    private static class EntityOperation implements Pool.Poolable {
+    private static class EntityOperation implements Disposable {
         public enum Type {
             Add,
             Remove,
@@ -498,7 +518,7 @@ public class Engine {
         public Entity entity;
 
         @Override
-        public void reset() {
+        public void dispose() {
             entity = null;
         }
     }
@@ -507,6 +527,80 @@ public class Engine {
         @Override
         protected EntityOperation newObject() {
             return new EntityOperation();
+        }
+    }
+
+    private static final class Injector {
+
+        //        private final Context context;
+        private Engine engine;
+
+        Injector(/*Context context, */Engine engine) {
+            //            this.context = context;
+            this.engine = engine;
+        }
+
+        public void wireObject(Object o) {
+            getFieldsForWire(o).forEach(field -> {
+                Object value = getComponentForField(field);
+                if (value != null) {
+                    setFieldValue(o, field, value);
+                }
+            });
+        }
+
+        private Object getComponentForField(Field field) {
+            Class type = field.getType();
+            if (EntitySystem.class.isAssignableFrom(type)) {
+                return engine.getSystem(type);
+            } else if (ComponentMapper.class.isAssignableFrom(type)) {
+                Type genericType = field.getGenericType();
+                if (genericType instanceof ParameterizedType) {
+                    Type componentType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
+                    //noinspection unchecked
+                    return ComponentMapper.getFor((Class<? extends Component>) componentType);
+                }
+            } else if (Engine.class.isAssignableFrom(type)) {
+                return engine;
+            }// else if (Context.class.isAssignableFrom(type)) {
+            //                return context;
+            //            }
+            //            Wired wired = field.getAnnotation(Wired.class);
+            //            if (wired != null) {
+            //                return context.get(type, wired.name());
+            //            }
+            //            return context.get(type);
+            return null;
+        }
+
+        public void cleanObject(Object o) {
+            getFieldsForWire(o)
+                    .forEach(field -> setFieldValue(o, field, null));
+        }
+
+        private static Stream<Field> getFieldsForWire(Object o) {
+            Class<?> c = o.getClass();
+            return Stream.of(c.getDeclaredFields()).filter(getFieldsFilter(c));
+        }
+
+        private static Predicate<? super Field> getFieldsFilter(Class<?> o) {
+            if (o.isAnnotationPresent(Wired.class)) {
+                return Injector::isNotFinal;
+            } else {
+                return f -> f.isAnnotationPresent(Wired.class) && isNotFinal(f);
+            }
+        }
+
+        private static boolean isNotFinal(Field f) {
+            return !Modifier.isFinal(f.getModifiers());
+        }
+
+        private static void setFieldValue(Object o, Field field, Object value) {
+            try {
+                field.setAccessible(true);
+                field.set(o, value);
+            } catch (IllegalAccessException ignore) {
+            }
         }
     }
 }

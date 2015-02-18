@@ -1,7 +1,7 @@
 package com.acme.server.combat;
 
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.systems.ManagerSystem;
+import com.acme.engine.aegis.Wired;
 import com.acme.server.impact.InvulImpactSystem;
 import com.acme.server.packet.outbound.HealthPacket;
 import com.acme.server.system.PacketSystem;
