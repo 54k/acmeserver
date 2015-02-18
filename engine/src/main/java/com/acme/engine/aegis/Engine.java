@@ -1,6 +1,7 @@
 package com.acme.engine.aegis;
 
 import com.acme.engine.aegis.Pool.Disposable;
+import com.acme.engine.event.Event;
 import com.acme.engine.event.EventBus;
 import com.acme.engine.event.Listener;
 import com.acme.engine.event.Signal;
@@ -56,12 +57,12 @@ public class Engine {
     private long nextEntityId = 1;
 
     private Map<Class<?>, Signal<?>> signals;
-    private EventBus eventBus = new EventBus();
+    private EventBus eventBus;
 
     private Injector injector;
     private Signal<Void> injectSignal;
     private Map<EntitySystem, Listener<Void>> injectionListeners;
-    private List<WiredListener> initListeners = new ArrayList<>(16);
+
     private boolean initialized;
 
     public Engine() {
@@ -88,7 +89,14 @@ public class Engine {
         componentOperations = new ArrayList<>();
         componentOperationHandler = new ComponentOperationHandler(this);
 
+        signals = new HashMap<>();
+        eventBus = new EventBus();
+
         injector = new Injector(this);
+        injectSignal = new Signal<>();
+        injectionListeners = new HashMap<>();
+
+        initialized = false;
     }
 
     private long obtainEntityId() {
@@ -253,6 +261,7 @@ public class Engine {
      * @param deltaTime The time passed since the last frame.
      */
     public void update(float deltaTime) {
+        initialize();
         updating = true;
         for (EntitySystem system : systems) {
             if (system.checkProcessing()) {
@@ -264,6 +273,15 @@ public class Engine {
         }
 
         updating = false;
+    }
+
+    public void initialize() {
+        if (!initialized) {
+            initialized = true;
+            injectSignal.dispatch(null);
+            initListeners.forEach(WiredListener::wired);
+            initListeners.clear();
+        }
     }
 
     private void updateFamilyMembership(Entity entity) {
@@ -420,6 +438,36 @@ public class Engine {
         componentOperations.clear();
     }
 
+    public <T extends Event> T post(Class<T> type) {
+        return eventBus.post(type);
+    }
+
+    public void register(Object listener) {
+        eventBus.register(listener);
+    }
+
+    public <T extends Event> void register(Class<T> type, T listener) {
+        eventBus.register(type, listener);
+    }
+
+    public void unregister(Object listener) {
+        eventBus.unregister(listener);
+    }
+
+    public <T extends Event> void unregister(Class<T> type, T listener) {
+        eventBus.unregister(type, listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Signal<T> signal(Class<T> type) {
+        Signal<?> signal = signals.get(type);
+        if (signal == null) {
+            signal = new Signal<>();
+            signals.put(type, signal);
+        }
+        return (Signal<T>) signal;
+    }
+
     private static class ComponentListener implements Listener<Entity> {
         private Engine engine;
 
@@ -530,7 +578,7 @@ public class Engine {
         }
     }
 
-    private static final class Injector {
+    private static class Injector {
 
         //        private final Context context;
         private Engine engine;

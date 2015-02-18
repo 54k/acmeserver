@@ -1,41 +1,44 @@
 package com.acme.engine.ashley;
 
-import com.badlogic.ashley.core.Component;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
+import com.acme.engine.aegis.Component;
+import com.acme.engine.aegis.Entity;
+import com.acme.engine.aegis.Family;
 
 import java.lang.reflect.Array;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class Archetype {
+public class Archetype {
 
-    private final Set<Class<? extends Component>> types = new HashSet<>();
+    private Set<Class<? extends Component>> components;
 
     public Archetype() {
+        components = new HashSet<>();
     }
 
     public Archetype(Archetype archetype) {
-        types.addAll(archetype.types);
+        components = new HashSet<>();
+        components.addAll(archetype.components);
     }
 
     public Archetype add(Class<? extends Component> type) {
-        types.add(type);
+        components.add(type);
         return this;
     }
 
-    public Entity build() {
+    public Entity buildEntity() {
         return addComponents(new Entity());
     }
 
     public Entity addComponents(Entity entity) {
-        types.stream().map(Archetype::instantiate).forEach(entity::add);
+        components.stream().map(Archetype::instantiate).forEach(entity::add);
         return entity;
     }
 
+    @SuppressWarnings("unchecked")
     public Family getFamily() {
-        @SuppressWarnings("unchecked") Class<? extends Component>[] array = (Class<? extends Component>[]) Array.newInstance(Component.class.getClass(), types.size());
-        return Family.all(types.toArray(array)).get();
+        Class<? extends Component>[] array = (Class<? extends Component>[]) Array.newInstance(Component.class, components.size());
+        return Family.all(components.toArray(array)).get();
     }
 
     private static Component instantiate(Class<? extends Component> type) {

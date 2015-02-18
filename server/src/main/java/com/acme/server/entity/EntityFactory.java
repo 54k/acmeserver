@@ -130,7 +130,7 @@ public final class EntityFactory extends ManagerSystem {
     }
 
     private Entity create(Type type) {
-        Entity entity = type.getArchetype().build();
+        Entity entity = type.getArchetype().buildEntity();
         typeCm.get(entity).setType(type);
         engine.addEntity(entity);
         return entity;

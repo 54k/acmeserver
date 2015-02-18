@@ -29,7 +29,6 @@ public class Bag<E> {
     /**
      * Removes the element at the specified position in this Bag. Order of elements is not preserved.
      *
-     * @param index
      * @return element that was removed from the Bag.
      */
     public E remove(int index) {
@@ -58,7 +57,6 @@ public class Bag<E> {
      * Removes the first occurrence of the specified element from this Bag, if it is present. If the Bag does not contain the
      * element, it is unchanged. It does not preserve order of elements.
      *
-     * @param e
      * @return true if the element was removed.
      */
     public boolean remove(E e) {
@@ -109,7 +107,6 @@ public class Bag<E> {
     }
 
     /**
-     * @param index
      * @return whether or not the index is within the bounds of the collection
      */
     public boolean isIndexWithinBounds(int index) {

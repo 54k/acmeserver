@@ -30,6 +30,9 @@ public abstract class EntitySystem {
         this.processing = true;
     }
 
+    public void initialized() {
+    }
+
     /**
      * Called when this EntitySystem is added to an {@link Engine}.
      *
