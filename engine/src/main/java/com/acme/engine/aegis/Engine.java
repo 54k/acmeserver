@@ -57,7 +57,7 @@ public class Engine {
     private Map<Class<?>, Signal<?>> signals;
     private Map<Class<? extends EventListener>, Event<? extends EventListener>> events;
 
-    private List<SystemProcessor> processors;
+    private List<Processor> processors;
 
     private boolean initialized;
 
@@ -257,9 +257,9 @@ public class Engine {
     }
 
     /**
-     * Adds the {@link SystemProcessor} to this Engine
+     * Adds the {@link Processor} to this Engine
      */
-    public void addSystemProcessor(SystemProcessor processor) {
+    public void addSystemProcessor(Processor processor) {
         processors.add(processor);
         if (initialized) {
             processor.processSystems(immutableSystems, this);
@@ -267,9 +267,9 @@ public class Engine {
     }
 
     /**
-     * Removes the {@link SystemProcessor} from this Engine
+     * Removes the {@link Processor} from this Engine
      */
-    public void removeSystemProcessor(SystemProcessor processor) {
+    public void removeSystemProcessor(Processor processor) {
         processors.remove(processor);
     }
 
@@ -327,7 +327,7 @@ public class Engine {
     }
 
     private void processSystems(ImmutableList<EntitySystem> systems) {
-        for (SystemProcessor processor : processors) {
+        for (Processor processor : processors) {
             processor.processSystems(systems, this);
         }
     }
