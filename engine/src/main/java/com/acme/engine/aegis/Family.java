@@ -12,6 +12,8 @@ import java.util.Map;
  */
 public class Family {
 
+    public static final Family ALL = Family.all().get();
+
     private static Map<String, Family> families = new HashMap<>();
     private static int familyIndex = 0;
     private static final Builder builder = new Builder();

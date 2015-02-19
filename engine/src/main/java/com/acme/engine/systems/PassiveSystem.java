@@ -11,7 +11,7 @@ public abstract class PassiveSystem extends EntitySystem implements EntityListen
     private Family family;
 
     public PassiveSystem() {
-        this(Family.all().get());
+        this(Family.ALL);
     }
 
     public PassiveSystem(Family family) {

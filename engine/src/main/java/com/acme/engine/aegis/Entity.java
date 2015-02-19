@@ -92,6 +92,14 @@ public class Entity {
      * Removes all the {@link Component}'s from the Entity.
      */
     public void removeAll() {
+        if (componentOperationHandler != null) {
+            componentOperationHandler.removeAll(this);
+        } else {
+            removeAllInternal();
+        }
+    }
+
+    void removeAllInternal() {
         while (componentsArray.size() > 0) {
             removeInternal(componentsArray.get(0).getClass());
         }

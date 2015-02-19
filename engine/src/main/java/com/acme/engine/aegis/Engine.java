@@ -341,6 +341,9 @@ public class Engine {
                 case Remove:
                     operation.entity.removeInternal(operation.componentClass);
                     break;
+                case RemoveAll:
+                    operation.entity.removeAllInternal();
+                    break;
             }
             componentOperationsPool.free(operation);
         }
@@ -528,12 +531,23 @@ public class Engine {
                 entity.removeInternal(componentClass);
             }
         }
+
+        void removeAll(Entity entity) {
+            if (engine.updating) {
+                ComponentOperation operation = engine.componentOperationsPool.obtain();
+                operation.makeRemoveAll(entity);
+                engine.componentOperations.add(operation);
+            } else {
+                entity.removeAllInternal();
+            }
+        }
     }
 
     private static class ComponentOperation implements Disposable {
         public enum Type {
             Add,
             Remove,
+            RemoveAll
         }
 
         Type type;
@@ -553,6 +567,11 @@ public class Engine {
             this.entity = entity;
             this.component = null;
             this.componentClass = componentClass;
+        }
+
+        void makeRemoveAll(Entity entity) {
+            this.type = Type.RemoveAll;
+            this.entity = entity;
         }
 
         @Override
