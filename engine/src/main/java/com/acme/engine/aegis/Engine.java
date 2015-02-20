@@ -3,20 +3,12 @@ package com.acme.engine.aegis;
 import com.acme.engine.events.Event;
 import com.acme.engine.events.EventListener;
 import com.acme.engine.events.Signal;
-import com.acme.engine.events.SignalListener;
 import com.acme.engine.utils.ImmutableList;
 import com.acme.engine.utils.Pool;
 import com.acme.engine.utils.Pool.Disposable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Queue;
 
 public class Engine {
 
@@ -39,8 +31,7 @@ public class Engine {
     private List<EntityListener> entityListeners;
     private Map<Family, List<EntityListener>> familyListeners;
 
-    private SignalListener<Entity> componentAdded;
-    private SignalListener<Entity> componentRemoved;
+    private ComponentListener componentListener;
 
     private boolean updating;
     private boolean notifying;
@@ -77,8 +68,7 @@ public class Engine {
         entityListeners = new ArrayList<>(16);
         familyListeners = new HashMap<>();
 
-        componentAdded = new ComponentListener(this);
-        componentRemoved = new ComponentListener(this);
+        componentListener = new FamilyMembershipUpdater(this);
 
         updating = false;
         notifying = false;
@@ -102,7 +92,7 @@ public class Engine {
      * Adds an entity to this Engine
      */
     public void addEntity(Entity entity) {
-        entity.uuid = obtainEntityId();
+        entity.id = obtainEntityId();
         if (notifying) {
             EntityOperation operation = entityOperationPool.obtain();
             operation.entity = entity;
@@ -211,7 +201,7 @@ public class Engine {
 
     /**
      * Adds an {@link EntityListener}
-     * <p/>
+     * <p>
      * The listener will be notified every time an entity is added/removed to/from the engine
      */
     public void addEntityListener(EntityListener listener) {
@@ -220,7 +210,7 @@ public class Engine {
 
     /**
      * Adds an {@link EntityListener} for a specific {@link Family}
-     * <p/>
+     * <p>
      * The listener will be notified every time an entity is added/removed to/from the given family
      */
     public void addEntityListener(Family family, EntityListener listener) {
@@ -243,16 +233,6 @@ public class Engine {
 
         for (List<EntityListener> familyListenerArray : familyListeners.values()) {
             familyListenerArray.remove(listener);
-        }
-    }
-
-    /**
-     * Removes an {@link EntityListener} for a specific {@link Family}
-     */
-    public void removeEntityListener(Family family, EntityListener listener) {
-        List<EntityListener> listeners = familyListeners.get(family);
-        if (listeners != null) {
-            listeners.remove(listener);
         }
     }
 
@@ -413,8 +393,7 @@ public class Engine {
             }
         }
 
-        entity.componentAdded.remove(componentAdded);
-        entity.componentRemoved.remove(componentRemoved);
+        entity.removeComponentListener(componentListener);
         entity.componentOperationHandler = null;
 
         notifying = true;
@@ -430,8 +409,7 @@ public class Engine {
 
         updateFamilyMembership(entity);
 
-        entity.componentAdded.add(componentAdded);
-        entity.componentRemoved.add(componentRemoved);
+        entity.addComponentListener(componentListener);
         entity.componentOperationHandler = componentOperationHandler;
 
         notifying = true;
@@ -492,16 +470,21 @@ public class Engine {
         }
     }
 
-    private static class ComponentListener implements SignalListener<Entity> {
+    private static class FamilyMembershipUpdater implements ComponentListener {
         private Engine engine;
 
-        public ComponentListener(Engine engine) {
+        public FamilyMembershipUpdater(Engine engine) {
             this.engine = engine;
         }
 
         @Override
-        public void receive(Signal<Entity> signal, Entity object) {
-            engine.updateFamilyMembership(object);
+        public void componentAdded(Entity entity, Component component) {
+            engine.updateFamilyMembership(entity);
+        }
+
+        @Override
+        public void componentRemoved(Entity entity, Component component) {
+            engine.updateFamilyMembership(entity);
         }
     }
 

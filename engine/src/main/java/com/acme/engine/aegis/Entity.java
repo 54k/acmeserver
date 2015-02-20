@@ -1,30 +1,18 @@
 package com.acme.engine.aegis;
 
-import com.acme.engine.events.Signal;
 import com.acme.engine.utils.Bag;
 import com.acme.engine.utils.ImmutableList;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
+import java.util.*;
 
 public class Entity {
-    /**
-     * A flag that can be used to bit mask this entity. Up to the user to manage.
-     */
-    public int flags;
-    /**
-     * Will dispatch an event when a component is added.
-     */
-    public final Signal<Entity> componentAdded;
-    /**
-     * Will dispatch an event when a component is removed.
-     */
-    public final Signal<Entity> componentRemoved;
 
-    long uuid;
+    long id;
     boolean scheduledForRemoval;
     Engine.ComponentOperationHandler componentOperationHandler;
+
+    private List<ComponentListener> listeners;
+    private Map<Class<? extends Component>, List<ComponentListener>> listenersByComponent;
 
     private Bag<Component> components;
     private List<Component> componentsArray;
@@ -36,22 +24,44 @@ public class Entity {
      * Creates an empty Entity.
      */
     public Entity() {
+        listeners = new ArrayList<>(16);
+        listenersByComponent = new HashMap<>();
+
         components = new Bag<>();
         componentsArray = new ArrayList<>(16);
         immutableComponentsArray = new ImmutableList<>(componentsArray);
         componentBits = new BitSet();
         familyBits = new BitSet();
-        flags = 0;
-
-        componentAdded = new Signal<>();
-        componentRemoved = new Signal<>();
     }
 
     /**
      * @return The Entity's unique id.
      */
     public long getId() {
-        return uuid;
+        return id;
+    }
+
+    public void addComponentListener(ComponentListener listener) {
+        listeners.add(listener);
+    }
+
+    public void addComponentListener(Class<? extends Component> componentClass, ComponentListener listener) {
+        List<ComponentListener> listeners = listenersByComponent.get(componentClass);
+
+        if (listeners == null) {
+            listeners = new ArrayList<>(16);
+            listenersByComponent.put(componentClass, listeners);
+        }
+
+        listeners.add(listener);
+    }
+
+    public void removeComponentListener(ComponentListener listener) {
+        listeners.remove(listener);
+
+        for (List<ComponentListener> listeners : listenersByComponent.values()) {
+            listeners.remove(listener);
+        }
     }
 
     /**
@@ -183,10 +193,8 @@ public class Entity {
 
         components.set(componentTypeIndex, component);
         componentsArray.add(component);
-
         componentBits.set(componentTypeIndex);
-
-        componentAdded.dispatch(this);
+        notifyComponentAdd(component);
         return this;
     }
 
@@ -199,16 +207,37 @@ public class Entity {
             components.set(componentTypeIndex, null);
             componentsArray.remove(removeComponent);
             componentBits.clear(componentTypeIndex);
-
-            componentRemoved.dispatch(this);
+            notifyComponentRemove(removeComponent);
         }
 
         return removeComponent;
     }
 
+    private void notifyComponentAdd(Component component) {
+        for (ComponentListener listener : listeners) {
+            listener.componentAdded(this, component);
+        }
+
+        List<ComponentListener> listeners = listenersByComponent.get(component.getClass());
+        for (ComponentListener listener : listeners) {
+            listener.componentAdded(this, component);
+        }
+    }
+
+    private void notifyComponentRemove(Component component) {
+        for (ComponentListener listener : listeners) {
+            listener.componentRemoved(this, component);
+        }
+
+        List<ComponentListener> listeners = listenersByComponent.get(component.getClass());
+        for (ComponentListener listener : listeners) {
+            listener.componentRemoved(this, component);
+        }
+    }
+
     @Override
     public int hashCode() {
-        return (int) (uuid ^ (uuid >>> 32));
+        return (int) (id ^ (id >>> 32));
     }
 
     @Override
@@ -220,7 +249,7 @@ public class Entity {
             return false;
         }
         Entity other = (Entity) obj;
-        return uuid == other.uuid;
+        return id == other.id;
     }
 
     /**
