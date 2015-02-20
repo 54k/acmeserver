@@ -12,7 +12,7 @@ public abstract class EntitySystem {
      * Use this to set the priority of the system. Lower means it'll get executed first.
      */
     public int priority;
-    private boolean disabled;
+    private boolean enabled;
 
     Engine engine;
 
@@ -30,7 +30,7 @@ public abstract class EntitySystem {
      */
     public EntitySystem(int priority) {
         this.priority = priority;
-        this.disabled = false;
+        this.enabled = true;
     }
 
     public void initialized() {
@@ -63,15 +63,15 @@ public abstract class EntitySystem {
     /**
      * @return Whether or not the system should be processed.
      */
-    public boolean isDisabled() {
-        return disabled;
+    public boolean isEnabled() {
+        return enabled;
     }
 
     /**
      * Sets whether or not the system should be processed by the {@link Engine}.
      */
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public final <T> Signal<T> signal(Class<T> type) {

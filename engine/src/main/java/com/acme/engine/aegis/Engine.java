@@ -282,7 +282,7 @@ public class Engine {
         initialize();
         updating = true;
         for (EntitySystem system : systems) {
-            if (system.isDisabled()) {
+            if (system.isEnabled()) {
                 system.update(deltaTime);
             }
             processComponentOperations();

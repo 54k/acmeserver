@@ -1,10 +1,6 @@
 package com.acme.engine.systems;
 
-import com.acme.engine.aegis.Engine;
-import com.acme.engine.aegis.Entity;
-import com.acme.engine.aegis.EntityListener;
-import com.acme.engine.aegis.EntitySystem;
-import com.acme.engine.aegis.Family;
+import com.acme.engine.aegis.*;
 
 public abstract class PassiveSystem extends EntitySystem implements EntityListener {
 
@@ -16,7 +12,7 @@ public abstract class PassiveSystem extends EntitySystem implements EntityListen
 
     public PassiveSystem(Family family) {
         this.family = family;
-        setDisabled(false);
+        setEnabled(false);
     }
 
     @Override
@@ -26,7 +22,7 @@ public abstract class PassiveSystem extends EntitySystem implements EntityListen
 
     @Override
     public void removedFromEngine(Engine engine) {
-        engine.removeEntityListener(family, this);
+        engine.removeEntityListener(this);
     }
 
     @Override
