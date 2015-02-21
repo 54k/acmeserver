@@ -2,14 +2,10 @@ package com.acme.engine.systems;
 
 import com.acme.engine.aegis.Engine;
 import com.acme.engine.aegis.Entity;
-import com.acme.engine.aegis.EntitySystem;
 import com.acme.engine.aegis.Family;
 import com.acme.engine.utils.ImmutableList;
 
-public abstract class IntervalIteratingSystem extends EntitySystem {
-
-    private float interval;
-    private float accumulator;
+public abstract class IntervalIteratingSystem extends IntervalSystem {
 
     private Family family;
     private ImmutableList<Entity> entities;
@@ -19,8 +15,7 @@ public abstract class IntervalIteratingSystem extends EntitySystem {
     }
 
     public IntervalIteratingSystem(Family family, float interval, int priority) {
-        super(priority);
-        this.interval = interval;
+        super(interval, priority);
         this.family = family;
     }
 
@@ -35,14 +30,10 @@ public abstract class IntervalIteratingSystem extends EntitySystem {
     }
 
     @Override
-    public void update(float deltaTime) {
-        accumulator += deltaTime;
-        if (accumulator >= interval) {
-            accumulator -= interval;
-            int size = entities.size();
-            for (int i = 0; i < size; i++) {
-                processEntity(entities.get(i));
-            }
+    protected void updateInterval() {
+        int size = entities.size();
+        for (int i = 0; i < size; i++) {
+            processEntity(entities.get(i));
         }
     }
 
