@@ -1,9 +1,9 @@
 package com.acme.server.system;
 
 import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Engine;
 import com.acme.engine.aegis.core.Entity;
 import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.ashley.EntityEngine;
 import com.acme.engine.network.*;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PositionComponent;
@@ -23,7 +23,7 @@ public class PacketSystem extends NetworkSystem {
     private ComponentMapper<KnownListComponent> kcm;
     private ComponentMapper<PositionComponent> pcm;
 
-    private EntityEngine engine;
+    private Engine engine;
     private EntityFactory entityFactory;
 
     private ObjectMapper objectMapper;

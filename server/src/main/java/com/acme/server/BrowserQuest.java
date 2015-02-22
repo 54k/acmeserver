@@ -1,8 +1,8 @@
 package com.acme.server;
 
+import com.acme.engine.aegis.core.Engine;
 import com.acme.engine.application.Context;
 import com.acme.engine.application.EngineApplication;
-import com.acme.engine.ashley.EntityEngine;
 import com.acme.engine.network.NetworkServer;
 import com.acme.server.combat.CombatController;
 import com.acme.server.combat.HateListController;
@@ -39,13 +39,14 @@ public class BrowserQuest extends EngineApplication {
 
     private static final Logger LOG = Logger.getAnonymousLogger();
 
+    private ObjectMapper objectMapper;
     private NetworkServer networkServer;
 
     @Override
     public void create(Context context) {
         super.create(context);
-        context.register(ObjectMapper.class, new ObjectMapper());
-        EntityEngine engine = context.get(EntityEngine.class);
+        objectMapper = new ObjectMapper();
+        Engine engine = getEngine();
         PacketSystem packetSystem = new PacketSystem();
         engine.addSystem(packetSystem);
         engine.addSystem(new SpawnSystem());
@@ -96,7 +97,6 @@ public class BrowserQuest extends EngineApplication {
 
     private WorldManager createWorldManager() {
         try {
-            ObjectMapper objectMapper = getContext().get(ObjectMapper.class);
             WorldTemplate template = objectMapper.readValue(getResourceAsStream("world.json"), WorldTemplate.class);
             return new WorldManager(template);
         } catch (IOException e) {
@@ -106,7 +106,6 @@ public class BrowserQuest extends EngineApplication {
 
     private EntityFactory createEntityManager() {
         try {
-            ObjectMapper objectMapper = getContext().get(ObjectMapper.class);
             MapType mapType = objectMapper.getTypeFactory().constructMapType(HashMap.class, Type.class, CreatureTemplate.class);
             Map<Type, CreatureTemplate> creaturesByType = objectMapper.readValue(getResourceAsStream("creatures.json"), mapType);
             return new EntityFactory(creaturesByType);

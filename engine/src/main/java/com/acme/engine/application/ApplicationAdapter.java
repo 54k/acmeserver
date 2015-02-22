@@ -11,7 +11,6 @@ public abstract class ApplicationAdapter implements Application {
     public void create(Context context) {
         this.context = context;
         engine = new Engine();
-        context.register(Engine.class, engine);
     }
 
     @Override
@@ -31,5 +30,9 @@ public abstract class ApplicationAdapter implements Application {
 
     public Context getContext() {
         return context;
+    }
+
+    public Engine getEngine() {
+        return engine;
     }
 }
