@@ -1,8 +1,9 @@
 package com.acme.engine.ecs.events;
 
+import com.acme.engine.ecs.utils.reflection.ClassReflection;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,19 +36,18 @@ public final class Event<T extends EventListener> {
         return dispatcher.proxy;
     }
 
-    @SuppressWarnings("unchecked")
     private static class Dispatcher<T extends EventListener> implements InvocationHandler {
 
         final T proxy;
-        final List<? super Object> listeners = new ArrayList<>();
+        final List<T> listeners = new ArrayList<>();
 
         Dispatcher(Class<T> type) {
-            proxy = (T) Proxy.newProxyInstance(type.getClassLoader(), new Class[]{type}, this);
+            proxy = ClassReflection.newProxyInstance(type, this);
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            for (Object l : new ArrayList<>(listeners)) {
+            for (T l : new ArrayList<>(listeners)) {
                 method.invoke(l, args);
             }
             return null;

@@ -1,9 +1,21 @@
 package com.acme.engine.ecs.utils.reflection;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+
 /**
  * Utilities for Class reflection.
  */
 public final class ClassReflection {
+
+    @SuppressWarnings("unchecked")
+    public static <T> T newProxyInstance(Class<T> c, InvocationHandler invocationHandler) throws ReflectionException {
+        try {
+            return (T) Proxy.newProxyInstance(c.getClassLoader(), new Class[]{c}, invocationHandler);
+        } catch (IllegalArgumentException | SecurityException e) {
+            throw new ReflectionException(e.getMessage(), e);
+        }
+    }
 
     /**
      * Creates a new instance of the class represented by the supplied Class.
