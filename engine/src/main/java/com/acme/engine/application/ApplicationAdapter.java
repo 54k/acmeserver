@@ -10,7 +10,6 @@ public abstract class ApplicationAdapter implements Application {
     public ApplicationAdapter() {
         context = new UpdateLoop(this, 60);
         engine = new Engine();
-        engine.addProcessor(new ApplicationProcessor(context));
     }
 
     public Context getContext() {

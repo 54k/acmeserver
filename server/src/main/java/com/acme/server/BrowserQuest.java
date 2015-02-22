@@ -3,6 +3,9 @@ package com.acme.server;
 import com.acme.engine.application.ApplicationAdapter;
 import com.acme.engine.application.Context;
 import com.acme.engine.ecs.core.Engine;
+import com.acme.engine.ecs.core.Processor;
+import com.acme.engine.ecs.utils.reflection.ClassReflection;
+import com.acme.engine.ecs.utils.reflection.Field;
 import com.acme.engine.mechanics.network.NetworkServer;
 import com.acme.server.brain.CombatBrainState;
 import com.acme.server.brain.PatrolBrainState;
@@ -49,6 +52,7 @@ public class BrowserQuest extends ApplicationAdapter {
         super.create(context);
         objectMapper = new ObjectMapper();
         Engine engine = getEngine();
+        engine.addProcessor(new ApplicationProcessor(context));
         PacketSystem packetSystem = new PacketSystem(objectMapper);
         engine.addSystem(packetSystem);
         engine.addSystem(new SpawnSystem());
@@ -137,5 +141,34 @@ public class BrowserQuest extends ApplicationAdapter {
     @Override
     public void handleError(Throwable t) {
         LOG.log(Level.SEVERE, t.getMessage(), t);
+    }
+
+    // TODO this should be deleted
+    static class ApplicationProcessor implements Processor {
+
+        private final Context context;
+
+        public ApplicationProcessor(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        public void processObject(Object object, Engine engine) {
+            Class<?> objectClass = object.getClass();
+            while (objectClass != null) {
+                injectContext(object, objectClass);
+                objectClass = objectClass.getSuperclass();
+            }
+        }
+
+        private void injectContext(Object object, Class<?> objectClass) {
+            Field[] fields = ClassReflection.getDeclaredFields(objectClass);
+            for (Field field : fields) {
+                if (Context.class.isAssignableFrom(field.getType())) {
+                    field.setAccessible(true);
+                    field.set(object, context);
+                }
+            }
+        }
     }
 }
