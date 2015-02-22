@@ -1,4 +1,4 @@
-package com.acme.server.pickup;
+package com.acme.server.pickups;
 
 import com.acme.engine.ecs.core.Component;
 

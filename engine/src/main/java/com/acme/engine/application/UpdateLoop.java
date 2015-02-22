@@ -94,6 +94,7 @@ public class UpdateLoop implements Context {
                 signalStarted();
             } catch (Throwable t) {
                 application.handleError(t);
+                dispose();
             }
 
             while (!isDisposed()) {

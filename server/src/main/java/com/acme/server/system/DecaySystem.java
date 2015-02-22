@@ -7,8 +7,8 @@ import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.mechanics.timer.TimerSystem;
 import com.acme.server.component.Decay;
 import com.acme.server.component.PositionComponent;
-import com.acme.server.impact.BlinkImpact;
-import com.acme.server.impact.BlinkImpactSystem;
+import com.acme.server.impacts.BlinkImpact;
+import com.acme.server.impacts.BlinkImpactSystem;
 import com.acme.server.manager.WorldManager;
 
 @Wire

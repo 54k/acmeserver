@@ -1,4 +1,4 @@
-package com.acme.engine.mechanics.brain;
+package com.acme.engine.mechanics.brains;
 
 import com.acme.engine.ecs.core.ComponentMapper;
 import com.acme.engine.ecs.core.Entity;
@@ -9,9 +9,9 @@ import com.acme.engine.ecs.systems.IteratingSystem;
 @Wire
 public class BrainSystem extends IteratingSystem {
 
-    private static final Family BRAIN_OWNERS_FAMILY = Family.all(BrainComponent.class).get();
+    private static final Family BRAIN_OWNERS_FAMILY = Family.all(BrainHolder.class).get();
 
-    private ComponentMapper<BrainComponent> brainCm;
+    private ComponentMapper<BrainHolder> brainCm;
 
     private Family family;
 
@@ -40,7 +40,11 @@ public class BrainSystem extends IteratingSystem {
     }
 
     private void updateBrain(Entity entity, float deltaTime) {
-        Brain brain = brainCm.get(entity).getBrain();
+        Brain brain = getBrain(entity);
         brain.update(deltaTime);
+    }
+
+    protected final Brain<Entity> getBrain(Entity entity) {
+        return brainCm.get(entity).getBrain();
     }
 }

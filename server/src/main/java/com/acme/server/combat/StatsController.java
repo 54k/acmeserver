@@ -5,7 +5,7 @@ import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Family;
 import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.ecs.systems.PassiveSystem;
-import com.acme.server.impact.InvulImpactSystem;
+import com.acme.server.impacts.InvulImpactSystem;
 import com.acme.server.packet.outbound.HealthPacket;
 import com.acme.server.system.PacketSystem;
 

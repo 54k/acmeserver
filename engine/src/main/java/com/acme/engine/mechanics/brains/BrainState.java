@@ -1,4 +1,4 @@
-package com.acme.engine.mechanics.brain;
+package com.acme.engine.mechanics.brains;
 
 public interface BrainState<E> {
 

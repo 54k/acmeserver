@@ -1,11 +1,11 @@
-package com.acme.engine.mechanics.brain;
+package com.acme.engine.mechanics.brains;
 
 import com.acme.engine.ecs.core.Component;
 import com.acme.engine.ecs.core.Entity;
 
-public class BrainComponent extends Component {
+public class BrainHolder extends Component {
 
-    private Brain<Entity> brain;
+    Brain<Entity> brain;
 
     public Brain<Entity> getBrain() {
         return brain;

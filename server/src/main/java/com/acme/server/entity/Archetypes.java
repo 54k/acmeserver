@@ -1,14 +1,14 @@
 package com.acme.server.entity;
 
 import com.acme.engine.ecs.core.EntityBuilder;
-import com.acme.engine.mechanics.brain.BrainComponent;
+import com.acme.engine.mechanics.brains.BrainHolder;
 import com.acme.server.combat.Combat;
 import com.acme.server.combat.HateList;
 import com.acme.server.combat.Stats;
 import com.acme.server.component.*;
 import com.acme.server.inventory.DropList;
 import com.acme.server.inventory.Inventory;
-import com.acme.server.pickup.Pickup;
+import com.acme.server.pickups.Pickup;
 
 public final class Archetypes {
     private Archetypes() {
@@ -42,7 +42,7 @@ public final class Archetypes {
                 .addComponentType(Stats.class)
                 .addComponentType(DropList.class)
                 .addComponentType(HateList.class)
-                .addComponentType(BrainComponent.class)
+                .addComponentType(BrainHolder.class)
                 .addComponentType(Combat.class);
     }
 

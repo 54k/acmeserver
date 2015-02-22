@@ -1,4 +1,4 @@
-package com.acme.engine.mechanics.brain;
+package com.acme.engine.mechanics.brains;
 
 public class Brain<E> {
 
@@ -6,6 +6,10 @@ public class Brain<E> {
 
     private BrainState<E> globalState;
     private BrainState<E> currentState;
+
+    public Brain(E owner) {
+        this(owner, null);
+    }
 
     public Brain(E owner, BrainState<E> initialState) {
         this(owner, initialState, null);
@@ -18,7 +22,13 @@ public class Brain<E> {
     }
 
     public void setGlobalState(BrainState<E> globalState) {
+        if (this.globalState != null) {
+            this.globalState.exit(owner);
+        }
         this.globalState = globalState;
+        if (this.globalState != null) {
+            this.globalState.enter(owner);
+        }
     }
 
     public void update(float deltaTime) {
@@ -43,5 +53,16 @@ public class Brain<E> {
 
     public boolean isInState(BrainState state) {
         return currentState == state;
+    }
+
+    public void clear() {
+        if (globalState != null) {
+            globalState.exit(owner);
+        }
+        globalState = null;
+        if (currentState != null) {
+            currentState.exit(owner);
+        }
+        currentState = null;
     }
 }

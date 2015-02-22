@@ -1,4 +1,4 @@
-package com.acme.server.pickup;
+package com.acme.server.pickups;
 
 import com.acme.engine.ecs.core.ComponentMapper;
 import com.acme.engine.ecs.core.Entity;
@@ -7,8 +7,8 @@ import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.combat.StatsController;
 import com.acme.server.entity.EntityFactory;
 import com.acme.server.entity.Type;
-import com.acme.server.impact.HealImpact;
-import com.acme.server.impact.InvulImpact;
+import com.acme.server.impacts.HealImpact;
+import com.acme.server.impacts.InvulImpact;
 import com.acme.server.inventory.DropListController;
 import com.acme.server.inventory.InventoryController;
 import com.acme.server.manager.WorldManager;

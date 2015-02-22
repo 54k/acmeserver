@@ -5,15 +5,14 @@ import com.acme.engine.ecs.core.Engine;
 import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.ecs.systems.PassiveSystem;
-import com.acme.engine.mechanics.brain.Brain;
-import com.acme.engine.mechanics.brain.BrainComponent;
-import com.acme.server.brain.PatrolBrainState;
+import com.acme.engine.mechanics.brains.Brain;
+import com.acme.engine.mechanics.brains.BrainHolder;
 import com.acme.server.combat.StatsController;
 import com.acme.server.component.TypeComponent;
-import com.acme.server.impact.RegenImpact;
+import com.acme.server.impacts.RegenImpact;
 import com.acme.server.inventory.DropList;
 import com.acme.server.inventory.Inventory;
-import com.acme.server.pickup.Pickup;
+import com.acme.server.pickups.Pickup;
 import com.acme.server.template.CreatureTemplate;
 
 import java.util.List;
@@ -27,7 +26,7 @@ public final class EntityFactory extends PassiveSystem {
     private ComponentMapper<TypeComponent> typeCm;
     private ComponentMapper<Pickup> pickupCm;
     private ComponentMapper<DropList> dropListCm;
-    private ComponentMapper<BrainComponent> brainCm;
+    private ComponentMapper<BrainHolder> brainCm;
 
     private Engine engine;
     private StatsController statsController;
@@ -45,6 +44,7 @@ public final class EntityFactory extends PassiveSystem {
     public Entity createPlayer() {
         Entity entity = create(Type.WARRIOR);
         entity.add(new RegenImpact());
+        engine.addEntity(entity);
         return entity;
     }
 
@@ -54,7 +54,9 @@ public final class EntityFactory extends PassiveSystem {
         } else if (type.getEntityBuilder() == Archetypes.ITEM_TYPE) {
             return createItem(type);
         } else {
-            return create(type);
+            Entity entity = create(type);
+            engine.addEntity(entity);
+            return entity;
         }
     }
 
@@ -100,6 +102,7 @@ public final class EntityFactory extends PassiveSystem {
             default:
                 throw new IllegalArgumentException("Cannot set pickupType for instanceType " + type);
         }
+        engine.addEntity(entity);
         return entity;
     }
 
@@ -116,8 +119,9 @@ public final class EntityFactory extends PassiveSystem {
                 .map(e -> new DropList.Drop(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
         dropList.getDrops().addAll(drops);
-        brainCm.get(entity).setBrain(new Brain<>(entity, engine.getSystem(PatrolBrainState.class)));
+        brainCm.get(entity).setBrain(new Brain<>(entity));
         entity.add(new RegenImpact());
+        engine.addEntity(entity);
         return entity;
     }
 
@@ -132,7 +136,6 @@ public final class EntityFactory extends PassiveSystem {
     private Entity create(Type type) {
         Entity entity = type.getEntityBuilder().get();
         typeCm.get(entity).setType(type);
-        engine.addEntity(entity);
         return entity;
     }
 }

@@ -75,6 +75,11 @@ public class HateListController extends PassiveSystem implements CombatListener 
     public void clearHaters(Entity entity) {
         HateList hateList = hateListCm.get(entity);
         Set<Entity> haters = hateList.haters.keySet();
+
+        if (haters.isEmpty()) {
+            return;
+        }
+
         Set<Entity> h = new HashSet<>();
         h.addAll(haters);
 
