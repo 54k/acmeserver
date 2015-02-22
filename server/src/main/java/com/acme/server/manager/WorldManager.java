@@ -1,8 +1,11 @@
 package com.acme.server.manager;
 
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Family;
+import com.acme.engine.aegis.core.Wired;
+import com.acme.engine.aegis.systems.PassiveSystem;
 import com.acme.engine.application.Context;
-import com.acme.engine.systems.PassiveSystem;
-import com.acme.engine.processors.Wired;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.event.WorldManagerEventListener;
@@ -13,9 +16,6 @@ import com.acme.server.util.EntityContainer;
 import com.acme.server.world.Instance;
 import com.acme.server.world.Region;
 import com.acme.server.world.World;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 
 import java.util.Collection;
 

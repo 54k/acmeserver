@@ -1,6 +1,7 @@
 package com.acme.server.impact;
 
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
 import com.acme.engine.impact.ImpactSystem;
 import com.acme.server.combat.StatsController;
 import com.acme.server.entity.Type;
@@ -8,7 +9,6 @@ import com.acme.server.inventory.InventoryController;
 import com.acme.server.packet.outbound.EquipPacket;
 import com.acme.server.packet.outbound.HealthPacket;
 import com.acme.server.system.PacketSystem;
-import com.badlogic.ashley.core.Entity;
 
 @Wired
 public class InvulImpactSystem extends ImpactSystem<InvulImpact> {

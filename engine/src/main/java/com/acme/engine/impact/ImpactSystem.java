@@ -1,13 +1,8 @@
 package com.acme.engine.impact;
 
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.EntityListener;
-import com.badlogic.ashley.core.EntitySystem;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.signals.Listener;
-import com.badlogic.ashley.utils.ImmutableArray;
+import com.acme.engine.aegis.core.*;
+import com.acme.engine.aegis.signals.Listener;
+import com.acme.engine.aegis.utils.ImmutableArray;
 import com.badlogic.gdx.utils.Array;
 
 import java.util.HashMap;

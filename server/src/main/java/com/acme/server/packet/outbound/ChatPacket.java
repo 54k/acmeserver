@@ -1,8 +1,8 @@
 package com.acme.server.packet.outbound;
 
+import com.acme.engine.aegis.core.Entity;
 import com.acme.engine.network.OutboundPacket;
 import com.acme.server.packet.OpCodes;
-import com.badlogic.ashley.core.Entity;
 
 public class ChatPacket extends OutboundPacket {
 

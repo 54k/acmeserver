@@ -1,7 +1,7 @@
 package com.acme.server.packet;
 
+import com.acme.engine.aegis.core.Entity;
 import com.acme.engine.network.InboundPacket;
-import com.badlogic.ashley.core.Entity;
 
 public class PacketReader extends com.acme.engine.network.PacketReader {
 

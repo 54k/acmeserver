@@ -1,6 +1,6 @@
 package com.acme.server.entity;
 
-import com.acme.engine.aegis.Archetype;
+import com.acme.engine.aegis.core.Archetype;
 import com.acme.engine.brain.BrainComponent;
 import com.acme.server.combat.Combat;
 import com.acme.server.combat.HateList;

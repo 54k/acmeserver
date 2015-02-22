@@ -1,13 +1,9 @@
 package com.acme.server.combat;
 
-import com.acme.engine.ashley.EntityEngine;
-import com.acme.engine.systems.PassiveSystem;
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.*;
+import com.acme.engine.aegis.systems.PassiveSystem;
+import com.acme.engine.aegis.utils.ImmutableList;
 import com.acme.server.util.EntityContainer;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.utils.ImmutableArray;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -19,16 +15,16 @@ public class HateListController extends PassiveSystem implements CombatListener 
     private static final Family hateListFamily = Family.all(HateList.class).get();
 
     private ComponentMapper<HateList> hateListCm;
-    private ImmutableArray<Entity> hateOwners;
+    private ImmutableList<Entity> hateOwners;
 
     @Override
-    public void addedToEngine(EntityEngine engine) {
+    public void addedToEngine(Engine engine) {
         super.addedToEngine(engine);
         hateOwners = engine.getEntitiesFor(hateListFamily);
     }
 
     @Override
-    public void removedFromEngine(EntityEngine engine) {
+    public void removedFromEngine(Engine engine) {
         super.removedFromEngine(engine);
         hateOwners = null;
     }
@@ -49,7 +45,7 @@ public class HateListController extends PassiveSystem implements CombatListener 
     }
 
     @Override
-    public void entityRemoved0(Entity entity) {
+    public void entityRemoved(Entity entity) {
         removeHater(entity);
     }
 
@@ -57,7 +53,7 @@ public class HateListController extends PassiveSystem implements CombatListener 
         HateList hateList = hateListCm.get(entity);
         Map<Entity, Integer> haters = hateList.haters;
         if (haters.putIfAbsent(hater, 0) == null) {
-            dispatch(HateListListener.class).onHaterAdded(entity, hater);
+            event(HateListListener.class).dispatch().onHaterAdded(entity, hater);
         }
         haters.compute(hater, (e, hate) -> hate + amount);
     }
@@ -70,10 +66,10 @@ public class HateListController extends PassiveSystem implements CombatListener 
         HateList hateList = hateListCm.get(entity);
         Map<Entity, Integer> haters = hateList.haters;
         if (haters.remove(hater) != null) {
-            dispatch(HateListListener.class).onHaterRemoved(entity, hater);
+            event(HateListListener.class).dispatch().onHaterRemoved(entity, hater);
         }
         if (haters.isEmpty()) {
-            dispatch(HateListListener.class).onHatersEmpty(entity);
+            event(HateListListener.class).dispatch().onHatersEmpty(entity);
         }
     }
 
@@ -85,7 +81,7 @@ public class HateListController extends PassiveSystem implements CombatListener 
 
         haters.clear();
 
-        HateListListener hateListListener = dispatch(HateListListener.class);
+        HateListListener hateListListener = event(HateListListener.class).dispatch();
         h.forEach(hater -> hateListListener.onHaterRemoved(entity, hater));
         hateListListener.onHatersEmpty(entity);
     }

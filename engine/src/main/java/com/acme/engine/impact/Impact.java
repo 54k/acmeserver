@@ -1,6 +1,6 @@
 package com.acme.engine.impact;
 
-import com.badlogic.ashley.core.Component;
+import com.acme.engine.aegis.core.Component;
 
 public abstract class Impact extends Component {
 

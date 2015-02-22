@@ -1,11 +1,11 @@
 package com.acme.server.packet.outbound;
 
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
 import com.acme.engine.network.OutboundPacket;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.packet.OpCodes;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 
 @Wired
 public class MovePacket extends OutboundPacket {

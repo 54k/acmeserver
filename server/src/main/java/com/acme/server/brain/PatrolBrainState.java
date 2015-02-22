@@ -1,6 +1,8 @@
 package com.acme.server.brain;
 
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
 import com.acme.engine.brain.BrainStateController;
 import com.acme.server.component.PatrolComponent;
 import com.acme.server.component.Spawn;
@@ -9,8 +11,6 @@ import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 
 @Wired
 public class PatrolBrainState extends BrainStateController {

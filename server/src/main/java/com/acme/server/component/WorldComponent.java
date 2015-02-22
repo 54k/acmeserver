@@ -1,7 +1,7 @@
 package com.acme.server.component;
 
+import com.acme.engine.aegis.core.Component;
 import com.acme.server.world.Instance;
-import com.badlogic.ashley.core.Component;
 
 public class WorldComponent extends Component {
 

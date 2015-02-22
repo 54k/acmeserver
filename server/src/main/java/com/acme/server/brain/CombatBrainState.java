@@ -1,6 +1,8 @@
 package com.acme.server.brain;
 
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
 import com.acme.engine.brain.BrainStateController;
 import com.acme.server.combat.CombatController;
 import com.acme.server.combat.HateListController;
@@ -11,8 +13,6 @@ import com.acme.server.controller.PositionController;
 import com.acme.server.packet.outbound.MovePacket;
 import com.acme.server.system.PacketSystem;
 import com.acme.server.world.Position;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 
 @Wired
 public class CombatBrainState extends BrainStateController implements HateListListener {

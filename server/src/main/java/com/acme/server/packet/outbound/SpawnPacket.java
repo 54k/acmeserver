@@ -1,6 +1,8 @@
 package com.acme.server.packet.outbound;
 
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
 import com.acme.engine.network.OutboundPacket;
 import com.acme.server.component.PlayerComponent;
 import com.acme.server.component.PositionComponent;
@@ -9,8 +11,6 @@ import com.acme.server.entity.Type;
 import com.acme.server.inventory.Inventory;
 import com.acme.server.packet.OpCodes;
 import com.acme.server.util.TypeUtils;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 
 public class SpawnPacket extends OutboundPacket {
 

@@ -1,6 +1,8 @@
 package com.acme.server.system;
 
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
 import com.acme.engine.timer.TimerSystem;
 import com.acme.server.combat.StatsController;
 import com.acme.server.component.PositionComponent;
@@ -13,8 +15,6 @@ import com.acme.server.world.Area;
 import com.acme.server.world.Instance;
 import com.acme.server.world.Orientation;
 import com.acme.server.world.Position;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 
 @Wired
 public class SpawnSystem extends TimerSystem<Spawn> {

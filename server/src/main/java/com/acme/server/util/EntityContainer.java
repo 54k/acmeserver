@@ -1,8 +1,8 @@
 package com.acme.server.util;
 
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Family;
 import com.acme.server.entity.Archetypes;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 
 import java.util.ArrayList;
 import java.util.Optional;

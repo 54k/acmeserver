@@ -1,6 +1,6 @@
 package com.acme.server.packet.inbound;
 
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.Wired;
 import com.acme.engine.network.InboundPacket;
 import com.acme.server.controller.PositionController;
 import com.acme.server.world.Position;

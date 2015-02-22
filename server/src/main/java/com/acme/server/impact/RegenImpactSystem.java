@@ -1,9 +1,9 @@
 package com.acme.server.impact;
 
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
 import com.acme.engine.impact.ImpactSystem;
 import com.acme.server.combat.StatsController;
-import com.badlogic.ashley.core.Entity;
 
 @Wired
 public class RegenImpactSystem extends ImpactSystem<RegenImpact> {

@@ -1,7 +1,7 @@
 package com.acme.server.component;
 
+import com.acme.engine.aegis.core.Component;
 import com.acme.server.util.EntityContainer;
-import com.badlogic.ashley.core.Component;
 
 public class KnownListComponent extends Component {
 

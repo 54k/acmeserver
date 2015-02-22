@@ -1,6 +1,6 @@
 package com.acme.server.pickup;
 
-import com.badlogic.ashley.core.Component;
+import com.acme.engine.aegis.core.Component;
 
 public class Pickup extends Component {
 

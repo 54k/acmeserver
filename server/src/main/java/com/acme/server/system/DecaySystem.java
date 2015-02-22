@@ -1,15 +1,15 @@
 package com.acme.server.system;
 
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Engine;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
 import com.acme.engine.timer.TimerSystem;
 import com.acme.server.component.Decay;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.impact.BlinkImpact;
 import com.acme.server.impact.BlinkImpactSystem;
 import com.acme.server.manager.WorldManager;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
 
 @Wired
 public class DecaySystem extends TimerSystem<Decay> {

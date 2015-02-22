@@ -1,11 +1,11 @@
 package com.acme.server.inventory;
 
-import com.acme.engine.systems.PassiveSystem;
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
+import com.acme.engine.aegis.systems.PassiveSystem;
 import com.acme.server.packet.outbound.EquipPacket;
 import com.acme.server.system.PacketSystem;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 
 @Wired
 public class InventoryController extends PassiveSystem {

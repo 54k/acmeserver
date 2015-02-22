@@ -1,26 +1,28 @@
 package com.acme.engine.application;
 
-import com.acme.engine.ashley.EntityEngine;
-import com.badlogic.ashley.core.Engine;
+import com.acme.engine.aegis.core.Engine;
 
 public abstract class ApplicationAdapter implements Application {
 
     private Context context;
+    private Engine engine;
 
     @Override
     public void create(Context context) {
         this.context = context;
-        context.register(EntityEngine.class, new EntityEngine(context, new Engine()));
+        engine = new Engine();
+        context.register(Engine.class, engine);
     }
 
     @Override
     public void update() {
-        context.get(EntityEngine.class).update(context.getDelta());
+        engine.update(context.getDelta());
     }
 
     @Override
     public void dispose() {
         context = null;
+        engine = null;
     }
 
     @Override

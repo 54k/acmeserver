@@ -1,8 +1,11 @@
 package com.acme.server.inventory;
 
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Family;
+import com.acme.engine.aegis.core.Wired;
+import com.acme.engine.aegis.systems.PassiveSystem;
 import com.acme.engine.application.Context;
-import com.acme.engine.systems.PassiveSystem;
-import com.acme.engine.processors.Wired;
 import com.acme.server.combat.CombatListener;
 import com.acme.server.component.Decay;
 import com.acme.server.component.PositionComponent;
@@ -15,9 +18,6 @@ import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 
 import java.util.List;
 import java.util.stream.Collectors;

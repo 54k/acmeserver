@@ -1,6 +1,6 @@
 package com.acme.server.inventory;
 
-import com.badlogic.ashley.core.Component;
+import com.acme.engine.aegis.core.Component;
 
 public final class Inventory extends Component {
 

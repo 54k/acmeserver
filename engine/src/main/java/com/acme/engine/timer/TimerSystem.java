@@ -1,9 +1,9 @@
 package com.acme.engine.timer;
 
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Family;
+import com.acme.engine.aegis.systems.IteratingSystem;
 
 public abstract class TimerSystem<T extends Timer> extends IteratingSystem {
 

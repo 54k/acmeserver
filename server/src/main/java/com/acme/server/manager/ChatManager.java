@@ -1,10 +1,10 @@
 package com.acme.server.manager;
 
-import com.acme.engine.systems.PassiveSystem;
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
+import com.acme.engine.aegis.systems.PassiveSystem;
 import com.acme.server.packet.outbound.ChatPacket;
 import com.acme.server.system.PacketSystem;
-import com.badlogic.ashley.core.Entity;
 
 @Wired
 public class ChatManager extends PassiveSystem {

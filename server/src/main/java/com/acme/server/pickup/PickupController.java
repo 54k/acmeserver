@@ -1,7 +1,9 @@
 package com.acme.server.pickup;
 
-import com.acme.engine.systems.PassiveSystem;
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
+import com.acme.engine.aegis.systems.PassiveSystem;
 import com.acme.server.combat.StatsController;
 import com.acme.server.entity.EntityFactory;
 import com.acme.server.entity.Type;
@@ -10,8 +12,6 @@ import com.acme.server.impact.InvulImpact;
 import com.acme.server.inventory.DropListController;
 import com.acme.server.inventory.InventoryController;
 import com.acme.server.manager.WorldManager;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 
 @Wired
 public class PickupController extends PassiveSystem {

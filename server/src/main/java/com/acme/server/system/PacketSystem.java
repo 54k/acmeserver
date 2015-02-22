@@ -1,7 +1,9 @@
 package com.acme.server.system;
 
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
 import com.acme.engine.ashley.EntityEngine;
-import com.acme.engine.processors.Wired;
 import com.acme.engine.network.*;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PositionComponent;
@@ -9,8 +11,6 @@ import com.acme.server.entity.EntityFactory;
 import com.acme.server.packet.OpCodes;
 import com.acme.server.packet.PacketReader;
 import com.acme.server.packet.inbound.*;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

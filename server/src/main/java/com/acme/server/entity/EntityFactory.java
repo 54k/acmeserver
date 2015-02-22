@@ -1,7 +1,10 @@
 package com.acme.server.entity;
 
-import com.acme.engine.systems.PassiveSystem;
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Engine;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Wired;
+import com.acme.engine.aegis.systems.PassiveSystem;
 import com.acme.engine.brain.Brain;
 import com.acme.engine.brain.BrainComponent;
 import com.acme.server.brain.PatrolBrainState;
@@ -12,9 +15,6 @@ import com.acme.server.inventory.DropList;
 import com.acme.server.inventory.Inventory;
 import com.acme.server.pickup.Pickup;
 import com.acme.server.template.CreatureTemplate;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
 
 import java.util.List;
 import java.util.Map;

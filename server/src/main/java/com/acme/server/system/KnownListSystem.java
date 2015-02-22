@@ -1,6 +1,10 @@
 package com.acme.server.system;
 
-import com.acme.engine.processors.Wired;
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Family;
+import com.acme.engine.aegis.core.Wired;
+import com.acme.engine.aegis.systems.IteratingSystem;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
@@ -9,10 +13,6 @@ import com.acme.server.packet.outbound.SpawnPacket;
 import com.acme.server.util.EntityContainer;
 import com.acme.server.util.PositionUtils;
 import com.acme.server.world.Region;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
 
 @Wired
 public class KnownListSystem extends IteratingSystem {

@@ -1,6 +1,6 @@
 package com.acme.engine.network;
 
-import com.badlogic.ashley.core.Component;
+import com.acme.engine.aegis.core.Component;
 
 public class SessionComponent extends Component {
 

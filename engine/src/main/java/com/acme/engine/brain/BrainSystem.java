@@ -1,13 +1,12 @@
 package com.acme.engine.brain;
 
-import com.acme.engine.ashley.EntityEngine;
-import com.acme.engine.ashley.EntityEngineListener;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
+import com.acme.engine.aegis.core.ComponentMapper;
+import com.acme.engine.aegis.core.Engine;
+import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.aegis.core.Family;
+import com.acme.engine.aegis.systems.IteratingSystem;
 
-public class BrainSystem extends IteratingSystem implements EntityEngineListener {
+public class BrainSystem extends IteratingSystem {
 
     private static final Family BRAIN_OWNERS_FAMILY = Family.all(BrainComponent.class).get();
     private static final ComponentMapper<BrainComponent> bcm = ComponentMapper.getFor(BrainComponent.class);
@@ -30,14 +29,16 @@ public class BrainSystem extends IteratingSystem implements EntityEngineListener
     }
 
     @Override
-    public void addedToEngine(EntityEngine engine) {
+    public void addedToEngine(Engine engine) {
+        super.addedToEngine(engine);
         for (BrainStateController brainStateController : brainStateControllers) {
             engine.addSystem(brainStateController);
         }
     }
 
     @Override
-    public void removedFromEngine(EntityEngine engine) {
+    public void removedFromEngine(Engine engine) {
+        super.addedToEngine(engine);
         for (BrainStateController brainStateController : brainStateControllers) {
             engine.removeSystem(brainStateController);
         }
