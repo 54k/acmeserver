@@ -21,11 +21,6 @@ public abstract class PassiveSystem extends EntitySystem implements EntityListen
     }
 
     @Override
-    public void removedFromEngine(Engine engine) {
-        engine.removeEntityListener(this);
-    }
-
-    @Override
     public void entityAdded(Entity entity) {
     }
 

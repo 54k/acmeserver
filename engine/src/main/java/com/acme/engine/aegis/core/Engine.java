@@ -156,8 +156,11 @@ public class Engine {
 
     /**
      * Adds the {@link EntitySystem} to this Engine
+     *
+     * @throws java.lang.IllegalStateException if engine has been initialized
      */
     public void addSystem(EntitySystem system) {
+        checkInitialized();
         Class<? extends EntitySystem> systemType = system.getClass();
         if (!systemsByClass.containsKey(systemType)) {
             systems.add(system);
@@ -165,22 +168,6 @@ public class Engine {
             system.engine = this;
             system.addedToEngine(this);
             Collections.sort(systems, systemsComparator);
-
-            if (initialized) {
-                processSystems(new ImmutableList<>(Collections.singletonList(system)));
-                system.initialized();
-            }
-        }
-    }
-
-    /**
-     * Removes the {@link EntitySystem} from this Engine
-     */
-    public void removeSystem(EntitySystem system) {
-        if (systems.remove(system)) {
-            systemsByClass.remove(system.getClass());
-            system.engine = null;
-            system.removedFromEngine(this);
         }
     }
 
@@ -245,19 +232,18 @@ public class Engine {
 
     /**
      * Adds the {@link Processor} to this Engine
+     *
+     * @throws java.lang.IllegalStateException if engine has been initialized
      */
     public void addSystemProcessor(Processor processor) {
+        checkInitialized();
         processors.add(processor);
-        if (initialized) {
-            processor.processSystems(immutableSystems, this);
-        }
     }
 
-    /**
-     * Removes the {@link Processor} from this Engine
-     */
-    public void removeSystemProcessor(Processor processor) {
-        processors.remove(processor);
+    private void checkInitialized() {
+        if (initialized) {
+            throw new IllegalStateException("Engine has been initialized");
+        }
     }
 
     @SuppressWarnings("unchecked")

@@ -38,7 +38,7 @@ public class ComponentType {
     }
 
     /**
-     * Quick helper method. The same could be done via {@link ComponentType.getFor(Class<? extends Component>)}.
+     * Quick helper method.
      *
      * @param componentType The {@link Component} class
      * @return The index for the specified {@link Component} Class
@@ -49,9 +49,9 @@ public class ComponentType {
 
     /**
      * @param componentTypes list of {@link Component} classes
-     * @return Bits representing the collection of components for quick comparison and matching. See
-     * {@link Family#getFor(Bits, Bits, Bits)}.
+     * @return Bits representing the collection of components for quick comparison and matching.
      */
+    @SafeVarargs
     public static BitSet getBitsFor(Class<? extends Component>... componentTypes) {
         BitSet bits = new BitSet();
 

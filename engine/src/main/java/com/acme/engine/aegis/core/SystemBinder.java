@@ -65,7 +65,7 @@ class SystemBinder implements Processor {
             value = ComponentMapper.getFor(elementType);
         }
         if (value == null) {
-            throw new NullPointerException();
+            throw new NullPointerException("Cannot bind value type " + type.getName() + " for field " + field.getName());
         }
         return value;
     }

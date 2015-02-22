@@ -25,11 +25,6 @@ public abstract class IntervalIteratingSystem extends IntervalSystem {
     }
 
     @Override
-    public void removedFromEngine(Engine engine) {
-        entities = null;
-    }
-
-    @Override
     protected void updateInterval() {
         int size = entities.size();
         for (int i = 0; i < size; i++) {

@@ -37,11 +37,6 @@ public abstract class IteratingSystem extends EntitySystem {
     }
 
     @Override
-    public void removedFromEngine(Engine engine) {
-        entities = null;
-    }
-
-    @Override
     public void update(float deltaTime) {
         int size = entities.size();
         for (int i = 0; i < size; ++i) {

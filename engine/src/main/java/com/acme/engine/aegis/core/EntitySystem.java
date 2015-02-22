@@ -11,7 +11,7 @@ public abstract class EntitySystem {
     /**
      * Use this to set the priority of the system. Lower means it'll get executed first.
      */
-    public int priority;
+    int priority;
     private boolean enabled;
 
     Engine engine;
@@ -45,14 +45,6 @@ public abstract class EntitySystem {
     }
 
     /**
-     * Called when this EntitySystem is removed from an {@link Engine}.
-     *
-     * @param engine The {@link Engine} the system was removed from.
-     */
-    public void removedFromEngine(Engine engine) {
-    }
-
-    /**
      * The update method called every tick.
      *
      * @param deltaTime The time passed since last frame in seconds.
@@ -63,14 +55,14 @@ public abstract class EntitySystem {
     /**
      * @return Whether or not the system should be processed.
      */
-    public boolean isEnabled() {
+    public final boolean isEnabled() {
         return enabled;
     }
 
     /**
      * Sets whether or not the system should be processed by the {@link Engine}.
      */
-    public void setEnabled(boolean enabled) {
+    public final void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
