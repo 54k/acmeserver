@@ -4,13 +4,35 @@ import com.acme.engine.ecs.core.Engine;
 
 public abstract class ApplicationAdapter implements Application {
 
-    private Context context;
-    private Engine engine;
+    private volatile Context context;
+    private volatile Engine engine;
+
+    public ApplicationAdapter() {
+        context = new UpdateLoop(this, 60);
+        engine = new Engine();
+        engine.addProcessor(new ApplicationProcessor(context));
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public Engine getEngine() {
+        return engine;
+    }
+
+    public final void start() {
+        context.start();
+        context.waitForStart(0);
+    }
+
+    public final void stop() {
+        context.dispose();
+        context.waitForDispose(0);
+    }
 
     @Override
     public void create(Context context) {
-        this.context = context;
-        engine = new Engine();
     }
 
     @Override
@@ -26,13 +48,5 @@ public abstract class ApplicationAdapter implements Application {
 
     @Override
     public void handleError(Throwable t) {
-    }
-
-    public Context getContext() {
-        return context;
-    }
-
-    public Engine getEngine() {
-        return engine;
     }
 }

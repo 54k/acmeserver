@@ -1,6 +1,6 @@
 package com.acme.server.entity;
 
-import com.acme.engine.ecs.core.Archetype;
+import com.acme.engine.ecs.core.EntityBuilder;
 import com.acme.engine.mechanics.brain.BrainComponent;
 import com.acme.server.combat.Combat;
 import com.acme.server.combat.HateList;
@@ -14,50 +14,50 @@ public final class Archetypes {
     private Archetypes() {
     }
 
-    public static final Archetype BASE_TYPE = new Archetype();
+    public static final EntityBuilder BASE_TYPE = new EntityBuilder();
 
     static {
         BASE_TYPE
-                .add(PositionComponent.class)
-                .add(WorldComponent.class)
-                .add(TypeComponent.class);
+                .addComponentType(PositionComponent.class)
+                .addComponentType(WorldComponent.class)
+                .addComponentType(TypeComponent.class);
     }
 
-    public static final Archetype PLAYER_TYPE = new Archetype(BASE_TYPE);
+    public static final EntityBuilder PLAYER_TYPE = new EntityBuilder(BASE_TYPE);
 
     static {
         PLAYER_TYPE
-                .add(PlayerComponent.class)
-                .add(KnownListComponent.class)
-                .add(Inventory.class)
-                .add(Stats.class);
+                .addComponentType(PlayerComponent.class)
+                .addComponentType(KnownListComponent.class)
+                .addComponentType(Inventory.class)
+                .addComponentType(Stats.class);
     }
 
-    public static final Archetype CREATURE_TYPE = new Archetype(BASE_TYPE);
+    public static final EntityBuilder CREATURE_TYPE = new EntityBuilder(BASE_TYPE);
 
     static {
         CREATURE_TYPE
-                .add(KnownListComponent.class)
-                .add(Inventory.class)
-                .add(Stats.class)
-                .add(DropList.class)
-                .add(HateList.class)
-                .add(BrainComponent.class)
-                .add(Combat.class);
+                .addComponentType(KnownListComponent.class)
+                .addComponentType(Inventory.class)
+                .addComponentType(Stats.class)
+                .addComponentType(DropList.class)
+                .addComponentType(HateList.class)
+                .addComponentType(BrainComponent.class)
+                .addComponentType(Combat.class);
     }
 
-    public static final Archetype ITEM_TYPE = new Archetype(BASE_TYPE);
+    public static final EntityBuilder ITEM_TYPE = new EntityBuilder(BASE_TYPE);
 
     static {
         ITEM_TYPE
-                .add(Pickup.class);
+                .addComponentType(Pickup.class);
 
     }
 
-    public static final Archetype CHEST_TYPE = new Archetype(BASE_TYPE);
+    public static final EntityBuilder CHEST_TYPE = new EntityBuilder(BASE_TYPE);
 
     static {
         CHEST_TYPE
-                .add(DropList.class);
+                .addComponentType(DropList.class);
     }
 }

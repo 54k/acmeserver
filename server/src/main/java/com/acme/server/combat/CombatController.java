@@ -47,6 +47,7 @@ public class CombatController extends PassiveSystem {
         event(CombatListener.class).dispatch().onEntityDamaged(attacker, target, damage);
         if (statsController.isDead(target)) {
             event(CombatListener.class).dispatch().onEntityKilled(attacker, target);
+            setTarget(target, null);
             worldManager.decay(target);
             packetSystem.sendPacket(attacker, new KillPacket(entityFactory.getType(target)));
         }

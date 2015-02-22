@@ -240,7 +240,7 @@ public class Engine {
      *
      * @throws java.lang.IllegalStateException if engine has been initialized
      */
-    public void addSystemProcessor(Processor processor) {
+    public void addProcessor(Processor processor) {
         checkInitialized();
         processors.add(processor);
     }

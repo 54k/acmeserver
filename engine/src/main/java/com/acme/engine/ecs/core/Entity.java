@@ -219,8 +219,10 @@ public class Entity {
         }
 
         List<ComponentListener> listeners = listenersByComponent.get(component.getClass());
-        for (ComponentListener listener : listeners) {
-            listener.componentAdded(this, component);
+        if (listeners != null) {
+            for (ComponentListener listener : listeners) {
+                listener.componentAdded(this, component);
+            }
         }
     }
 
@@ -230,8 +232,10 @@ public class Entity {
         }
 
         List<ComponentListener> listeners = listenersByComponent.get(component.getClass());
-        for (ComponentListener listener : listeners) {
-            listener.componentRemoved(this, component);
+        if (listeners != null) {
+            for (ComponentListener listener : listeners) {
+                listener.componentRemoved(this, component);
+            }
         }
     }
 

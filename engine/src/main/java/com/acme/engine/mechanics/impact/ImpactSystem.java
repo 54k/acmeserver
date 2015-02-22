@@ -3,7 +3,9 @@ package com.acme.engine.mechanics.impact;
 import com.acme.engine.ecs.core.*;
 import com.acme.engine.ecs.utils.ImmutableList;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class ImpactSystem<I extends Impact> extends EntitySystem {
@@ -13,7 +15,8 @@ public abstract class ImpactSystem<I extends Impact> extends EntitySystem {
     private ComponentMapper<I> impactCm;
     private ImpactListener listener;
 
-    private ImmutableList<Entity> entities;
+    private ImmutableList<Entity> targets;
+    private List<Entity> prevTargets;
 
     public ImpactSystem(Class<I> impactClass) {
         this(impactClass, 0);
@@ -25,19 +28,43 @@ public abstract class ImpactSystem<I extends Impact> extends EntitySystem {
         impactFamily = Family.all(impactClass).get();
         impactCm = ComponentMapper.getFor(impactClass);
         listener = new ImpactListener();
+        prevTargets = new ArrayList<>(16);
     }
 
     @Override
     public void addedToEngine(Engine engine) {
         engine.addEntityListener(listener);
-        entities = engine.getEntitiesFor(impactFamily);
+        targets = engine.getEntitiesFor(impactFamily);
     }
 
     @Override
     public void update(float deltaTime) {
-        for (int i = 0; i < entities.size(); i++) {
-            Entity target = entities.get(i);
+        processAppliedImpacts();
+        processRemovedImpacts();
+        int size = targets.size();
+        for (int i = 0; i < size; i++) {
+            Entity target = targets.get(i);
             processImpact(impactCm.get(target), target, deltaTime);
+        }
+    }
+
+    public void processAppliedImpacts() {
+        for (int i = 0; i < targets.size(); i++) {
+            Entity target = targets.get(i);
+            if (!prevTargets.contains(target)) {
+                listener.put(target, impactCm.get(target));
+                prevTargets.add(target);
+            }
+        }
+    }
+
+    public void processRemovedImpacts() {
+        for (int i = prevTargets.size() - 1; i >= 0; i--) {
+            Entity target = prevTargets.get(i);
+            if (!targets.contains(target)) {
+                listener.remove(target);
+                prevTargets.remove(i);
+            }
         }
     }
 
@@ -91,7 +118,6 @@ public abstract class ImpactSystem<I extends Impact> extends EntitySystem {
 
         @Override
         public void entityAdded(Entity entity) {
-            put(entity, getImpact(entity));
         }
 
         @Override
@@ -105,6 +131,10 @@ public abstract class ImpactSystem<I extends Impact> extends EntitySystem {
             put(entity, (I) component);
         }
 
+        @Override
+        public void componentRemoved(Entity entity, Component component) {
+        }
+
         public void put(Entity target, I impact) {
             I prevImpact = impactsByTarget.put(target, impact);
             if (prevImpact == null) {
@@ -115,18 +145,12 @@ public abstract class ImpactSystem<I extends Impact> extends EntitySystem {
             }
         }
 
-        @Override
-        public void componentRemoved(Entity entity, Component component) {
-            remove(entity);
-        }
-
         public void remove(Entity target) {
             I impact = impactsByTarget.remove(target);
-            if (impact == null) {
-                throw new NullPointerException();
+            if (impact != null) {
+                target.removeComponentListener(this);
+                impactRemoved(impact, target);
             }
-            target.removeComponentListener(this);
-            impactRemoved(impact, target);
         }
 
         public void removeFromEngine(Entity target) {

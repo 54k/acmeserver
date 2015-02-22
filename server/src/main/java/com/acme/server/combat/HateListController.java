@@ -59,6 +59,11 @@ public class HateListController extends PassiveSystem implements CombatListener 
     public void removeHater(Entity entity, Entity hater) {
         HateList hateList = hateListCm.get(entity);
         Map<Entity, Integer> haters = hateList.haters;
+
+        if (haters.isEmpty()) {
+            return;
+        }
+
         if (haters.remove(hater) != null) {
             event(HateListListener.class).dispatch().onHaterRemoved(entity, hater);
         }

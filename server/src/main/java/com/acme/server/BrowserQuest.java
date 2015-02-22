@@ -1,9 +1,11 @@
 package com.acme.server;
 
+import com.acme.engine.application.ApplicationAdapter;
 import com.acme.engine.application.Context;
-import com.acme.engine.application.EngineApplication;
 import com.acme.engine.ecs.core.Engine;
 import com.acme.engine.mechanics.network.NetworkServer;
+import com.acme.server.brain.CombatBrainState;
+import com.acme.server.brain.PatrolBrainState;
 import com.acme.server.combat.CombatController;
 import com.acme.server.combat.HateListController;
 import com.acme.server.combat.StatsController;
@@ -35,7 +37,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BrowserQuest extends EngineApplication {
+public class BrowserQuest extends ApplicationAdapter {
 
     private static final Logger LOG = Logger.getAnonymousLogger();
 
@@ -47,11 +49,13 @@ public class BrowserQuest extends EngineApplication {
         super.create(context);
         objectMapper = new ObjectMapper();
         Engine engine = getEngine();
-        PacketSystem packetSystem = new PacketSystem();
+        PacketSystem packetSystem = new PacketSystem(objectMapper);
         engine.addSystem(packetSystem);
         engine.addSystem(new SpawnSystem());
         engine.addSystem(new DecaySystem());
         engine.addSystem(new CreatureBrainSystem());
+        engine.addSystem(new PatrolBrainState());
+        engine.addSystem(new CombatBrainState());
         engine.addSystem(new KnownListSystem());
 
         engine.addSystem(new PositionController());

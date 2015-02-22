@@ -49,9 +49,9 @@ public final class EntityFactory extends PassiveSystem {
     }
 
     public Entity createEntity(Type type) {
-        if (type.getArchetype() == Archetypes.CREATURE_TYPE) {
+        if (type.getEntityBuilder() == Archetypes.CREATURE_TYPE) {
             return createCreature(type);
-        } else if (type.getArchetype() == Archetypes.ITEM_TYPE) {
+        } else if (type.getEntityBuilder() == Archetypes.ITEM_TYPE) {
             return createItem(type);
         } else {
             return create(type);
@@ -130,7 +130,7 @@ public final class EntityFactory extends PassiveSystem {
     }
 
     private Entity create(Type type) {
-        Entity entity = type.getArchetype().buildEntity();
+        Entity entity = type.getEntityBuilder().get();
         typeCm.get(entity).setType(type);
         engine.addEntity(entity);
         return entity;

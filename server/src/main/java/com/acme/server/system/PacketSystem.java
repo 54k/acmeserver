@@ -30,7 +30,8 @@ public class PacketSystem extends NetworkSystem {
 
     private final PacketReader packetReader;
 
-    public PacketSystem() {
+    public PacketSystem(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
         packetReader = new PacketReader();
         packetReader.registerPacketPrototype(OpCodes.HELLO, LoginPacket.class);
         packetReader.registerPacketPrototype(OpCodes.MOVE, MovePacket.class);

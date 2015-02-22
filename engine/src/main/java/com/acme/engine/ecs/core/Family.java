@@ -12,12 +12,13 @@ import java.util.Map;
  */
 public class Family {
 
-    public static final Family ALL = Family.all().get();
-
-    private static Map<String, Family> families = new HashMap<>();
     private static int familyIndex = 0;
+
+    private static final Map<String, Family> families = new HashMap<>();
     private static final Builder builder = new Builder();
     private static final BitSet zeroBits = new BitSet();
+
+    public static final Family ALL = Family.all().get();
 
     private final BitSet all;
     private final BitSet one;
@@ -118,7 +119,9 @@ public class Family {
          */
         @SafeVarargs
         public final Builder all(Class<? extends Component>... componentTypes) {
-            all = ComponentType.getBitsFor(componentTypes);
+            BitSet bits = ComponentType.getBitsFor(componentTypes);
+            bits.or(all);
+            all = bits;
             return this;
         }
 
@@ -128,7 +131,9 @@ public class Family {
          */
         @SafeVarargs
         public final Builder one(Class<? extends Component>... componentTypes) {
-            one = ComponentType.getBitsFor(componentTypes);
+            BitSet bits = ComponentType.getBitsFor(componentTypes);
+            bits.or(one);
+            one = bits;
             return this;
         }
 
@@ -138,7 +143,9 @@ public class Family {
          */
         @SafeVarargs
         public final Builder exclude(Class<? extends Component>... componentTypes) {
-            exclude = ComponentType.getBitsFor(componentTypes);
+            BitSet bits = ComponentType.getBitsFor(componentTypes);
+            bits.or(exclude);
+            exclude = bits;
             return this;
         }
 
@@ -146,7 +153,7 @@ public class Family {
          * @return A family for the configured component types
          */
         public Family get() {
-            String hash = getFamilyHash(all, one, exclude);
+            String hash = getHash(all, one, exclude);
             Family family = families.get(hash);
             if (family == null) {
                 family = new Family(all, one, exclude);
@@ -179,7 +186,7 @@ public class Family {
         return index == other.index && all.equals(other.all) && one.equals(other.one) && exclude.equals(other.exclude);
     }
 
-    private static String getFamilyHash(BitSet all, BitSet one, BitSet exclude) {
+    private static String getHash(BitSet all, BitSet one, BitSet exclude) {
         StringBuilder builder = new StringBuilder();
         if (!all.isEmpty()) {
             builder.append("{all:").append(getBitsString(all)).append("}");

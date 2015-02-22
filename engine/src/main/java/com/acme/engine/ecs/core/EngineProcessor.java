@@ -18,16 +18,21 @@ class EngineProcessor implements Processor {
 
     @SuppressWarnings("unchecked")
     private void bindEventListener(Object object, Engine engine) {
-        Class<?> systemClass = object.getClass();
-        while (systemClass != null) {
-            Class<?>[] interfaces = systemClass.getInterfaces();
+        Class<?> objectClass = object.getClass();
+
+        if (!objectClass.isAnnotationPresent(Wire.class)) {
+            return;
+        }
+
+        while (objectClass != null) {
+            Class<?>[] interfaces = objectClass.getInterfaces();
             for (Class<?> i : interfaces) {
                 if (EventListener.class.isAssignableFrom(i)) {
                     Class<EventListener> listenerClass = (Class<EventListener>) i;
                     engine.event(listenerClass).add((EventListener) object);
                 }
             }
-            systemClass = systemClass.getSuperclass();
+            objectClass = objectClass.getSuperclass();
         }
     }
 
@@ -54,7 +59,7 @@ class EngineProcessor implements Processor {
         Field[] fields = ClassReflection.getDeclaredFields(objectClass);
         List<Field> matchingFields = new ArrayList<>();
         for (Field field : fields) {
-            if (allMatch || field.isAnnotationPresent(Wire.class)) {
+            if ((allMatch || field.isAnnotationPresent(Wire.class)) && !field.isFinal()) {
                 matchingFields.add(field);
             }
         }
@@ -63,24 +68,27 @@ class EngineProcessor implements Processor {
 
     private void bindField(Field field, Object object, Engine engine) {
         field.setAccessible(true);
-        field.set(object, getBindValue(field, engine));
+        Object bindValue = getBindValue(field, engine);
+        if (bindValue != null) {
+            field.set(object, bindValue);
+        }
     }
 
     @SuppressWarnings("unchecked")
     private Object getBindValue(Field field, Engine engine) {
-        Object value = null;
         Class type = field.getType();
         if (Engine.class.isAssignableFrom(type)) {
-            value = engine;
+            return engine;
         } else if (EntitySystem.class.isAssignableFrom(type)) {
-            value = engine.getSystem(type);
+            EntitySystem system = engine.getSystem(type);
+            if (system == null) {
+                throw new NullPointerException("Cannot bind system type " + type.getName() + " for field " + field.getName());
+            }
+            return system;
         } else if (ComponentMapper.class.isAssignableFrom(type)) {
             Class<? extends Component> elementType = (Class<? extends Component>) field.getElementType(0);
-            value = ComponentMapper.getFor(elementType);
+            return ComponentMapper.getFor(elementType);
         }
-        if (value == null) {
-            throw new NullPointerException("Cannot bind value type " + type.getName() + " for field " + field.getName());
-        }
-        return value;
+        return null;
     }
 }

@@ -36,6 +36,7 @@ public class UpdateLoop implements Context {
 
     private long lastNanos;
     private volatile float delta;
+    private volatile Thread mainLoopThread;
 
     public UpdateLoop(Application application, int fps) {
         this(application, fps, createThreadName());
@@ -52,7 +53,7 @@ public class UpdateLoop implements Context {
     }
 
     private void runLoop() {
-        Thread mainLoopThread = new Thread(threadName) {
+        mainLoopThread = new Thread(threadName) {
             @Override
             public void run() {
                 try {
@@ -62,14 +63,6 @@ public class UpdateLoop implements Context {
                 }
             }
         };
-
-        mainLoopThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                application.handleError(e);
-            }
-        });
-
         mainLoopThread.start();
     }
 
@@ -96,8 +89,12 @@ public class UpdateLoop implements Context {
 
     private void loop() {
         try {
-            application.create(this);
-            signalStarted();
+            try {
+                application.create(this);
+                signalStarted();
+            } catch (Throwable t) {
+                application.handleError(t);
+            }
 
             while (!isDisposed()) {
                 if (updateIntervalNanos > 0) {
@@ -215,11 +212,17 @@ public class UpdateLoop implements Context {
 
     @Override
     public void dispose() {
-        schedule(() -> {
-            if (!isDisposed()) {
-                state.set(STATE_DISPOSED);
-            }
-        });
+        if (Thread.currentThread() == mainLoopThread) {
+            dispose0();
+        } else {
+            schedule(this::dispose0);
+        }
+    }
+
+    public void dispose0() {
+        if (!isDisposed()) {
+            state.set(STATE_DISPOSED);
+        }
     }
 
     @Override
