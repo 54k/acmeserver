@@ -19,11 +19,6 @@ class EngineProcessor implements Processor {
     @SuppressWarnings("unchecked")
     private void bindEventListener(Object object, Engine engine) {
         Class<?> objectClass = object.getClass();
-
-        if (!objectClass.isAnnotationPresent(Wire.class)) {
-            return;
-        }
-
         while (objectClass != null) {
             Class<?>[] interfaces = objectClass.getInterfaces();
             for (Class<?> i : interfaces) {
