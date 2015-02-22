@@ -1,11 +1,11 @@
 package com.acme.server.impact;
 
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.impact.ImpactSystem;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.mechanics.impact.ImpactSystem;
 import com.acme.server.combat.StatsController;
 
-@Wired
+@Wire
 public class HealImpactSystem extends ImpactSystem<HealImpact> {
 
     private StatsController statsController;

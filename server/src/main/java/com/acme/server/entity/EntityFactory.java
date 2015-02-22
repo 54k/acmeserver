@@ -1,12 +1,12 @@
 package com.acme.server.entity;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Engine;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.aegis.systems.PassiveSystem;
-import com.acme.engine.brain.Brain;
-import com.acme.engine.brain.BrainComponent;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Engine;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
+import com.acme.engine.mechanics.brain.Brain;
+import com.acme.engine.mechanics.brain.BrainComponent;
 import com.acme.server.brain.PatrolBrainState;
 import com.acme.server.combat.StatsController;
 import com.acme.server.component.TypeComponent;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Wired
+@Wire
 public final class EntityFactory extends PassiveSystem {
 
     private ComponentMapper<Inventory> inventoryCm;

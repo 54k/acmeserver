@@ -1,7 +1,7 @@
 package com.acme.server.event;
 
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.events.EventListener;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.events.EventListener;
 
 public interface WorldManagerEventListener extends EventListener {
 

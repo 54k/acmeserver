@@ -1,9 +1,9 @@
 package com.acme.server.pickup;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.aegis.systems.PassiveSystem;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.combat.StatsController;
 import com.acme.server.entity.EntityFactory;
 import com.acme.server.entity.Type;
@@ -13,7 +13,7 @@ import com.acme.server.inventory.DropListController;
 import com.acme.server.inventory.InventoryController;
 import com.acme.server.manager.WorldManager;
 
-@Wired
+@Wire
 public class PickupController extends PassiveSystem {
 
     private ComponentMapper<Pickup> pickupCm;

@@ -1,9 +1,9 @@
 package com.acme.server;
 
-import com.acme.engine.aegis.core.Engine;
 import com.acme.engine.application.Context;
 import com.acme.engine.application.EngineApplication;
-import com.acme.engine.network.NetworkServer;
+import com.acme.engine.ecs.core.Engine;
+import com.acme.engine.mechanics.network.NetworkServer;
 import com.acme.server.combat.CombatController;
 import com.acme.server.combat.HateListController;
 import com.acme.server.combat.StatsController;

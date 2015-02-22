@@ -1,9 +1,9 @@
 package com.acme.server.combat;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.aegis.systems.PassiveSystem;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.controller.PositionController;
 import com.acme.server.entity.EntityFactory;
 import com.acme.server.inventory.InventoryController;
@@ -16,7 +16,7 @@ import com.acme.server.util.Rnd;
 import com.acme.server.util.TypeUtils;
 import com.acme.server.world.Position;
 
-@Wired
+@Wire
 public class CombatController extends PassiveSystem {
 
     private ComponentMapper<Combat> combatCm;

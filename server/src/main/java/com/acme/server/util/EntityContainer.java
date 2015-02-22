@@ -1,7 +1,7 @@
 package com.acme.server.util;
 
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Family;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Family;
 import com.acme.server.entity.Archetypes;
 
 import java.util.ArrayList;

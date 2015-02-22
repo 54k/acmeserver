@@ -1,7 +1,7 @@
 package com.acme.server.packet.outbound;
 
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.network.OutboundPacket;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.mechanics.network.OutboundPacket;
 import com.acme.server.packet.OpCodes;
 
 public class EquipPacket extends OutboundPacket {

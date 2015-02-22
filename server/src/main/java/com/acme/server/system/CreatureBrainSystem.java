@@ -1,16 +1,16 @@
 package com.acme.server.system;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.brain.BrainSystem;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.mechanics.brain.BrainSystem;
 import com.acme.server.brain.CombatBrainState;
 import com.acme.server.brain.PatrolBrainState;
 import com.acme.server.combat.HateListController;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.entity.Archetypes;
 
-@Wired
+@Wire
 public class CreatureBrainSystem extends BrainSystem {
 
     private ComponentMapper<PositionComponent> pcm;

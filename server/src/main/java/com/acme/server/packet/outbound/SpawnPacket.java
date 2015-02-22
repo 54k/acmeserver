@@ -1,9 +1,9 @@
 package com.acme.server.packet.outbound;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.network.OutboundPacket;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.mechanics.network.OutboundPacket;
 import com.acme.server.component.PlayerComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.TypeComponent;
@@ -14,13 +14,13 @@ import com.acme.server.util.TypeUtils;
 
 public class SpawnPacket extends OutboundPacket {
 
-    @Wired
+    @Wire
     private ComponentMapper<PlayerComponent> pcm;
-    @Wired
+    @Wire
     private ComponentMapper<PositionComponent> poscm;
-    @Wired
+    @Wire
     private ComponentMapper<TypeComponent> tcm;
-    @Wired
+    @Wire
     private ComponentMapper<Inventory> icm;
 
     private Entity entity;

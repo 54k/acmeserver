@@ -1,7 +1,7 @@
 package com.acme.server.util;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;

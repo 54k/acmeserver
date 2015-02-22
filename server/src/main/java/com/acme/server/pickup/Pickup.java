@@ -1,6 +1,6 @@
 package com.acme.server.pickup;
 
-import com.acme.engine.aegis.core.Component;
+import com.acme.engine.ecs.core.Component;
 
 public class Pickup extends Component {
 

@@ -1,13 +1,13 @@
 package com.acme.server.inventory;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.aegis.systems.PassiveSystem;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.packet.outbound.EquipPacket;
 import com.acme.server.system.PacketSystem;
 
-@Wired
+@Wire
 public class InventoryController extends PassiveSystem {
 
     private ComponentMapper<Inventory> inventoryCm;

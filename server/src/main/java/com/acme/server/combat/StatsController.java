@@ -1,15 +1,15 @@
 package com.acme.server.combat;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Family;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.aegis.systems.PassiveSystem;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Family;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.impact.InvulImpactSystem;
 import com.acme.server.packet.outbound.HealthPacket;
 import com.acme.server.system.PacketSystem;
 
-@Wired
+@Wire
 public class StatsController extends PassiveSystem {
 
     public static final Family statsFamily = Family.all(Stats.class).get();

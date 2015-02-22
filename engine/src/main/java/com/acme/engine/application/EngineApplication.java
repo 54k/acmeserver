@@ -5,10 +5,7 @@ public class EngineApplication extends ApplicationAdapter {
     private volatile Context context;
 
     public final void start() {
-        ContextBuilder builder = new ContextBuilder(this);
-        builder.setApplicationName("Engine Application Thread");
-        builder.setUpdateInterval(1000 / 60);
-        context = builder.build();
+        context = new UpdateLoop(this, 60);
         context.waitForStart(0);
     }
 

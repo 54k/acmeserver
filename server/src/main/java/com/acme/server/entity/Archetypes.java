@@ -1,7 +1,7 @@
 package com.acme.server.entity;
 
-import com.acme.engine.aegis.core.Archetype;
-import com.acme.engine.brain.BrainComponent;
+import com.acme.engine.ecs.core.Archetype;
+import com.acme.engine.mechanics.brain.BrainComponent;
 import com.acme.server.combat.Combat;
 import com.acme.server.combat.HateList;
 import com.acme.server.combat.Stats;

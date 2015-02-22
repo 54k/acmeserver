@@ -1,17 +1,17 @@
 package com.acme.server.system;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Engine;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.timer.TimerSystem;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Engine;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.mechanics.timer.TimerSystem;
 import com.acme.server.component.Decay;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.impact.BlinkImpact;
 import com.acme.server.impact.BlinkImpactSystem;
 import com.acme.server.manager.WorldManager;
 
-@Wired
+@Wire
 public class DecaySystem extends TimerSystem<Decay> {
 
     private ComponentMapper<PositionComponent> positionCm;

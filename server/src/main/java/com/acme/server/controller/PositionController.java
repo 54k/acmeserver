@@ -1,9 +1,9 @@
 package com.acme.server.controller;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.aegis.systems.PassiveSystem;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.packet.outbound.MovePacket;
@@ -11,7 +11,7 @@ import com.acme.server.system.PacketSystem;
 import com.acme.server.world.Position;
 import com.acme.server.world.Region;
 
-@Wired
+@Wire
 public class PositionController extends PassiveSystem {
 
     private ComponentMapper<PositionComponent> pcm;

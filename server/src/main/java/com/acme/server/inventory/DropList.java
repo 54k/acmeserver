@@ -1,6 +1,6 @@
 package com.acme.server.inventory;
 
-import com.acme.engine.aegis.core.Component;
+import com.acme.engine.ecs.core.Component;
 import com.acme.server.entity.Type;
 
 import java.util.ArrayList;

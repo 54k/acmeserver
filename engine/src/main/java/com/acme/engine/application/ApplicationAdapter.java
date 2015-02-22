@@ -1,6 +1,6 @@
 package com.acme.engine.application;
 
-import com.acme.engine.aegis.core.Engine;
+import com.acme.engine.ecs.core.Engine;
 
 public abstract class ApplicationAdapter implements Application {
 

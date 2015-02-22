@@ -1,10 +1,10 @@
 package com.acme.server.system;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Engine;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.network.*;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Engine;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.mechanics.network.*;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.entity.EntityFactory;
@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-@Wired
+@Wire
 public class PacketSystem extends NetworkSystem {
 
     private ComponentMapper<SessionComponent> scm;
@@ -58,7 +58,7 @@ public class PacketSystem extends NetworkSystem {
 
     @Override
     protected void runPacket(InboundPacket packet) {
-        engine.wireObject(packet);
+        engine.processObject(packet);
         super.runPacket(packet);
     }
 
@@ -79,19 +79,19 @@ public class PacketSystem extends NetworkSystem {
     }
 
     @Override
-    protected com.acme.engine.network.PacketReader getPacketReader() {
+    protected com.acme.engine.mechanics.network.PacketReader getPacketReader() {
         return packetReader;
     }
 
     @Override
     public void sendPacket(Entity receiver, OutboundPacket packet) {
-        engine.wireObject(packet);
+        engine.processObject(packet);
         super.sendPacket(receiver, packet);
     }
 
     @Override
     public void sendToAll(OutboundPacket packet) {
-        engine.wireObject(packet);
+        engine.processObject(packet);
         super.sendToAll(packet);
     }
 

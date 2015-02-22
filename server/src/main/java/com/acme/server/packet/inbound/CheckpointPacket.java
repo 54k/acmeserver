@@ -1,13 +1,13 @@
 package com.acme.server.packet.inbound;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.network.InboundPacket;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.mechanics.network.InboundPacket;
 import com.acme.server.component.PlayerComponent;
 import com.acme.server.manager.WorldManager;
 import com.acme.server.world.Area;
 
-@Wired
+@Wire
 public class CheckpointPacket extends InboundPacket {
 
     private int checkpointId;

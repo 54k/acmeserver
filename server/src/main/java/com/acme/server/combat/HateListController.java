@@ -1,15 +1,15 @@
 package com.acme.server.combat;
 
-import com.acme.engine.aegis.core.*;
-import com.acme.engine.aegis.systems.PassiveSystem;
-import com.acme.engine.aegis.utils.ImmutableList;
+import com.acme.engine.ecs.core.*;
+import com.acme.engine.ecs.systems.PassiveSystem;
+import com.acme.engine.ecs.utils.ImmutableList;
 import com.acme.server.util.EntityContainer;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@Wired
+@Wire
 public class HateListController extends PassiveSystem implements CombatListener {
 
     private static final Family hateListFamily = Family.all(HateList.class).get();
@@ -21,12 +21,6 @@ public class HateListController extends PassiveSystem implements CombatListener 
     public void addedToEngine(Engine engine) {
         super.addedToEngine(engine);
         hateOwners = engine.getEntitiesFor(hateListFamily);
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        super.removedFromEngine(engine);
-        hateOwners = null;
     }
 
     @Override

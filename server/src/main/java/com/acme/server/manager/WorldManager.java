@@ -1,11 +1,11 @@
 package com.acme.server.manager;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Family;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.aegis.systems.PassiveSystem;
 import com.acme.engine.application.Context;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Family;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.event.WorldManagerEventListener;
@@ -19,7 +19,7 @@ import com.acme.server.world.World;
 
 import java.util.Collection;
 
-@Wired
+@Wire
 public class WorldManager extends PassiveSystem {
 
     private static final Family worldEntitiesFamily = Family.all(PositionComponent.class, WorldComponent.class).get();
@@ -58,7 +58,7 @@ public class WorldManager extends PassiveSystem {
         newRegion.addEntity(entity);
         positionComponent.setRegion(newRegion);
         positionComponent.setSpawned(true);
-        dispatch(WorldManagerEventListener.class).onEntitySpawned(entity);
+        event(WorldManagerEventListener.class).dispatch().onEntitySpawned(entity);
     }
 
     public void removeFromWorld(Entity entity) {
@@ -75,7 +75,7 @@ public class WorldManager extends PassiveSystem {
         Region region = positionComponent.getRegion();
         region.removeEntity(entity);
         positionComponent.setSpawned(false);
-        dispatch(WorldManagerEventListener.class).onEntityDecayed(entity);
+        event(WorldManagerEventListener.class).dispatch().onEntityDecayed(entity);
     }
 
     public Instance getAvailableInstance() {
@@ -129,7 +129,7 @@ public class WorldManager extends PassiveSystem {
     }
 
     @Override
-    public void entityRemoved0(Entity entity) {
+    public void entityRemoved(Entity entity) {
         removeFromWorld(entity);
     }
 }

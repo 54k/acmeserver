@@ -1,11 +1,11 @@
 package com.acme.server.inventory;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Family;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.aegis.systems.PassiveSystem;
 import com.acme.engine.application.Context;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Family;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.combat.CombatListener;
 import com.acme.server.component.Decay;
 import com.acme.server.component.PositionComponent;
@@ -22,7 +22,7 @@ import com.acme.server.world.Position;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Wired
+@Wire
 public class DropListController extends PassiveSystem implements CombatListener {
 
     private static final Family dropListFamily = Family.all(DropList.class).get();

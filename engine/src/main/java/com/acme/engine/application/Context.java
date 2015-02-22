@@ -12,6 +12,8 @@ public interface Context {
 
     CancellableTask schedulePeriodic(Runnable task, long delay, long period, TimeUnit unit);
 
+    void start();
+
     void waitForStart(long timeoutMillis);
 
     void dispose();

@@ -1,6 +1,6 @@
 package com.acme.server.entity;
 
-import com.acme.engine.aegis.core.Archetype;
+import com.acme.engine.ecs.core.Archetype;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 

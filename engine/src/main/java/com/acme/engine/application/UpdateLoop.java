@@ -2,14 +2,13 @@ package com.acme.engine.application;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-final class UpdateLoop implements Context {
+public class UpdateLoop implements Context {
 
     private static final long MICROS_IN_SECOND = 1000000;
     private static final long ORIGIN_NANOS = System.nanoTime();
@@ -18,15 +17,15 @@ final class UpdateLoop implements Context {
     private static final int STATE_STARTED = 1;
     private static final int STATE_DISPOSED = 2;
 
-    private final AtomicInteger state = new AtomicInteger(STATE_STARTING);
+    private static final AtomicInteger counter = new AtomicInteger();
 
-    private final Queue<ContextListener> contextListeners = new ConcurrentLinkedQueue<>();
+    private final AtomicInteger state = new AtomicInteger(STATE_STARTING);
 
     private final Queue<ScheduledTask> scheduledTasks = new PriorityQueue<>();
     private final Queue<ScheduledTask> taskQueue = new PriorityQueue<>();
 
     private final Application application;
-    private final Configuration configuration;
+    private String threadName;
 
     private final Lock lock = new ReentrantLock();
     private final Condition createdCondition = lock.newCondition();
@@ -38,16 +37,22 @@ final class UpdateLoop implements Context {
     private long lastNanos;
     private volatile float delta;
 
-    UpdateLoop(Application application, Configuration configuration) {
+    public UpdateLoop(Application application, int fps) {
+        this(application, fps, createThreadName());
+    }
+
+    public UpdateLoop(Application application, int fps, String threadName) {
         this.application = application;
-        this.configuration = configuration;
-        updateIntervalNanos = configuration.updateInterval * MICROS_IN_SECOND;
-        contextListeners.addAll(configuration.contextListeners);
-        runLoop();
+        updateIntervalNanos = 1000 / fps * MICROS_IN_SECOND;
+        this.threadName = threadName;
+    }
+
+    private static String createThreadName() {
+        return "aegis-loop-" + counter.incrementAndGet();
     }
 
     private void runLoop() {
-        Thread mainLoopThread = new Thread(configuration.applicationName) {
+        Thread mainLoopThread = new Thread(threadName) {
             @Override
             public void run() {
                 try {
@@ -57,6 +62,14 @@ final class UpdateLoop implements Context {
                 }
             }
         };
+
+        mainLoopThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                application.handleError(e);
+            }
+        });
+
         mainLoopThread.start();
     }
 
@@ -85,7 +98,6 @@ final class UpdateLoop implements Context {
         try {
             application.create(this);
             signalStarted();
-            contextListeners.forEach(ContextListener::created);
 
             while (!isDisposed()) {
                 if (updateIntervalNanos > 0) {
@@ -102,11 +114,8 @@ final class UpdateLoop implements Context {
                     application.handleError(t);
                 }
             }
-        } catch (Throwable t) {
-            application.handleError(t);
         } finally {
             application.dispose();
-            contextListeners.forEach(ContextListener::disposed);
         }
     }
 
@@ -175,7 +184,7 @@ final class UpdateLoop implements Context {
     @Override
     public CancellableTask schedulePeriodic(Runnable task, long delay, long period, TimeUnit unit) {
         if (isDisposed()) {
-            throw new IllegalStateException(configuration.applicationName + " disposed");
+            throw new IllegalStateException("UpdateLoop has been disposed");
         }
         synchronized (scheduledTasks) {
             ScheduledTask scheduledTask = new ScheduledTask(task, unit.toNanos(delay), unit.toNanos(period), scheduledTasks);
@@ -185,12 +194,8 @@ final class UpdateLoop implements Context {
     }
 
     @Override
-    public void dispose() {
-        schedule(() -> {
-            if (!isDisposed()) {
-                state.set(STATE_DISPOSED);
-            }
-        });
+    public void start() {
+        runLoop();
     }
 
     @Override
@@ -206,6 +211,15 @@ final class UpdateLoop implements Context {
         } finally {
             lock.unlock();
         }
+    }
+
+    @Override
+    public void dispose() {
+        schedule(() -> {
+            if (!isDisposed()) {
+                state.set(STATE_DISPOSED);
+            }
+        });
     }
 
     @Override

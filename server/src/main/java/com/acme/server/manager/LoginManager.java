@@ -1,10 +1,10 @@
 package com.acme.server.manager;
 
-import com.acme.engine.aegis.core.ComponentMapper;
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.core.Wired;
-import com.acme.engine.aegis.systems.PassiveSystem;
 import com.acme.engine.application.Context;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.combat.StatsController;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PlayerComponent;
@@ -25,7 +25,7 @@ import com.acme.server.world.Position;
 
 import java.util.Collection;
 
-@Wired
+@Wire
 public class LoginManager extends PassiveSystem {
 
     private ComponentMapper<Inventory> icm;

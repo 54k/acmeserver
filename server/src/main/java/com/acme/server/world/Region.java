@@ -1,6 +1,6 @@
 package com.acme.server.world;
 
-import com.acme.engine.aegis.core.Entity;
+import com.acme.engine.ecs.core.Entity;
 import com.acme.server.util.EntityContainer;
 
 import java.util.Collections;

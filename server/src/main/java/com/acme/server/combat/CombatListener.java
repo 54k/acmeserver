@@ -1,7 +1,7 @@
 package com.acme.server.combat;
 
-import com.acme.engine.aegis.core.Entity;
-import com.acme.engine.aegis.events.EventListener;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.events.EventListener;
 
 public interface CombatListener extends EventListener {
 

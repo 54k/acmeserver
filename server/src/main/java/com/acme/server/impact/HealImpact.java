@@ -1,6 +1,6 @@
 package com.acme.server.impact;
 
-import com.acme.engine.impact.Impact;
+import com.acme.engine.mechanics.impact.Impact;
 
 public final class HealImpact extends Impact {
 
