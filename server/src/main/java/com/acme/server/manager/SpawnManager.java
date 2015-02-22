@@ -1,8 +1,10 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.Spawn;
 import com.acme.server.component.WorldComponent;
@@ -14,14 +16,12 @@ import com.acme.server.template.StaticChestTemplate;
 import com.acme.server.world.Area;
 import com.acme.server.world.Instance;
 import com.acme.server.world.Position;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Wired
-public class SpawnManager extends ManagerSystem {
+@Wire
+public class SpawnManager extends PassiveSystem {
 
     private ComponentMapper<WorldComponent> wcm;
     private ComponentMapper<PositionComponent> pcm;

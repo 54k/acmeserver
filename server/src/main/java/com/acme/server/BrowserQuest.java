@@ -1,9 +1,14 @@
 package com.acme.server;
 
+import com.acme.engine.application.ApplicationAdapter;
 import com.acme.engine.application.Context;
-import com.acme.engine.application.EngineApplication;
-import com.acme.engine.ashley.EntityEngine;
-import com.acme.engine.network.NetworkServer;
+import com.acme.engine.ecs.core.Engine;
+import com.acme.engine.ecs.core.Processor;
+import com.acme.engine.ecs.utils.reflection.ClassReflection;
+import com.acme.engine.ecs.utils.reflection.Field;
+import com.acme.engine.mechanics.network.NetworkServer;
+import com.acme.server.brain.CombatBrainState;
+import com.acme.server.brain.PatrolBrainState;
 import com.acme.server.combat.CombatController;
 import com.acme.server.combat.HateListController;
 import com.acme.server.combat.StatsController;
@@ -35,22 +40,26 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BrowserQuest extends EngineApplication {
+public class BrowserQuest extends ApplicationAdapter {
 
     private static final Logger LOG = Logger.getAnonymousLogger();
 
+    private ObjectMapper objectMapper;
     private NetworkServer networkServer;
 
     @Override
     public void create(Context context) {
         super.create(context);
-        context.register(ObjectMapper.class, new ObjectMapper());
-        EntityEngine engine = context.get(EntityEngine.class);
-        PacketSystem packetSystem = new PacketSystem();
+        objectMapper = new ObjectMapper();
+        Engine engine = getEngine();
+        engine.addProcessor(new ApplicationProcessor(context));
+        PacketSystem packetSystem = new PacketSystem(objectMapper);
         engine.addSystem(packetSystem);
         engine.addSystem(new SpawnSystem());
         engine.addSystem(new DecaySystem());
         engine.addSystem(new CreatureBrainSystem());
+        engine.addSystem(new PatrolBrainState());
+        engine.addSystem(new CombatBrainState());
         engine.addSystem(new KnownListSystem());
 
         engine.addSystem(new PositionController());
@@ -96,7 +105,6 @@ public class BrowserQuest extends EngineApplication {
 
     private WorldManager createWorldManager() {
         try {
-            ObjectMapper objectMapper = getContext().get(ObjectMapper.class);
             WorldTemplate template = objectMapper.readValue(getResourceAsStream("world.json"), WorldTemplate.class);
             return new WorldManager(template);
         } catch (IOException e) {
@@ -106,7 +114,6 @@ public class BrowserQuest extends EngineApplication {
 
     private EntityFactory createEntityManager() {
         try {
-            ObjectMapper objectMapper = getContext().get(ObjectMapper.class);
             MapType mapType = objectMapper.getTypeFactory().constructMapType(HashMap.class, Type.class, CreatureTemplate.class);
             Map<Type, CreatureTemplate> creaturesByType = objectMapper.readValue(getResourceAsStream("creatures.json"), mapType);
             return new EntityFactory(creaturesByType);
@@ -134,5 +141,34 @@ public class BrowserQuest extends EngineApplication {
     @Override
     public void handleError(Throwable t) {
         LOG.log(Level.SEVERE, t.getMessage(), t);
+    }
+
+    // TODO this should be deleted
+    static class ApplicationProcessor implements Processor {
+
+        private final Context context;
+
+        public ApplicationProcessor(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        public void processObject(Object object, Engine engine) {
+            Class<?> objectClass = object.getClass();
+            while (objectClass != null) {
+                injectContext(object, objectClass);
+                objectClass = objectClass.getSuperclass();
+            }
+        }
+
+        private void injectContext(Object object, Class<?> objectClass) {
+            Field[] fields = ClassReflection.getDeclaredFields(objectClass);
+            for (Field field : fields) {
+                if (Context.class.isAssignableFrom(field.getType())) {
+                    field.setAccessible(true);
+                    field.set(object, context);
+                }
+            }
+        }
     }
 }

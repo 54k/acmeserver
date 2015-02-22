@@ -1,7 +1,7 @@
 package com.acme.server.combat;
 
-import com.badlogic.ashley.core.Component;
-import com.badlogic.ashley.core.Entity;
+import com.acme.engine.ecs.core.Component;
+import com.acme.engine.ecs.core.Entity;
 
 public final class Combat extends Component {
 

@@ -1,18 +1,18 @@
 package com.acme.server.controller;
 
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
 import com.acme.server.packet.outbound.MovePacket;
 import com.acme.server.system.PacketSystem;
 import com.acme.server.world.Position;
 import com.acme.server.world.Region;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 
-@Wired
-public class PositionController extends ManagerSystem {
+@Wire
+public class PositionController extends PassiveSystem {
 
     private ComponentMapper<PositionComponent> pcm;
     private ComponentMapper<WorldComponent> wcm;

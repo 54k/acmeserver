@@ -1,6 +1,6 @@
 package com.acme.server.combat;
 
-import com.badlogic.ashley.core.Component;
+import com.acme.engine.ecs.core.Component;
 
 public final class Stats extends Component {
 

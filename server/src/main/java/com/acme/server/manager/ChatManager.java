@@ -1,13 +1,13 @@
 package com.acme.server.manager;
 
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.packet.outbound.ChatPacket;
 import com.acme.server.system.PacketSystem;
-import com.badlogic.ashley.core.Entity;
 
-@Wired
-public class ChatManager extends ManagerSystem {
+@Wire
+public class ChatManager extends PassiveSystem {
 
     private PacketSystem packetSystem;
 

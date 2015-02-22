@@ -1,7 +1,7 @@
 package com.acme.server.world;
 
+import com.acme.engine.ecs.core.Entity;
 import com.acme.server.util.EntityContainer;
-import com.badlogic.ashley.core.Entity;
 
 import java.util.Collections;
 import java.util.HashSet;

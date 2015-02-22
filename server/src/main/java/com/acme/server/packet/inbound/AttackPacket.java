@@ -1,11 +1,11 @@
 package com.acme.server.packet.inbound;
 
-import com.acme.engine.ashley.Wired;
-import com.acme.engine.network.InboundPacket;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.mechanics.network.InboundPacket;
 import com.acme.server.combat.CombatController;
 import com.acme.server.manager.WorldManager;
 
-@Wired
+@Wire
 public class AttackPacket extends InboundPacket {
 
     private CombatController combatController;

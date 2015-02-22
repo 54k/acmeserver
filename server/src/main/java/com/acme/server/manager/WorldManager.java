@@ -1,11 +1,14 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Family;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
-import com.acme.server.event.WorldManagerEvent;
+import com.acme.server.event.WorldManagerEventListener;
 import com.acme.server.packet.outbound.PopulationPacket;
 import com.acme.server.system.PacketSystem;
 import com.acme.server.template.WorldTemplate;
@@ -13,14 +16,11 @@ import com.acme.server.util.EntityContainer;
 import com.acme.server.world.Instance;
 import com.acme.server.world.Region;
 import com.acme.server.world.World;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 
 import java.util.Collection;
 
-@Wired
-public class WorldManager extends ManagerSystem {
+@Wire
+public class WorldManager extends PassiveSystem {
 
     private static final Family worldEntitiesFamily = Family.all(PositionComponent.class, WorldComponent.class).get();
 
@@ -58,7 +58,7 @@ public class WorldManager extends ManagerSystem {
         newRegion.addEntity(entity);
         positionComponent.setRegion(newRegion);
         positionComponent.setSpawned(true);
-        post(WorldManagerEvent.class).onEntitySpawned(entity);
+        event(WorldManagerEventListener.class).dispatch().onEntitySpawned(entity);
     }
 
     public void removeFromWorld(Entity entity) {
@@ -75,7 +75,7 @@ public class WorldManager extends ManagerSystem {
         Region region = positionComponent.getRegion();
         region.removeEntity(entity);
         positionComponent.setSpawned(false);
-        post(WorldManagerEvent.class).onEntityDecayed(entity);
+        event(WorldManagerEventListener.class).dispatch().onEntityDecayed(entity);
     }
 
     public Instance getAvailableInstance() {
@@ -129,7 +129,7 @@ public class WorldManager extends ManagerSystem {
     }
 
     @Override
-    public void entityRemoved0(Entity entity) {
+    public void entityRemoved(Entity entity) {
         removeFromWorld(entity);
     }
 }

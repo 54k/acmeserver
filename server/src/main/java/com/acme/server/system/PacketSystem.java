@@ -1,36 +1,37 @@
 package com.acme.server.system;
 
-import com.acme.engine.ashley.EntityEngine;
-import com.acme.engine.ashley.Wired;
-import com.acme.engine.network.*;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Engine;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.mechanics.network.*;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.entity.EntityFactory;
 import com.acme.server.packet.OpCodes;
 import com.acme.server.packet.PacketReader;
 import com.acme.server.packet.inbound.*;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-@Wired
+@Wire
 public class PacketSystem extends NetworkSystem {
 
     private ComponentMapper<SessionComponent> scm;
     private ComponentMapper<KnownListComponent> kcm;
     private ComponentMapper<PositionComponent> pcm;
 
-    private EntityEngine engine;
+    private Engine engine;
     private EntityFactory entityFactory;
 
     private ObjectMapper objectMapper;
 
     private final PacketReader packetReader;
 
-    public PacketSystem() {
+    public PacketSystem(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
         packetReader = new PacketReader();
         packetReader.registerPacketPrototype(OpCodes.HELLO, LoginPacket.class);
         packetReader.registerPacketPrototype(OpCodes.MOVE, MovePacket.class);
@@ -58,7 +59,7 @@ public class PacketSystem extends NetworkSystem {
 
     @Override
     protected void runPacket(InboundPacket packet) {
-        engine.wireObject(packet);
+        engine.processObject(packet);
         super.runPacket(packet);
     }
 
@@ -79,19 +80,19 @@ public class PacketSystem extends NetworkSystem {
     }
 
     @Override
-    protected com.acme.engine.network.PacketReader getPacketReader() {
+    protected com.acme.engine.mechanics.network.PacketReader getPacketReader() {
         return packetReader;
     }
 
     @Override
     public void sendPacket(Entity receiver, OutboundPacket packet) {
-        engine.wireObject(packet);
+        engine.processObject(packet);
         super.sendPacket(receiver, packet);
     }
 
     @Override
     public void sendToAll(OutboundPacket packet) {
-        engine.wireObject(packet);
+        engine.processObject(packet);
         super.sendToAll(packet);
     }
 

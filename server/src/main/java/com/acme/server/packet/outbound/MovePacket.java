@@ -1,13 +1,13 @@
 package com.acme.server.packet.outbound;
 
-import com.acme.engine.ashley.Wired;
-import com.acme.engine.network.OutboundPacket;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.mechanics.network.OutboundPacket;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.packet.OpCodes;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 
-@Wired
+@Wire
 public class MovePacket extends OutboundPacket {
 
     private ComponentMapper<PositionComponent> pcm;

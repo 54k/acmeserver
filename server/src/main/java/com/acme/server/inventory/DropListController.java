@@ -1,8 +1,11 @@
 package com.acme.server.inventory;
 
 import com.acme.engine.application.Context;
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Family;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.combat.CombatListener;
 import com.acme.server.component.Decay;
 import com.acme.server.component.PositionComponent;
@@ -15,15 +18,12 @@ import com.acme.server.util.PositionUtils;
 import com.acme.server.util.Rnd;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Wired
-public class DropListController extends ManagerSystem implements CombatListener {
+@Wire
+public class DropListController extends PassiveSystem implements CombatListener {
 
     private static final Family dropListFamily = Family.all(DropList.class).get();
 

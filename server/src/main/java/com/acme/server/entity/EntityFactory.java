@@ -1,9 +1,12 @@
 package com.acme.server.entity;
 
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
-import com.acme.engine.brain.Brain;
-import com.acme.engine.brain.BrainComponent;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Engine;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
+import com.acme.engine.mechanics.brain.Brain;
+import com.acme.engine.mechanics.brain.BrainComponent;
 import com.acme.server.brain.PatrolBrainState;
 import com.acme.server.combat.StatsController;
 import com.acme.server.component.TypeComponent;
@@ -12,16 +15,13 @@ import com.acme.server.inventory.DropList;
 import com.acme.server.inventory.Inventory;
 import com.acme.server.pickup.Pickup;
 import com.acme.server.template.CreatureTemplate;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Wired
-public final class EntityFactory extends ManagerSystem {
+@Wire
+public final class EntityFactory extends PassiveSystem {
 
     private ComponentMapper<Inventory> inventoryCm;
     private ComponentMapper<TypeComponent> typeCm;
@@ -49,9 +49,9 @@ public final class EntityFactory extends ManagerSystem {
     }
 
     public Entity createEntity(Type type) {
-        if (type.getArchetype() == Archetypes.CREATURE_TYPE) {
+        if (type.getEntityBuilder() == Archetypes.CREATURE_TYPE) {
             return createCreature(type);
-        } else if (type.getArchetype() == Archetypes.ITEM_TYPE) {
+        } else if (type.getEntityBuilder() == Archetypes.ITEM_TYPE) {
             return createItem(type);
         } else {
             return create(type);
@@ -130,7 +130,7 @@ public final class EntityFactory extends ManagerSystem {
     }
 
     private Entity create(Type type) {
-        Entity entity = type.getArchetype().build();
+        Entity entity = type.getEntityBuilder().get();
         typeCm.get(entity).setType(type);
         engine.addEntity(entity);
         return entity;

@@ -1,9 +1,9 @@
 package com.acme.server.combat;
 
-import com.acme.engine.event.Event;
-import com.badlogic.ashley.core.Entity;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.events.EventListener;
 
-public interface HateListListener extends Event {
+public interface HateListListener extends EventListener {
 
     void onHaterAdded(Entity entity, Entity hater);
 

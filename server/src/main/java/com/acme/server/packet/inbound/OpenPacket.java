@@ -1,11 +1,11 @@
 package com.acme.server.packet.inbound;
 
-import com.acme.engine.ashley.Wired;
-import com.acme.engine.network.InboundPacket;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.mechanics.network.InboundPacket;
 import com.acme.server.manager.WorldManager;
 import com.acme.server.pickup.PickupController;
 
-@Wired
+@Wire
 public class OpenPacket extends InboundPacket {
 
     private int chestId;

@@ -1,11 +1,11 @@
 package com.acme.server.impact;
 
-import com.acme.engine.ashley.Wired;
-import com.acme.engine.impact.ImpactSystem;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.mechanics.impact.ImpactSystem;
 import com.acme.server.combat.StatsController;
-import com.badlogic.ashley.core.Entity;
 
-@Wired
+@Wire
 public class HealImpactSystem extends ImpactSystem<HealImpact> {
 
     private StatsController statsController;

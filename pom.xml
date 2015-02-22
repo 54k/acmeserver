@@ -54,11 +54,11 @@
                 <version>${gogo.command.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.badlogicgames.ashley</groupId>
-                <artifactId>ashley</artifactId>
-                <version>${ashley-version}</version>
-            </dependency>
+            <!--<dependency>-->
+            <!--<groupId>com.badlogicgames.ashley</groupId>-->
+            <!--<artifactId>ashley</artifactId>-->
+            <!--<version>${ashley-version}</version>-->
+            <!--</dependency>-->
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-transport</artifactId>

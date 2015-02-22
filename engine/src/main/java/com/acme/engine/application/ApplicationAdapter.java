@@ -1,33 +1,51 @@
 package com.acme.engine.application;
 
-import com.acme.engine.ashley.EntityEngine;
-import com.badlogic.ashley.core.Engine;
+import com.acme.engine.ecs.core.Engine;
 
 public abstract class ApplicationAdapter implements Application {
 
-    private Context context;
+    private volatile Context context;
+    private volatile Engine engine;
+
+    public ApplicationAdapter() {
+        context = new UpdateLoop(this, 60);
+        engine = new Engine();
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public Engine getEngine() {
+        return engine;
+    }
+
+    public final void start() {
+        context.start();
+        context.waitForStart(0);
+    }
+
+    public final void stop() {
+        context.dispose();
+        context.waitForDispose(0);
+    }
 
     @Override
     public void create(Context context) {
-        this.context = context;
-        context.register(EntityEngine.class, new EntityEngine(context, new Engine()));
     }
 
     @Override
     public void update() {
-        context.get(EntityEngine.class).update(context.getDelta());
+        engine.update(context.getDelta());
     }
 
     @Override
     public void dispose() {
         context = null;
+        engine = null;
     }
 
     @Override
     public void handleError(Throwable t) {
-    }
-
-    public Context getContext() {
-        return context;
     }
 }

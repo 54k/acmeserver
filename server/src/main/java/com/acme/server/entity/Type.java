@@ -1,6 +1,6 @@
 package com.acme.server.entity;
 
-import com.acme.engine.ashley.Archetype;
+import com.acme.engine.ecs.core.EntityBuilder;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -68,11 +68,11 @@ public enum Type {
     BLUESWORD(66, Archetypes.ITEM_TYPE);
 
     private final int id;
-    private final Archetype archetype;
+    private final EntityBuilder entityBuilder;
 
-    Type(int id, Archetype archetype) {
+    Type(int id, EntityBuilder entityBuilder) {
         this.id = id;
-        this.archetype = archetype;
+        this.entityBuilder = entityBuilder;
     }
 
     @JsonCreator
@@ -103,7 +103,7 @@ public enum Type {
         return name().toLowerCase();
     }
 
-    public Archetype getArchetype() {
-        return archetype;
+    public EntityBuilder getEntityBuilder() {
+        return entityBuilder;
     }
 }

@@ -1,6 +1,10 @@
 package com.acme.server.system;
 
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Family;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.IteratingSystem;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PositionComponent;
 import com.acme.server.component.WorldComponent;
@@ -9,12 +13,8 @@ import com.acme.server.packet.outbound.SpawnPacket;
 import com.acme.server.util.EntityContainer;
 import com.acme.server.util.PositionUtils;
 import com.acme.server.world.Region;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
 
-@Wired
+@Wire
 public class KnownListSystem extends IteratingSystem {
 
     private static final Family KNOWN_LIST_OWNERS_FAMILY = Family.all(KnownListComponent.class, PositionComponent.class, WorldComponent.class).get();

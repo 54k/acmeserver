@@ -28,7 +28,7 @@ public class FelixLauncher {
         Framework framework = new Felix(configMap);
         framework.init();
         addShutdownHook(framework);
-        waitForStop(framework);
+        startFramework(framework);
     }
 
     public static void copySystemProperties(Map<String, Object> configMap) {
@@ -65,7 +65,7 @@ public class FelixLauncher {
         });
     }
 
-    private static void waitForStop(Framework framework) throws BundleException, InterruptedException {
+    private static void startFramework(Framework framework) throws BundleException, InterruptedException {
         FrameworkEvent event;
         do {
             framework.start();

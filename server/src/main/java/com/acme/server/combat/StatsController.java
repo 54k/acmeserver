@@ -1,16 +1,16 @@
 package com.acme.server.combat;
 
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Family;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.impact.InvulImpactSystem;
 import com.acme.server.packet.outbound.HealthPacket;
 import com.acme.server.system.PacketSystem;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 
-@Wired
-public class StatsController extends ManagerSystem {
+@Wire
+public class StatsController extends PassiveSystem {
 
     public static final Family statsFamily = Family.all(Stats.class).get();
 

@@ -1,7 +1,9 @@
 package com.acme.server.combat;
 
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.controller.PositionController;
 import com.acme.server.entity.EntityFactory;
 import com.acme.server.inventory.InventoryController;
@@ -13,11 +15,9 @@ import com.acme.server.system.PacketSystem;
 import com.acme.server.util.Rnd;
 import com.acme.server.util.TypeUtils;
 import com.acme.server.world.Position;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 
-@Wired
-public class CombatController extends ManagerSystem {
+@Wire
+public class CombatController extends PassiveSystem {
 
     private ComponentMapper<Combat> combatCm;
     private PositionController positionController;
@@ -44,9 +44,10 @@ public class CombatController extends ManagerSystem {
     public void attack(Entity attacker, Entity target) {
         int damage = calculateDamage(attacker, target);
         applyDamage(attacker, target, damage);
-        post(CombatListener.class).onEntityDamaged(attacker, target, damage);
+        event(CombatListener.class).dispatch().onEntityDamaged(attacker, target, damage);
         if (statsController.isDead(target)) {
-            post(CombatListener.class).onEntityKilled(attacker, target);
+            event(CombatListener.class).dispatch().onEntityKilled(attacker, target);
+            setTarget(target, null);
             worldManager.decay(target);
             packetSystem.sendPacket(attacker, new KillPacket(entityFactory.getType(target)));
         }

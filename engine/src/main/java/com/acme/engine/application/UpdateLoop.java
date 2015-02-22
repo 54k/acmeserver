@@ -1,17 +1,14 @@
 package com.acme.engine.application;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-final class UpdateLoop implements Context {
+public class UpdateLoop implements Context {
 
     private static final long MICROS_IN_SECOND = 1000000;
     private static final long ORIGIN_NANOS = System.nanoTime();
@@ -20,16 +17,15 @@ final class UpdateLoop implements Context {
     private static final int STATE_STARTED = 1;
     private static final int STATE_DISPOSED = 2;
 
-    private final AtomicInteger state = new AtomicInteger(STATE_STARTING);
+    private static final AtomicInteger counter = new AtomicInteger();
 
-    private final Queue<ContextListener> contextListeners = new ConcurrentLinkedQueue<>();
+    private final AtomicInteger state = new AtomicInteger(STATE_STARTING);
 
     private final Queue<ScheduledTask> scheduledTasks = new PriorityQueue<>();
     private final Queue<ScheduledTask> taskQueue = new PriorityQueue<>();
 
     private final Application application;
-    private final Configuration configuration;
-    private final Map<String, Object> injectables = new HashMap<>();
+    private String threadName;
 
     private final Lock lock = new ReentrantLock();
     private final Condition createdCondition = lock.newCondition();
@@ -40,17 +36,24 @@ final class UpdateLoop implements Context {
 
     private long lastNanos;
     private volatile float delta;
+    private volatile Thread mainLoopThread;
 
-    UpdateLoop(Application application, Configuration configuration) {
+    public UpdateLoop(Application application, int fps) {
+        this(application, fps, createThreadName());
+    }
+
+    public UpdateLoop(Application application, int fps, String threadName) {
         this.application = application;
-        this.configuration = configuration;
-        updateIntervalNanos = configuration.updateInterval * MICROS_IN_SECOND;
-        contextListeners.addAll(configuration.contextListeners);
-        runLoop();
+        updateIntervalNanos = 1000 / fps * MICROS_IN_SECOND;
+        this.threadName = threadName;
+    }
+
+    private static String createThreadName() {
+        return "aegis-loop-" + counter.incrementAndGet();
     }
 
     private void runLoop() {
-        Thread mainLoopThread = new Thread(configuration.applicationName) {
+        mainLoopThread = new Thread(threadName) {
             @Override
             public void run() {
                 try {
@@ -86,9 +89,12 @@ final class UpdateLoop implements Context {
 
     private void loop() {
         try {
-            application.create(this);
-            signalStarted();
-            contextListeners.forEach(ContextListener::created);
+            try {
+                application.create(this);
+                signalStarted();
+            } catch (Throwable t) {
+                application.handleError(t);
+            }
 
             while (!isDisposed()) {
                 if (updateIntervalNanos > 0) {
@@ -105,11 +111,8 @@ final class UpdateLoop implements Context {
                     application.handleError(t);
                 }
             }
-        } catch (Throwable t) {
-            application.handleError(t);
         } finally {
             application.dispose();
-            contextListeners.forEach(ContextListener::disposed);
         }
     }
 
@@ -161,63 +164,35 @@ final class UpdateLoop implements Context {
     }
 
     @Override
-    public <T> void register(Class<T> clazz, T object) {
-        register(clazz, "", object);
-    }
-
-    @Override
-    public <T> void register(Class<T> clazz, String name, T object) {
-        injectables.put(nameFor(clazz, name), object);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T get(Class<T> clazz) {
-        return get(clazz, "");
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T get(Class<T> clazz, String name) {
-        return (T) injectables.get(nameFor(clazz, name));
-    }
-
-    private static <T> String nameFor(Class<T> clazz, String name) {
-        return clazz.getName() + "$" + name;
-    }
-
-    @Override
     public float getDelta() {
         return delta;
     }
 
     @Override
-    public void schedule(Runnable task) {
-        schedule(task, 0, TimeUnit.NANOSECONDS);
+    public CancellableTask schedule(Runnable task) {
+        return schedule(task, 0, TimeUnit.NANOSECONDS);
     }
 
     @Override
-    public void schedule(Runnable task, long delay, TimeUnit unit) {
-        schedulePeriodic(task, delay, 0, unit);
+    public CancellableTask schedule(Runnable task, long delay, TimeUnit unit) {
+        return schedulePeriodic(task, delay, 0, unit);
     }
 
     @Override
-    public void schedulePeriodic(Runnable task, long delay, long period, TimeUnit unit) {
+    public CancellableTask schedulePeriodic(Runnable task, long delay, long period, TimeUnit unit) {
         if (isDisposed()) {
-            throw new IllegalStateException(configuration.applicationName + " disposed");
+            throw new IllegalStateException("UpdateLoop has been disposed");
         }
         synchronized (scheduledTasks) {
-            scheduledTasks.add(new ScheduledTask(task, unit.toNanos(delay), unit.toNanos(period), scheduledTasks));
+            ScheduledTask scheduledTask = new ScheduledTask(task, unit.toNanos(delay), unit.toNanos(period), scheduledTasks);
+            scheduledTasks.add(scheduledTask);
+            return scheduledTask;
         }
     }
 
     @Override
-    public void dispose() {
-        schedule(() -> {
-            if (!isDisposed()) {
-                state.set(STATE_DISPOSED);
-            }
-        });
+    public void start() {
+        runLoop();
     }
 
     @Override
@@ -236,6 +211,21 @@ final class UpdateLoop implements Context {
     }
 
     @Override
+    public void dispose() {
+        if (Thread.currentThread() == mainLoopThread) {
+            dispose0();
+        } else {
+            schedule(this::dispose0);
+        }
+    }
+
+    public void dispose0() {
+        if (!isDisposed()) {
+            state.set(STATE_DISPOSED);
+        }
+    }
+
+    @Override
     public void waitForDispose(long timeoutMillis) {
         lock.lock();
         try {
@@ -250,12 +240,13 @@ final class UpdateLoop implements Context {
         }
     }
 
-    private static final class ScheduledTask implements Runnable, Comparable<ScheduledTask> {
+    private static class ScheduledTask implements Runnable, CancellableTask, Comparable<ScheduledTask> {
 
         final Runnable task;
         final Queue<ScheduledTask> queue;
         final long period;
         long nextExecutionNanos;
+        volatile boolean cancelled;
 
         ScheduledTask(Runnable task, long delay, long period, Queue<ScheduledTask> queue) {
             this.task = task;
@@ -266,6 +257,12 @@ final class UpdateLoop implements Context {
 
         @Override
         public void run() {
+            if (!isCancelled()) {
+                run0();
+            }
+        }
+
+        private void run0() {
             long currentNanos = nanos();
             if (nextExecutionNanos <= currentNanos) {
                 task.run();
@@ -276,6 +273,16 @@ final class UpdateLoop implements Context {
             } else {
                 queue.add(this);
             }
+        }
+
+        @Override
+        public void cancel() {
+            cancelled = true;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return cancelled;
         }
 
         @Override

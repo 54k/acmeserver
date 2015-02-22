@@ -1,7 +1,7 @@
 package com.acme.server.console;
 
-import com.acme.engine.ashley.EntityEngine;
-import com.acme.engine.network.SessionComponent;
+import com.acme.engine.ecs.core.Engine;
+import com.acme.engine.mechanics.network.SessionComponent;
 import com.acme.server.BrowserQuest;
 import com.acme.server.manager.WorldManager;
 import org.apache.felix.service.command.Descriptor;
@@ -16,7 +16,7 @@ public class PlayerCommands {
 
     @Descriptor("show online players")
     public void online() {
-        EntityEngine engine = getEngine();
+        Engine engine = getEngine();
         System.out.println(engine.getSystem(WorldManager.class).getPlayers());
     }
 
@@ -27,7 +27,7 @@ public class PlayerCommands {
                 .getSession().close();
     }
 
-    private EntityEngine getEngine() {
-        return browserQuest.getContext().get(EntityEngine.class);
+    private Engine getEngine() {
+        return browserQuest.getEngine();
     }
 }

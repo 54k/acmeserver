@@ -1,6 +1,6 @@
 package com.acme.server.component;
 
-import com.badlogic.ashley.core.Component;
+import com.acme.engine.ecs.core.Component;
 
 public class PatrolComponent extends Component {
 

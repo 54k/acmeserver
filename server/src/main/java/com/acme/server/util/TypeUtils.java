@@ -1,7 +1,7 @@
 package com.acme.server.util;
 
+import com.acme.engine.ecs.core.Entity;
 import com.acme.server.entity.Archetypes;
-import com.badlogic.ashley.core.Entity;
 
 public final class TypeUtils {
     private TypeUtils() {

@@ -1,7 +1,7 @@
 package com.acme.server.inventory;
 
+import com.acme.engine.ecs.core.Component;
 import com.acme.server.entity.Type;
-import com.badlogic.ashley.core.Component;
 
 import java.util.ArrayList;
 import java.util.List;

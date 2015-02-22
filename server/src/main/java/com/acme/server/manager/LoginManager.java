@@ -1,8 +1,10 @@
 package com.acme.server.manager;
 
 import com.acme.engine.application.Context;
-import com.acme.engine.ashley.ManagerSystem;
-import com.acme.engine.ashley.Wired;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.server.combat.StatsController;
 import com.acme.server.component.KnownListComponent;
 import com.acme.server.component.PlayerComponent;
@@ -20,13 +22,11 @@ import com.acme.server.world.Area;
 import com.acme.server.world.Instance;
 import com.acme.server.world.Orientation;
 import com.acme.server.world.Position;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 
 import java.util.Collection;
 
-@Wired
-public class LoginManager extends ManagerSystem {
+@Wire
+public class LoginManager extends PassiveSystem {
 
     private ComponentMapper<Inventory> icm;
     private ComponentMapper<PlayerComponent> pcm;
