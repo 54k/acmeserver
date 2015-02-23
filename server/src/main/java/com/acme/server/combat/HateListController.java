@@ -1,6 +1,10 @@
 package com.acme.server.combat;
 
-import com.acme.engine.ecs.core.*;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Engine;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.Family;
+import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.engine.ecs.utils.ImmutableList;
 import com.acme.server.util.EntityContainer;
@@ -75,6 +79,11 @@ public class HateListController extends PassiveSystem implements CombatListener 
     public void clearHaters(Entity entity) {
         HateList hateList = hateListCm.get(entity);
         Set<Entity> haters = hateList.haters.keySet();
+
+        if (haters.isEmpty()) {
+            return;
+        }
+
         Set<Entity> h = new HashSet<>();
         h.addAll(haters);
 
