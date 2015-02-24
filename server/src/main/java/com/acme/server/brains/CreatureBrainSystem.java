@@ -1,6 +1,11 @@
 package com.acme.server.brains;
 
-import com.acme.engine.ecs.core.*;
+import com.acme.engine.ecs.core.ComponentMapper;
+import com.acme.engine.ecs.core.Engine;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.EntityListener;
+import com.acme.engine.ecs.core.Family;
+import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.mechanics.brains.BrainSystem;
 import com.acme.server.combat.HateListController;
 import com.acme.server.component.PositionComponent;
@@ -15,8 +20,6 @@ public class CreatureBrainSystem extends BrainSystem implements EntityListener {
     private Engine engine;
     private HateListController hateListController;
 
-    private CreatureGlobalState creatureGlobalState;
-
     public CreatureBrainSystem() {
         super(creaturesFamily);
     }
@@ -28,14 +31,7 @@ public class CreatureBrainSystem extends BrainSystem implements EntityListener {
     }
 
     @Override
-    public void initialized() {
-        creatureGlobalState = new CreatureGlobalState();
-        engine.processObject(creatureGlobalState);
-    }
-
-    @Override
     public void entityAdded(Entity entity) {
-        getBrain(entity).setGlobalState(creatureGlobalState);
     }
 
     @Override

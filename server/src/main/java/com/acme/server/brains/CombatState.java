@@ -20,6 +20,7 @@ public class CombatState implements BrainState<Entity> {
 
     @Override
     public void enter(Entity entity) {
+        System.out.println("Entity " + entity.getId() + " start combating");
         packetSystem.sendToSelfAndRegion(entity, new ChatPacket(entity, "To arms!"));
     }
 
@@ -27,6 +28,10 @@ public class CombatState implements BrainState<Entity> {
     public void update(Entity entity, float deltaTime) {
         Entity target = combatController.getTarget(entity);
         Entity mostHated = hateListController.getMostHated(entity);
+
+        if (mostHated == null) {
+            return;
+        }
 
         if (target != mostHated) {
             combatController.setTarget(entity, mostHated);

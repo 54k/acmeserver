@@ -26,6 +26,7 @@ public class PatrolState implements BrainState<Entity> {
 
     @Override
     public void enter(Entity entity) {
+        System.out.println("Entity " + entity.getId() + " start patrolling");
     }
 
     @Override
@@ -46,5 +47,6 @@ public class PatrolState implements BrainState<Entity> {
 
     @Override
     public void exit(Entity entity) {
+        System.out.println("Entity " + entity.getId() + " stop patrolling");
     }
 }

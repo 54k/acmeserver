@@ -30,23 +30,15 @@ public class CreatureGlobalState implements BrainState<Entity>, HateListListener
     private HateListController hateListController;
     private PacketSystem packetSystem;
 
-    private PatrolState patrolState;
-    private CombatState combatState;
-
-    public CreatureGlobalState() {
-        patrolState = new PatrolState();
-        combatState = new CombatState();
-    }
-
     @Override
     public void enter(Entity entity) {
-        changeState(entity, patrolState);
+        getBrain(entity).changeState(PatrolState.class);
     }
 
     @Override
     public void update(Entity entity, float deltaTime) {
-        if (statsController.isDead(entity) && !hasState(entity, patrolState)) {
-            changeState(entity, patrolState);
+        if (statsController.isDead(entity) && !isInState(entity, PatrolState.class)) {
+            getBrain(entity).changeState(PatrolState.class);
         } else if (isToFarAwayFromSpawn(entity)) {
             startPatrol(entity);
         }
@@ -77,7 +69,9 @@ public class CreatureGlobalState implements BrainState<Entity>, HateListListener
 
     @Override
     public void onHaterAdded(Entity entity, Entity hater) {
-        changeState(entity, combatState);
+        if (!isInState(entity, CombatState.class)) {
+            getBrain(entity).changeState(CombatState.class);
+        }
     }
 
     @Override
@@ -86,27 +80,24 @@ public class CreatureGlobalState implements BrainState<Entity>, HateListListener
 
     @Override
     public void onHatersEmpty(Entity entity) {
-        startPatrol(entity);
+        if (statsController.isDead(entity)) {
+            getBrain(entity).changeState(PatrolState.class);
+        } else {
+            startPatrol(entity);
+        }
     }
 
     private void startPatrol(Entity entity) {
-        System.out.println("Entity " + entity.getId() + " starts patroling");
         Position spawnPosition = spawnCm.get(entity).getSpawnPosition();
         positionController.moveEntity(entity, spawnPosition);
-        changeState(entity, patrolState);
+        getBrain(entity).changeState(PatrolState.class);
     }
 
-    private boolean hasState(Entity entity, BrainState<Entity> brainState) {
-        return brainHolderCm.get(entity).getBrain().isInState(brainState);
+    private BrainStateMachine getBrain(Entity entity) {
+        return (BrainStateMachine) brainHolderCm.get(entity).getBrain();
     }
 
-    private void changeState(Entity entity, BrainState<Entity> brainState) {
-        if (hasState(entity, brainState)) {
-            return;
-        }
-
-        engine.processObject(brainState);
-        BrainHolder brainHolder = brainHolderCm.get(entity);
-        brainHolder.getBrain().changeState(brainState);
+    private boolean isInState(Entity entity, Class<? extends BrainState<Entity>> brainStateClass) {
+        return getBrain(entity).isInState(brainStateClass);
     }
 }
