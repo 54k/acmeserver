@@ -44,8 +44,8 @@ public class Brain<E> {
             return this;
         }
 
-        changeState(state);
         statesStack.addFirst(currentState);
+        changeState(state);
         return this;
     }
 
