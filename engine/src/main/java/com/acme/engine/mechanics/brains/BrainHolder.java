@@ -5,13 +5,13 @@ import com.acme.engine.ecs.core.Entity;
 
 public class BrainHolder extends Component {
 
-    Brain<Entity> brain;
+    BrainStateMachine<Entity> brainStateMachine;
 
-    public Brain<Entity> getBrain() {
-        return brain;
+    public BrainStateMachine<Entity> getBrainStateMachine() {
+        return brainStateMachine;
     }
 
-    public void setBrain(Brain<Entity> brain) {
-        this.brain = brain;
+    public void setBrainStateMachine(BrainStateMachine<Entity> brainStateMachine) {
+        this.brainStateMachine = brainStateMachine;
     }
 }

@@ -2,9 +2,9 @@ package com.acme.engine.mechanics.brains;
 
 public interface BrainState<E> {
 
-    void enter(E entity);
+    void enter(BrainStateMachine<E> brainStateMachine);
 
-    void update(E entity, float deltaTime);
+    void update(BrainStateMachine<E> brainStateMachine, float deltaTime);
 
-    void exit(E entity);
+    void exit(BrainStateMachine<E> brainStateMachine);
 }

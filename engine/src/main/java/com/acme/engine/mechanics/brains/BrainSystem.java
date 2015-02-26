@@ -16,7 +16,7 @@ public class BrainSystem extends IteratingSystem {
     private Family family;
 
     public BrainSystem() {
-        this(Family.all().get(), 0);
+        this(Family.ALL, 0);
     }
 
     public BrainSystem(Family family) {
@@ -40,11 +40,11 @@ public class BrainSystem extends IteratingSystem {
     }
 
     private void updateBrain(Entity entity, float deltaTime) {
-        Brain brain = getBrain(entity);
-        brain.update(deltaTime);
+        BrainStateMachine brainStateMachine = getBrainStateMachine(entity);
+        brainStateMachine.update(deltaTime);
     }
 
-    protected final Brain<Entity> getBrain(Entity entity) {
-        return brainCm.get(entity).getBrain();
+    protected final BrainStateMachine<Entity> getBrainStateMachine(Entity entity) {
+        return brainCm.get(entity).brainStateMachine;
     }
 }

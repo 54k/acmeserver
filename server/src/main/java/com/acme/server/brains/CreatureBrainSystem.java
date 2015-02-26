@@ -36,7 +36,7 @@ public class CreatureBrainSystem extends BrainSystem implements EntityListener {
 
     @Override
     public void entityRemoved(Entity entity) {
-        getBrain(entity).clear();
+        getBrainStateMachine(entity).clear();
     }
 
     @Override

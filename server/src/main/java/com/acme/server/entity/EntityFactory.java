@@ -138,7 +138,7 @@ public final class EntityFactory extends PassiveSystem {
         engine.processObject(combatState);
         brainStateMachine.addState(combatState);
 
-        brainHolder.setBrain(brainStateMachine);
+        brainHolder.setBrainStateMachine(brainStateMachine);
         brainStateMachine.setGlobalState(creatureGlobalState);
 
         entity.add(new RegenImpact());

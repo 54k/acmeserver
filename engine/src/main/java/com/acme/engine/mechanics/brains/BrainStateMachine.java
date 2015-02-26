@@ -1,13 +1,11 @@
 package com.acme.engine.mechanics.brains;
 
-import com.acme.engine.ecs.core.Entity;
-
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class Brain<E> {
+public class BrainStateMachine<E> {
 
     private final E owner;
     private final Map<Class<? extends BrainState>, BrainState<E>> statesByClass;
@@ -16,15 +14,15 @@ public class Brain<E> {
     private BrainState<E> globalState;
     private BrainState<E> currentState;
 
-    public Brain(E owner) {
+    public BrainStateMachine(E owner) {
         this(owner, null);
     }
 
-    public Brain(E owner, BrainState<E> initialState) {
+    public BrainStateMachine(E owner, BrainState<E> initialState) {
         this(owner, initialState, null);
     }
 
-    public Brain(E owner, BrainState<E> initialState, BrainState<E> globalState) {
+    public BrainStateMachine(E owner, BrainState<E> initialState, BrainState<E> globalState) {
         this.owner = owner;
         setGlobalState(globalState);
         changeState(initialState);
@@ -33,13 +31,21 @@ public class Brain<E> {
         statesStack = new LinkedList<>();
     }
 
-    public Brain<E> addState(BrainState<E> state) {
+    public E getOwner() {
+        return owner;
+    }
+
+    public BrainStateMachine<E> addState(BrainState<E> state) {
         statesByClass.put(state.getClass(), state);
         return this;
     }
 
-    public Brain<E> pushState(Class<? extends BrainState<E>> stateClass) {
+    public BrainStateMachine<E> pushState(Class<? extends BrainState<E>> stateClass) {
         BrainState<E> state = getState(stateClass);
+        return pushState(state);
+    }
+
+    public BrainStateMachine<E> pushState(BrainState<E> state) {
         if (state == currentState) {
             return this;
         }
@@ -49,7 +55,7 @@ public class Brain<E> {
         return this;
     }
 
-    public Brain<E> popState() {
+    public BrainStateMachine<E> popState() {
         if (statesStack.isEmpty()) {
             throw new IllegalStateException("States stack is empty");
         }
@@ -58,8 +64,12 @@ public class Brain<E> {
         return this;
     }
 
-    public boolean isInState(Class<? extends BrainState<Entity>> stateClass) {
-        return currentState.getClass().equals(stateClass);
+    public boolean isInState(Class<? extends BrainState<E>> stateClass) {
+        return isInState(getState(stateClass));
+    }
+
+    public boolean isInState(BrainState<E> state) {
+        return currentState == state;
     }
 
     public BrainState<E> getCurrentState() {
@@ -76,42 +86,49 @@ public class Brain<E> {
 
     public void setGlobalState(BrainState<E> globalState) {
         if (this.globalState != null) {
-            this.globalState.exit(owner);
+            this.globalState.exit(this);
         }
         this.globalState = globalState;
         if (this.globalState != null) {
-            this.globalState.enter(owner);
+            this.globalState.enter(this);
         }
     }
 
     public void update(float deltaTime) {
         if (globalState != null) {
-            globalState.update(owner, deltaTime);
+            globalState.update(this, deltaTime);
         }
         if (currentState != null) {
-            currentState.update(owner, deltaTime);
+            currentState.update(this, deltaTime);
         }
+    }
+
+    public void changeState(Class<? extends BrainState<E>> stateClass) {
+        BrainState<E> state = getState(stateClass);
+        changeState(state);
     }
 
     public void changeState(BrainState<E> state) {
         BrainState<E> prevState = currentState;
         currentState = state;
         if (prevState != null) {
-            prevState.exit(owner);
+            prevState.exit(this);
         }
         if (currentState != null) {
-            state.enter(owner);
+            state.enter(this);
         }
     }
 
     public void clear() {
         if (globalState != null) {
-            globalState.exit(owner);
+            globalState.exit(this);
         }
         globalState = null;
         if (currentState != null) {
-            currentState.exit(owner);
+            currentState.exit(this);
         }
         currentState = null;
+        statesStack.clear();
+        statesByClass.clear();
     }
 }

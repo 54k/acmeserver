@@ -94,7 +94,7 @@ public class CreatureGlobalState implements BrainState<Entity>, HateListListener
     }
 
     private BrainStateMachine getBrain(Entity entity) {
-        return (BrainStateMachine) brainHolderCm.get(entity).getBrain();
+        return (BrainStateMachine) brainHolderCm.get(entity).getBrainStateMachine();
     }
 
     private boolean isInState(Entity entity, Class<? extends BrainState<Entity>> brainStateClass) {
