@@ -1,8 +1,16 @@
 package com.acme.engine.mechanics.brains;
 
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
 public class Brain<E> {
 
     private final E owner;
+
+    private Map<Class<? extends BrainState>, BrainState<E>> statesByClass;
+    private Deque<BrainState<E>> statesStack;
 
     private BrainState<E> globalState;
     private BrainState<E> currentState;
@@ -19,6 +27,30 @@ public class Brain<E> {
         this.owner = owner;
         setGlobalState(globalState);
         changeState(initialState);
+
+        statesByClass = new HashMap<>();
+        statesStack = new LinkedList<>();
+    }
+
+    public void addState(BrainState<E> state) {
+        statesByClass.put(state.getClass(), state);
+    }
+
+    private BrainState<E> getState(Class<? extends BrainState<E>> stateClass) {
+        BrainState<E> brainState = statesByClass.get(stateClass);
+        if (brainState == null) {
+            throw new NullPointerException("State for name " + stateClass.getSimpleName() + " does not exists");
+        }
+        return brainState;
+    }
+
+    public void pushState(Class<? extends BrainState<E>> stateClass) {
+        BrainState<E> state = getState(stateClass);
+        statesStack.addFirst(state);
+    }
+
+    public void popState() {
+        statesStack.pollFirst();
     }
 
     public void setGlobalState(BrainState<E> globalState) {
@@ -65,4 +97,5 @@ public class Brain<E> {
         }
         currentState = null;
     }
+
 }

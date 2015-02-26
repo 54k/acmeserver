@@ -7,7 +7,7 @@ public abstract class ApplicationAdapter implements Application {
     private final Context context;
     private final Engine engine;
 
-    public ApplicationAdapter() {
+    protected ApplicationAdapter() {
         context = new UpdateLoop(this, 60);
         engine = new Engine();
     }
