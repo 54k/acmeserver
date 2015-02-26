@@ -1,5 +1,7 @@
 package com.acme.engine.mechanics.brains;
 
+import com.acme.engine.ecs.core.Entity;
+
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -8,9 +10,8 @@ import java.util.Map;
 public class Brain<E> {
 
     private final E owner;
-
-    private Map<Class<? extends BrainState>, BrainState<E>> statesByClass;
-    private Deque<BrainState<E>> statesStack;
+    private final Map<Class<? extends BrainState>, BrainState<E>> statesByClass;
+    private final Deque<BrainState<E>> statesStack;
 
     private BrainState<E> globalState;
     private BrainState<E> currentState;
@@ -32,25 +33,45 @@ public class Brain<E> {
         statesStack = new LinkedList<>();
     }
 
-    public void addState(BrainState<E> state) {
+    public Brain<E> addState(BrainState<E> state) {
         statesByClass.put(state.getClass(), state);
+        return this;
+    }
+
+    public Brain<E> pushState(Class<? extends BrainState<E>> stateClass) {
+        BrainState<E> state = getState(stateClass);
+        if (state == currentState) {
+            return this;
+        }
+
+        changeState(state);
+        statesStack.addFirst(currentState);
+        return this;
+    }
+
+    public Brain<E> popState() {
+        if (statesStack.isEmpty()) {
+            throw new IllegalStateException("States stack is empty");
+        }
+        BrainState<E> previousState = statesStack.pollFirst();
+        changeState(previousState);
+        return this;
+    }
+
+    public boolean isInState(Class<? extends BrainState<Entity>> stateClass) {
+        return currentState.getClass().equals(stateClass);
+    }
+
+    public BrainState<E> getCurrentState() {
+        return currentState;
     }
 
     private BrainState<E> getState(Class<? extends BrainState<E>> stateClass) {
         BrainState<E> brainState = statesByClass.get(stateClass);
         if (brainState == null) {
-            throw new NullPointerException("State for name " + stateClass.getSimpleName() + " does not exists");
+            throw new NullPointerException("State for class " + stateClass.getSimpleName() + " does not exists");
         }
         return brainState;
-    }
-
-    public void pushState(Class<? extends BrainState<E>> stateClass) {
-        BrainState<E> state = getState(stateClass);
-        statesStack.addFirst(state);
-    }
-
-    public void popState() {
-        statesStack.pollFirst();
     }
 
     public void setGlobalState(BrainState<E> globalState) {
@@ -83,10 +104,6 @@ public class Brain<E> {
         }
     }
 
-    public boolean isInState(BrainState state) {
-        return currentState == state;
-    }
-
     public void clear() {
         if (globalState != null) {
             globalState.exit(owner);
@@ -97,5 +114,4 @@ public class Brain<E> {
         }
         currentState = null;
     }
-
 }
