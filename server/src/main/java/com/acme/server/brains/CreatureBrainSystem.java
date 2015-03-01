@@ -1,24 +1,19 @@
 package com.acme.server.brains;
 
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Engine;
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.EntityListener;
-import com.acme.engine.ecs.core.Family;
-import com.acme.engine.ecs.core.Wire;
+import com.acme.engine.ecs.core.*;
 import com.acme.engine.mechanics.brains.BrainSystem;
-import com.acme.server.combat.HateListController;
-import com.acme.server.component.PositionComponent;
-import com.acme.server.entity.Archetypes;
+import com.acme.server.combat.HateListSystem;
+import com.acme.server.entities.EntityBuilders;
+import com.acme.server.position.Transform;
 
 @Wire
 public class CreatureBrainSystem extends BrainSystem implements EntityListener {
 
-    private static final Family creaturesFamily = Archetypes.CREATURE_TYPE.getFamily();
+    private static final Family creaturesFamily = EntityBuilders.CREATURE_TYPE.getFamily();
 
-    private ComponentMapper<PositionComponent> positionCm;
+    private ComponentMapper<Transform> positionCm;
     private Engine engine;
-    private HateListController hateListController;
+    private HateListSystem hateListSystem;
 
     public CreatureBrainSystem() {
         super(creaturesFamily);
@@ -41,9 +36,9 @@ public class CreatureBrainSystem extends BrainSystem implements EntityListener {
 
     @Override
     protected boolean shouldUpdateBrain(Entity entity, float deltaTime) {
-        PositionComponent positionComponent = positionCm.get(entity);
-        boolean isSpawned = positionComponent.isSpawned();
-        boolean isRegionActive = positionComponent.getRegion().isActive();
-        return isSpawned && (hateListController.hasHaters(entity) || isRegionActive);
+        Transform transform = positionCm.get(entity);
+        boolean isSpawned = transform.isSpawned();
+        boolean isRegionActive = transform.getRegion().isActive();
+        return isSpawned && (hateListSystem.hasHaters(entity) || isRegionActive);
     }
 }

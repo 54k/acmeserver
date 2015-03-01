@@ -3,12 +3,12 @@ package com.acme.server.impacts;
 import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.mechanics.impact.ImpactSystem;
-import com.acme.server.combat.StatsController;
+import com.acme.server.combat.StatsSystem;
 
 @Wire
 public class HealImpactSystem extends ImpactSystem<HealImpact> {
 
-    private StatsController statsController;
+    private StatsSystem statsSystem;
 
     public HealImpactSystem() {
         super(HealImpact.class);
@@ -20,6 +20,6 @@ public class HealImpactSystem extends ImpactSystem<HealImpact> {
     }
 
     private void addHitPoints(HealImpact impact, Entity target) {
-        statsController.addHitPoints(target, impact.getAmount());
+        statsSystem.addHitPoints(target, impact.getAmount());
     }
 }

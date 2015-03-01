@@ -5,10 +5,10 @@ import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.mechanics.brains.BrainState;
 import com.acme.engine.mechanics.brains.BrainStateMachine;
-import com.acme.server.component.Spawn;
-import com.acme.server.controller.PositionController;
-import com.acme.server.util.PositionUtils;
-import com.acme.server.util.Rnd;
+import com.acme.server.position.Spawn;
+import com.acme.server.position.TransformSystem;
+import com.acme.server.utils.PositionUtils;
+import com.acme.server.utils.Rnd;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;
 
@@ -19,7 +19,7 @@ public class PatrolState implements BrainState<Entity> {
     private float accumulator;
 
     private ComponentMapper<Spawn> spawnCm;
-    private PositionController positionController;
+    private TransformSystem transformSystem;
 
     public PatrolState() {
         resetInterval();
@@ -42,7 +42,7 @@ public class PatrolState implements BrainState<Entity> {
     private void moveEntity(Entity entity) {
         Area spawnArea = spawnCm.get(entity).getArea();
         Position rndPos = PositionUtils.getRandomPositionInside(spawnArea);
-        positionController.moveEntity(entity, rndPos);
+        transformSystem.moveEntity(entity, rndPos);
     }
 
     private void resetInterval() {

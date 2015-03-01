@@ -1,8 +1,8 @@
 package com.acme.server.world;
 
-import com.acme.server.entity.Type;
-import com.acme.server.template.CheckpointTemplate;
-import com.acme.server.template.WorldTemplate;
+import com.acme.server.entities.Type;
+import com.acme.server.templates.CheckpointTemplate;
+import com.acme.server.templates.WorldTemplate;
 
 import java.util.HashMap;
 import java.util.Map;

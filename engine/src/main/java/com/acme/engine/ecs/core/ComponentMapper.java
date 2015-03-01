@@ -17,14 +17,14 @@ public class ComponentMapper<T extends Component> {
     }
 
     /**
-     * @return The {@link Component} of the specified class belonging to entity.
+     * @return The {@link Component} of the specified class belonging to entities.
      */
     public T get(Entity entity) {
         return entity.getComponent(componentType);
     }
 
     /**
-     * @return Whether or not entity has the component of the specified class.
+     * @return Whether or not entities has the component of the specified class.
      */
     public boolean has(Entity entity) {
         return entity.hasComponent(componentType);

@@ -3,18 +3,18 @@ package com.acme.server.impacts;
 import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.mechanics.impact.ImpactSystem;
-import com.acme.server.combat.StatsController;
-import com.acme.server.entity.Type;
-import com.acme.server.inventory.InventoryController;
-import com.acme.server.packet.outbound.EquipPacket;
-import com.acme.server.packet.outbound.HealthPacket;
-import com.acme.server.system.PacketSystem;
+import com.acme.server.combat.StatsSystem;
+import com.acme.server.entities.Type;
+import com.acme.server.inventory.InventorySystem;
+import com.acme.server.packets.PacketSystem;
+import com.acme.server.packets.outbound.EquipPacket;
+import com.acme.server.packets.outbound.HealthPacket;
 
 @Wire
 public class InvulImpactSystem extends ImpactSystem<InvulImpact> {
 
-    private StatsController statsController;
-    private InventoryController inventoryController;
+    private StatsSystem statsSystem;
+    private InventorySystem inventorySystem;
     private PacketSystem packetSystem;
 
     public InvulImpactSystem() {
@@ -23,14 +23,14 @@ public class InvulImpactSystem extends ImpactSystem<InvulImpact> {
 
     @Override
     protected void impactApplied(InvulImpact impact, Entity target) {
-        statsController.resetHitPoints(target);
+        statsSystem.resetHitPoints(target);
         packetSystem.sendToSelfAndRegion(target, new EquipPacket(target, Type.FIREFOX.getId()));
     }
 
     @Override
     protected void impactRemoved(InvulImpact impact, Entity target) {
-        int armor = inventoryController.getEquippedArmor(target);
+        int armor = inventorySystem.getEquippedArmor(target);
         packetSystem.sendToSelfAndRegion(target, new EquipPacket(target, armor));
-        packetSystem.sendPacket(target, new HealthPacket(statsController.getMaxHitPoints(target), true));
+        packetSystem.sendPacket(target, new HealthPacket(statsSystem.getMaxHitPoints(target), true));
     }
 }

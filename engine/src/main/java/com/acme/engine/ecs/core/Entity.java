@@ -257,7 +257,7 @@ public class Entity {
     }
 
     /**
-     * @return true if the entity is scheduled to be removed
+     * @return true if the entities is scheduled to be removed
      */
     public boolean isScheduledForRemoval() {
         return scheduledForRemoval;

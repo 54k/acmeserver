@@ -44,7 +44,7 @@ public class Family {
     }
 
     /**
-     * @return Whether the entity matches the family requirements or not
+     * @return Whether the entities matches the family requirements or not
      */
     public boolean matches(Entity entity) {
         BitSet entityComponentBits = entity.getComponentBits();

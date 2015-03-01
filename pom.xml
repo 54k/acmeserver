@@ -27,7 +27,7 @@
         <felix.version>4.6.0</felix.version>
         <gogo.runtime.version>0.10.0</gogo.runtime.version>
         <gogo.command.version>0.14.0</gogo.command.version>
-        <gdx-ai.version>1.4.0</gdx-ai.version>
+        <gdx-ai.version>1.5.0</gdx-ai.version>
     </properties>
 
     <dependencyManagement>
@@ -54,11 +54,12 @@
                 <version>${gogo.command.version}</version>
             </dependency>
 
-            <!--<dependency>-->
-            <!--<groupId>com.badlogicgames.ashley</groupId>-->
-            <!--<artifactId>ashley</artifactId>-->
-            <!--<version>${ashley-version}</version>-->
-            <!--</dependency>-->
+            <dependency>
+                <groupId>com.badlogicgames.gdx</groupId>
+                <artifactId>gdx-ai</artifactId>
+                <version>${gdx-ai.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-transport</artifactId>

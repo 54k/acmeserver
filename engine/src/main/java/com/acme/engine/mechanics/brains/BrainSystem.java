@@ -9,10 +9,9 @@ import com.acme.engine.ecs.systems.IteratingSystem;
 @Wire
 public class BrainSystem extends IteratingSystem {
 
-    private static final Family BRAIN_OWNERS_FAMILY = Family.all(BrainHolder.class).get();
+    private static final Family brainFamily = Family.all(Brain.class).get();
 
-    private ComponentMapper<BrainHolder> brainCm;
-
+    private ComponentMapper<Brain> brainCm;
     private Family family;
 
     public BrainSystem() {
@@ -24,7 +23,7 @@ public class BrainSystem extends IteratingSystem {
     }
 
     public BrainSystem(Family family, int priority) {
-        super(BRAIN_OWNERS_FAMILY, priority);
+        super(brainFamily, priority);
         this.family = family;
     }
 

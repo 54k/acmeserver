@@ -101,7 +101,7 @@ public class Engine {
     }
 
     /**
-     * Adds an entity to this Engine
+     * Adds an entities to this Engine
      */
     public void addEntity(Entity entity) {
         entity.id = obtainEntityId();
@@ -116,7 +116,7 @@ public class Engine {
     }
 
     /**
-     * Removes an entity from this Engine
+     * Removes an entities from this Engine
      */
     public void removeEntity(Entity entity) {
         if (updating || notifying) {
@@ -185,7 +185,7 @@ public class Engine {
     }
 
     /**
-     * @return immutable array of all entity systems managed by the {@link Engine}
+     * @return immutable array of all entities systems managed by the {@link Engine}
      */
     public ImmutableList<EntitySystem> getSystems() {
         return immutableSystems;
@@ -201,7 +201,7 @@ public class Engine {
     /**
      * Adds an {@link EntityListener}
      * <p>
-     * The listener will be notified every time an entity is added/removed to/from the engine
+     * The listener will be notified every time an entities is added/removed to/from the engine
      */
     public void addEntityListener(EntityListener listener) {
         entityListeners.add(listener);
@@ -210,7 +210,7 @@ public class Engine {
     /**
      * Adds an {@link EntityListener} for a specific {@link Family}
      * <p>
-     * The listener will be notified every time an entity is added/removed to/from the given family
+     * The listener will be notified every time an entities is added/removed to/from the given family
      */
     public void addEntityListener(Family family, EntityListener listener) {
         registerFamily(family);

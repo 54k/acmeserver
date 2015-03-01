@@ -1,7 +1,7 @@
 package com.acme.server.world;
 
 import com.acme.engine.ecs.core.Entity;
-import com.acme.server.util.EntityContainer;
+import com.acme.server.utils.EntityContainer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -91,8 +91,8 @@ public class Instance {
     }
 
     public void addEntity(Entity entity) {
-        if (entities.containsById(entity.getId())) {
-            throw new IllegalArgumentException("Duplicate entity id " + entity.getId());
+        if (entities.containsId(entity.getId())) {
+            throw new IllegalArgumentException("Duplicate entities id " + entity.getId());
         }
         entities.add(entity);
     }
@@ -102,7 +102,7 @@ public class Instance {
     }
 
     public Entity getEntityById(long id) {
-        return entities.getEntityById(id).orElse(null);
+        return entities.getEntity(id).orElse(null);
     }
 
     public EntityContainer getPlayers() {
@@ -114,6 +114,6 @@ public class Instance {
     }
 
     public Entity getPlayerById(long id) {
-        return entities.getPlayerById(id).orElse(null);
+        return entities.getPlayer(id).orElse(null);
     }
 }

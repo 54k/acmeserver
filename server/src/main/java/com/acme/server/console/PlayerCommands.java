@@ -3,7 +3,7 @@ package com.acme.server.console;
 import com.acme.engine.ecs.core.Engine;
 import com.acme.engine.mechanics.network.SessionComponent;
 import com.acme.server.BrowserQuest;
-import com.acme.server.manager.WorldManager;
+import com.acme.server.managers.WorldManager;
 import org.apache.felix.service.command.Descriptor;
 
 public class PlayerCommands {

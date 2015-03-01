@@ -52,7 +52,7 @@ public abstract class IteratingSystem extends EntitySystem {
     }
 
     /**
-     * This method is called on every entity on every update call of the EntitySystem. Override this to implement your system's
+     * This method is called on every entities on every update call of the EntitySystem. Override this to implement your system's
      * specific processing.
      *
      * @param entity    The current Entity being processed
