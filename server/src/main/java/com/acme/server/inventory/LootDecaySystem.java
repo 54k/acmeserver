@@ -14,7 +14,7 @@ import com.acme.server.position.Transform;
 @Wire
 public class LootDecaySystem extends TimerSystem<LootDecay> {
 
-    private ComponentMapper<Transform> positionCm;
+    private ComponentMapper<Transform> transformCm;
 
     private Engine engine;
     private BlinkImpactSystem blinkImpactSystem;
@@ -27,7 +27,7 @@ public class LootDecaySystem extends TimerSystem<LootDecay> {
 
     @Override
     protected boolean shouldTickTimer(Entity entity, float deltaTime) {
-        return positionCm.get(entity).isSpawned();
+        return transformCm.get(entity).isSpawned();
     }
 
     @Override

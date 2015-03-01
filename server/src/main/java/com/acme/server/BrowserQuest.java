@@ -7,6 +7,7 @@ import com.acme.engine.ecs.core.Processor;
 import com.acme.engine.ecs.utils.reflection.ClassReflection;
 import com.acme.engine.ecs.utils.reflection.Field;
 import com.acme.engine.mechanics.network.NetworkServer;
+import com.acme.engine.mechanics.timer.SchedulerSystem;
 import com.acme.server.brains.CreatureBrainSystem;
 import com.acme.server.combat.CombatSystem;
 import com.acme.server.combat.HateListSystem;
@@ -57,6 +58,8 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addProcessor(new ApplicationProcessor(context));
         PacketSystem packetSystem = new PacketSystem(objectMapper);
         engine.addSystem(packetSystem);
+
+        engine.addSystem(new SchedulerSystem());
         engine.addSystem(new SpawnSystem());
         engine.addSystem(new LootDecaySystem());
         engine.addSystem(new CreatureBrainSystem());
