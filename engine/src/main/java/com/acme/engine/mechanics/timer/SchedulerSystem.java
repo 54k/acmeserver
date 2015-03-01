@@ -1,14 +1,16 @@
 package com.acme.engine.mechanics.timer;
 
-import com.acme.engine.ecs.core.EntitySystem;
+import com.acme.engine.ecs.core.*;
+import com.acme.engine.ecs.utils.ImmutableList;
 
-import java.util.PriorityQueue;
-import java.util.Queue;
-
+@Wire
 public final class SchedulerSystem extends EntitySystem {
 
-    private final Queue<Task> scheduledTasks;
-    private final Queue<Task> tasksToRun;
+    private static final Family schedulerFamily = Family.all(SchedulerHolder.class).get();
+
+    private ComponentMapper<SchedulerHolder> schedulerCm;
+    private final Scheduler globalScheduler;
+    private ImmutableList<Entity> entities;
 
     public SchedulerSystem() {
         this(0);
@@ -16,99 +18,45 @@ public final class SchedulerSystem extends EntitySystem {
 
     public SchedulerSystem(int priority) {
         super(priority);
-        scheduledTasks = new PriorityQueue<>();
-        tasksToRun = new PriorityQueue<>();
+        globalScheduler = new Scheduler();
+    }
+
+    @Override
+    public void addedToEngine(Engine engine) {
+        super.addedToEngine(engine);
+        entities = engine.getEntitiesFor(schedulerFamily);
     }
 
     @Override
     public void update(float deltaTime) {
-        tasksToRun.addAll(scheduledTasks);
-        scheduledTasks.clear();
-        while (!tasksToRun.isEmpty()) {
-            tasksToRun.poll().run(deltaTime);
+        globalScheduler.update(deltaTime);
+        for (Entity entity : entities) {
+            schedulerCm.get(entity).scheduler.update(deltaTime);
         }
     }
 
-    public Cancellable schedule(Task task) {
-        return schedule(task, 0);
+    public Scheduler.Cancellable schedule(Scheduler.Task task) {
+        return globalScheduler.schedule(task);
     }
 
-    public Cancellable schedule(Task task, float delay) {
-        return schedule(task, delay, 0);
+    public Scheduler.Cancellable schedule(Scheduler.Task task, float delay) {
+        return globalScheduler.schedule(task, delay);
     }
 
-    public Cancellable schedule(Task task, float delay, float period) {
-        ScheduledTask t = new ScheduledTask(task, delay, period, scheduledTasks);
-        scheduledTasks.add(t);
-        return t;
+    public Scheduler.Cancellable schedule(Scheduler.Task task, float delay, float period) {
+        return globalScheduler.schedule(task, delay, period);
     }
 
-    private static final class ScheduledTask implements Task, Cancellable, Comparable<ScheduledTask> {
-
-        private final Task task;
-        private final Queue<Task> queue;
-
-        private final float period;
-        private float atAge;
-        private float age;
-
-        private boolean cancelled;
-
-        ScheduledTask(Task task, float atAge, float period, Queue<Task> queue) {
-            this.task = task;
-            this.queue = queue;
-            this.period = period;
-            this.atAge = atAge;
-        }
-
-        @Override
-        public void run(float deltaTime) {
-            if (!isCancelled()) {
-                age += deltaTime;
-                run0(deltaTime);
-            }
-        }
-
-        private void run0(float deltaTime) {
-            if (age >= atAge) {
-                task.run(deltaTime);
-                if (period > 0) {
-                    atAge += period;
-                    queue.add(this);
-                }
-            } else {
-                queue.add(this);
-            }
-        }
-
-        @Override
-        public void cancel() {
-            cancelled = true;
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return cancelled;
-        }
-
-        @Override
-        public int compareTo(ScheduledTask o) {
-            if (this == o) {
-                return 0;
-            }
-            return atAge > o.atAge ? -1 : atAge == o.atAge ? 0 : 1;
-        }
+    public Scheduler.Cancellable scheduleForEntity(Entity entity, Scheduler.Task task) {
+        return scheduleForEntity(entity, task, 0);
     }
 
-    public static interface Task {
-
-        void run(float deltaTime);
+    public Scheduler.Cancellable scheduleForEntity(Entity entity, Scheduler.Task task, float delay) {
+        return scheduleForEntity(entity, task, delay, 0);
     }
 
-    public static interface Cancellable {
-
-        void cancel();
-
-        boolean isCancelled();
+    public Scheduler.Cancellable scheduleForEntity(Entity entity, Scheduler.Task task, float delay, float period) {
+        Scheduler scheduler = schedulerCm.get(entity).scheduler;
+        return scheduler.schedule(task, delay, period);
     }
 }
