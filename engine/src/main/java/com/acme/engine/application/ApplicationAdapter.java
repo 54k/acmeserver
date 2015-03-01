@@ -4,10 +4,10 @@ import com.acme.engine.ecs.core.Engine;
 
 public abstract class ApplicationAdapter implements Application {
 
-    private volatile Context context;
-    private volatile Engine engine;
+    private final Context context;
+    private final Engine engine;
 
-    public ApplicationAdapter() {
+    protected ApplicationAdapter() {
         context = new UpdateLoop(this, 60);
         engine = new Engine();
     }
@@ -41,8 +41,6 @@ public abstract class ApplicationAdapter implements Application {
 
     @Override
     public void dispose() {
-        context = null;
-        engine = null;
     }
 
     @Override

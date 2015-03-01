@@ -14,13 +14,17 @@ import com.acme.server.world.Region;
 @Wire
 public class PositionController extends PassiveSystem {
 
-    private ComponentMapper<PositionComponent> pcm;
-    private ComponentMapper<WorldComponent> wcm;
+    private ComponentMapper<PositionComponent> positionCm;
+    private ComponentMapper<WorldComponent> worldCm;
 
     private PacketSystem packetSystem;
 
+    public Region getRegion(Entity entity) {
+        return positionCm.get(entity).getRegion();
+    }
+
     public Position getPosition(Entity entity) {
-        return pcm.get(entity).getPosition();
+        return positionCm.get(entity).getPosition();
     }
 
     public void moveEntity(Entity entity, Position position) {
@@ -29,14 +33,14 @@ public class PositionController extends PassiveSystem {
     }
 
     public void updatePosition(Entity entity, Position position) {
-        PositionComponent positionComponent = pcm.get(entity);
+        PositionComponent positionComponent = positionCm.get(entity);
         positionComponent.setPosition(position);
         updateRegion(entity, positionComponent.getPosition());
     }
 
     private void updateRegion(Entity entity, Position position) {
-        WorldComponent worldComponent = wcm.get(entity);
-        PositionComponent positionComponent = pcm.get(entity);
+        WorldComponent worldComponent = worldCm.get(entity);
+        PositionComponent positionComponent = positionCm.get(entity);
         Region oldRegion = positionComponent.getRegion();
         Region newRegion = worldComponent.getInstance().findRegion(position);
 

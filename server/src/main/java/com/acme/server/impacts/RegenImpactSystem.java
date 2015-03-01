@@ -1,4 +1,4 @@
-package com.acme.server.impact;
+package com.acme.server.impacts;
 
 import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Wire;

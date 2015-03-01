@@ -15,8 +15,9 @@ public class Family {
     private static int familyIndex = 0;
 
     private static final Map<String, Family> families = new HashMap<>();
-    private static final Builder builder = new Builder();
+    // zero bits should goes first for builder
     private static final BitSet zeroBits = new BitSet();
+    private static final Builder builder = new Builder();
 
     public static final Family ALL = Family.all().get();
 
@@ -75,7 +76,7 @@ public class Family {
      */
     @SafeVarargs
     public static Builder all(Class<? extends Component>... componentTypes) {
-        return builder.reset().all(componentTypes);
+        return builder.all(componentTypes);
     }
 
     /**
@@ -84,7 +85,7 @@ public class Family {
      */
     @SafeVarargs
     public static Builder one(Class<? extends Component>... componentTypes) {
-        return builder.reset().one(componentTypes);
+        return builder.one(componentTypes);
     }
 
     /**
@@ -93,7 +94,7 @@ public class Family {
      */
     @SafeVarargs
     public static Builder exclude(Class<? extends Component>... componentTypes) {
-        return builder.reset().exclude(componentTypes);
+        return builder.exclude(componentTypes);
     }
 
     public static class Builder {
@@ -159,6 +160,7 @@ public class Family {
                 family = new Family(all, one, exclude);
                 families.put(hash, family);
             }
+            reset();
             return family;
         }
     }
