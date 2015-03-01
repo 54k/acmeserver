@@ -4,6 +4,7 @@ import com.acme.engine.ecs.core.ComponentMapper;
 import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.mechanics.brains.BrainState;
+import com.acme.engine.mechanics.brains.BrainStateMachine;
 import com.acme.server.component.Spawn;
 import com.acme.server.controller.PositionController;
 import com.acme.server.util.PositionUtils;
@@ -21,21 +22,20 @@ public class PatrolState implements BrainState<Entity> {
     private PositionController positionController;
 
     public PatrolState() {
-        interval = Rnd.between(1000, 4000);
+        resetInterval();
     }
 
     @Override
-    public void enter(Entity entity) {
-        System.out.println("Entity " + entity.getId() + " start patrolling");
+    public void enter(BrainStateMachine<Entity> brainStateMachine) {
     }
 
     @Override
-    public void update(Entity entity, float deltaTime) {
+    public void update(BrainStateMachine<Entity> brainStateMachine, float deltaTime) {
         accumulator += deltaTime;
         if (accumulator >= interval) {
             accumulator -= interval;
-            moveEntity(entity);
-            interval = Rnd.between(1000, 4000);
+            moveEntity(brainStateMachine.getOwner());
+            resetInterval();
         }
     }
 
@@ -45,8 +45,11 @@ public class PatrolState implements BrainState<Entity> {
         positionController.moveEntity(entity, rndPos);
     }
 
+    private void resetInterval() {
+        interval = Rnd.between(1000, 4000);
+    }
+
     @Override
-    public void exit(Entity entity) {
-        System.out.println("Entity " + entity.getId() + " stop patrolling");
+    public void exit(BrainStateMachine<Entity> brainStateMachine) {
     }
 }

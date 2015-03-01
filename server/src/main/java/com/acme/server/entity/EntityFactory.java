@@ -6,9 +6,9 @@ import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.ecs.systems.PassiveSystem;
 import com.acme.engine.mechanics.brains.BrainHolder;
-import com.acme.server.brains.BrainStateMachine;
+import com.acme.engine.mechanics.brains.BrainStateMachine;
 import com.acme.server.brains.CombatState;
-import com.acme.server.brains.CreatureGlobalState;
+import com.acme.server.brains.GlobalState;
 import com.acme.server.brains.PatrolState;
 import com.acme.server.combat.StatsController;
 import com.acme.server.component.TypeComponent;
@@ -123,27 +123,27 @@ public final class EntityFactory extends PassiveSystem {
                 .collect(Collectors.toList());
         dropList.getDrops().addAll(drops);
 
-        BrainHolder brainHolder = brainCm.get(entity);
-
-        BrainStateMachine brainStateMachine = new BrainStateMachine(entity);
-
-        CreatureGlobalState creatureGlobalState = new CreatureGlobalState();
-        engine.processObject(creatureGlobalState);
-
-        PatrolState patrolState = new PatrolState();
-        engine.processObject(patrolState);
-        brainStateMachine.addState(patrolState);
-
-        CombatState combatState = new CombatState();
-        engine.processObject(combatState);
-        brainStateMachine.addState(combatState);
-
-        brainHolder.setBrainStateMachine(brainStateMachine);
-        brainStateMachine.setGlobalState(creatureGlobalState);
+        applyBrain(entity);
 
         entity.add(new RegenImpact());
         engine.addEntity(entity);
         return entity;
+    }
+
+    private void applyBrain(Entity entity) {
+        BrainHolder brainHolder = brainCm.get(entity);
+        BrainStateMachine<Entity> brainStateMachine = new BrainStateMachine<>(entity);
+        GlobalState globalState = new GlobalState();
+        engine.processObject(globalState);
+        PatrolState patrolState = new PatrolState();
+        engine.processObject(patrolState);
+        CombatState combatState = new CombatState();
+        engine.processObject(combatState);
+
+        brainStateMachine.addState(patrolState);
+        brainStateMachine.addState(combatState);
+        brainHolder.setBrainStateMachine(brainStateMachine);
+        brainStateMachine.setGlobalState(globalState);
     }
 
     private CreatureTemplate getCreatureTemplate(Type type) {
