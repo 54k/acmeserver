@@ -18,7 +18,7 @@ public class PickupSystem extends PassiveSystem {
 
     private InventorySystem inventory;
     private StatsSystem stats;
-    private LootTablesSystem drop;
+    private LootTableSystem drop;
 
     private EntityFactory entityFactory;
     private WorldManager worldManager;

@@ -19,8 +19,7 @@ import com.acme.server.impacts.HealImpactSystem;
 import com.acme.server.impacts.InvulImpactSystem;
 import com.acme.server.impacts.RegenImpactSystem;
 import com.acme.server.inventory.InventorySystem;
-import com.acme.server.inventory.LootDecaySystem;
-import com.acme.server.inventory.LootTablesSystem;
+import com.acme.server.inventory.LootTableSystem;
 import com.acme.server.inventory.PickupSystem;
 import com.acme.server.managers.ChatManager;
 import com.acme.server.managers.LoginManager;
@@ -61,7 +60,6 @@ public class BrowserQuest extends ApplicationAdapter {
 
         engine.addSystem(new SchedulerSystem());
         engine.addSystem(new SpawnSystem());
-        engine.addSystem(new LootDecaySystem());
         engine.addSystem(new CreatureBrainSystem());
         engine.addSystem(new KnownListSystem());
 
@@ -69,7 +67,7 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addSystem(new PickupSystem());
         engine.addSystem(new InventorySystem());
         engine.addSystem(new StatsSystem());
-        engine.addSystem(new LootTablesSystem());
+        engine.addSystem(new LootTableSystem());
         engine.addSystem(new CombatSystem());
         engine.addSystem(new HateListSystem());
 
