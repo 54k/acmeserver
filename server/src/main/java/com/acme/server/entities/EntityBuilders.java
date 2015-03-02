@@ -9,6 +9,9 @@ import com.acme.server.combat.Stats;
 import com.acme.server.inventory.Inventory;
 import com.acme.server.inventory.LootTable;
 import com.acme.server.inventory.Pickup;
+import com.acme.server.items.Armor;
+import com.acme.server.items.Consumable;
+import com.acme.server.items.Weapon;
 import com.acme.server.managers.PlayerComponent;
 import com.acme.server.managers.WorldComponent;
 import com.acme.server.position.KnownList;
@@ -56,6 +59,27 @@ public final class EntityBuilders {
     static {
         ITEM_TYPE
                 .addComponentType(Pickup.class);
+    }
+
+    public static final EntityBuilder CONSUMABLE_TYPE = new EntityBuilder(ITEM_TYPE);
+
+    static {
+        CONSUMABLE_TYPE
+                .addComponentType(Consumable.class);
+    }
+
+    public static final EntityBuilder WEAPON_TYPE = new EntityBuilder(ITEM_TYPE);
+
+    static {
+        WEAPON_TYPE
+                .addComponentType(Weapon.class);
+    }
+
+    public static final EntityBuilder ARMOR_TYPE = new EntityBuilder(ITEM_TYPE);
+
+    static {
+        ARMOR_TYPE
+                .addComponentType(Armor.class);
     }
 
     public static final EntityBuilder CHEST_TYPE = new EntityBuilder(BASE_TYPE);
