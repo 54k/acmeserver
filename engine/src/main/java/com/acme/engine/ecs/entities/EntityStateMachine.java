@@ -1,4 +1,4 @@
-package com.acme.engine.ecs.fsm;
+package com.acme.engine.ecs.entities;
 
 import com.acme.engine.ecs.core.Component;
 import com.acme.engine.ecs.core.Entity;

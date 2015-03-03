@@ -1,4 +1,4 @@
-package com.acme.engine.ecs.fsm;
+package com.acme.engine.ecs.entities;
 
 import com.acme.engine.ecs.core.Component;
 
@@ -20,7 +20,7 @@ public class EntityState {
      * @param componentClass The type of component to be mapped
      * @return The component mapping to use when setting the provider for the component
      */
-    public <T extends Component> StateComponentMapping<T> add(Class<T> componentClass) {
-        return new StateComponentMapping<>(this, componentClass);
+    public <T extends Component> ComponentMapper<T> add(Class<T> componentClass) {
+        return new DefaultComponentMapper<>(providers, componentClass);
     }
 }

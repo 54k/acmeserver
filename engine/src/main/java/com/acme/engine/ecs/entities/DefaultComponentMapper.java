@@ -1,13 +1,15 @@
-package com.acme.engine.ecs.fsm;
+package com.acme.engine.ecs.entities;
 
 import com.acme.engine.ecs.core.Component;
+
+import java.util.Map;
 
 /**
  * Used by the {@link EntityState} class to create the mappings of components to providers via a fluent interface.
  */
-public class StateComponentMapping<T extends Component> {
+class DefaultComponentMapper<T extends Component> implements ComponentMapper<T> {
 
-    private EntityState creatingState;
+    private Map<Class<? extends Component>, ComponentProvider<? extends Component>> providers;
     private Class<T> componentClass;
 
     /**
@@ -15,11 +17,11 @@ public class StateComponentMapping<T extends Component> {
      * creates a {@link ComponentTypeProvider} as the default mapping, which will be replaced
      * by more specific mappings if other methods are called.
      *
-     * @param creatingState  The EntityState that the mapping will belong to
+     * @param providers      The providers that the mapping will belong to
      * @param componentClass The component class for the mapping
      */
-    StateComponentMapping(EntityState creatingState, Class<T> componentClass) {
-        this.creatingState = creatingState;
+    DefaultComponentMapper(Map<Class<? extends Component>, ComponentProvider<? extends Component>> providers, Class<T> componentClass) {
+        this.providers = providers;
         this.componentClass = componentClass;
         withType(componentClass);
     }
@@ -31,7 +33,7 @@ public class StateComponentMapping<T extends Component> {
      * @param component The component instance to use for the mapping
      * @return This ComponentMapping, so more modifications can be applied
      */
-    public StateComponentMapping<T> withInstance(T component) {
+    public DefaultComponentMapper<T> withInstance(T component) {
         setProvider(new ComponentInstanceProvider<>(component));
         return this;
     }
@@ -44,7 +46,7 @@ public class StateComponentMapping<T extends Component> {
      * @param componentClass The type of components to be created by this mapping
      * @return This ComponentMapping, so more modifications can be applied
      */
-    public StateComponentMapping<T> withType(Class<T> componentClass) {
+    public DefaultComponentMapper<T> withType(Class<T> componentClass) {
         setProvider(new ComponentTypeProvider<>(componentClass));
         return this;
     }
@@ -59,7 +61,7 @@ public class StateComponentMapping<T extends Component> {
      *                       mapping is used.
      * @return This ComponentMapping, so more modifications can be applied
      */
-    public StateComponentMapping<T> withSingleton(Class<T> componentClass) {
+    public DefaultComponentMapper<T> withSingleton(Class<T> componentClass) {
         setProvider(new ComponentSingletonProvider<>(componentClass));
         return this;
     }
@@ -70,12 +72,12 @@ public class StateComponentMapping<T extends Component> {
      * @param provider The component provider to use.
      * @return This ComponentMapping, so more modifications can be applied.
      */
-    public StateComponentMapping<T> withProvider(ComponentProvider<T> provider) {
+    public DefaultComponentMapper<T> withProvider(ComponentProvider<T> provider) {
         setProvider(provider);
         return this;
     }
 
     private void setProvider(ComponentProvider<T> provider) {
-        creatingState.providers.put(componentClass, provider);
+        providers.put(componentClass, provider);
     }
 }
