@@ -1,6 +1,6 @@
 package com.acme.server.entities;
 
-import com.acme.engine.ecs.core.EntityBuilder;
+import com.acme.engine.ecs.entities.EntityBuilder;
 import com.acme.engine.mechanics.brains.Brain;
 import com.acme.server.combat.Combat;
 import com.acme.server.combat.HateList;
@@ -23,67 +23,59 @@ public final class EntityBuilders {
     public static final EntityBuilder BASE_TYPE = new EntityBuilder();
 
     static {
-        BASE_TYPE
-                .addComponentType(Transform.class)
-                .addComponentType(WorldComponent.class)
-                .addComponentType(EntityType.class);
+        BASE_TYPE.add(Transform.class);
+        BASE_TYPE.add(WorldComponent.class);
+        BASE_TYPE.add(EntityType.class);
     }
 
     public static final EntityBuilder PLAYER_TYPE = new EntityBuilder(BASE_TYPE);
 
     static {
-        PLAYER_TYPE
-                .addComponentType(PlayerComponent.class)
-                .addComponentType(KnownList.class)
-                .addComponentType(Inventory.class)
-                .addComponentType(Stats.class);
+        PLAYER_TYPE.add(PlayerComponent.class);
+        PLAYER_TYPE.add(KnownList.class);
+        PLAYER_TYPE.add(Inventory.class);
+        PLAYER_TYPE.add(Stats.class);
     }
 
     public static final EntityBuilder CREATURE_TYPE = new EntityBuilder(BASE_TYPE);
 
     static {
-        CREATURE_TYPE
-                .addComponentType(KnownList.class)
-                .addComponentType(Inventory.class)
-                .addComponentType(Stats.class)
-                .addComponentType(LootTable.class)
-                .addComponentType(HateList.class)
-                .addComponentType(Brain.class)
-                .addComponentType(Combat.class);
+        CREATURE_TYPE.add(KnownList.class);
+        CREATURE_TYPE.add(Inventory.class);
+        CREATURE_TYPE.add(Stats.class);
+        CREATURE_TYPE.add(LootTable.class);
+        CREATURE_TYPE.add(HateList.class);
+        CREATURE_TYPE.add(Brain.class);
+        CREATURE_TYPE.add(Combat.class);
     }
 
     public static final EntityBuilder ITEM_TYPE = new EntityBuilder(BASE_TYPE);
 
     static {
-        ITEM_TYPE
-                .addComponentType(Pickup.class);
+        ITEM_TYPE.add(Pickup.class);
     }
 
     public static final EntityBuilder CONSUMABLE_TYPE = new EntityBuilder(ITEM_TYPE);
 
     static {
-        CONSUMABLE_TYPE
-                .addComponentType(Consumable.class);
+        CONSUMABLE_TYPE.add(Consumable.class);
     }
 
     public static final EntityBuilder WEAPON_TYPE = new EntityBuilder(ITEM_TYPE);
 
     static {
-        WEAPON_TYPE
-                .addComponentType(Weapon.class);
+        WEAPON_TYPE.add(Weapon.class);
     }
 
     public static final EntityBuilder ARMOR_TYPE = new EntityBuilder(ITEM_TYPE);
 
     static {
-        ARMOR_TYPE
-                .addComponentType(Armor.class);
+        ARMOR_TYPE.add(Armor.class);
     }
 
     public static final EntityBuilder CHEST_TYPE = new EntityBuilder(BASE_TYPE);
 
     static {
-        CHEST_TYPE
-                .addComponentType(LootTable.class);
+        CHEST_TYPE.add(LootTable.class);
     }
 }
