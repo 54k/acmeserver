@@ -18,8 +18,8 @@ public class EntityBuilder {
         providers.putAll(parent.providers);
     }
 
-    public <T extends Component> ComponentMapper<T> add(Class<T> componentClass) {
-        return new DefaultComponentMapper<>(providers, componentClass);
+    public <T extends Component> ComponentMapping<T> add(Class<T> componentClass) {
+        return new DefaultComponentMapping<>(providers, componentClass);
     }
 
     public <T extends Component> void remove(Class<T> componentClass) {

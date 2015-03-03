@@ -20,7 +20,7 @@ public class EntityState {
      * @param componentClass The type of component to be mapped
      * @return The component mapping to use when setting the provider for the component
      */
-    public <T extends Component> ComponentMapper<T> add(Class<T> componentClass) {
-        return new DefaultComponentMapper<>(providers, componentClass);
+    public <T extends Component> ComponentMapping<T> add(Class<T> componentClass) {
+        return new DefaultComponentMapping<>(providers, componentClass);
     }
 }

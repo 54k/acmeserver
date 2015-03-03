@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Used by the {@link EntityState} class to create the mappings of components to providers via a fluent interface.
  */
-class DefaultComponentMapper<T extends Component> implements ComponentMapper<T> {
+class DefaultComponentMapping<T extends Component> implements ComponentMapping<T> {
 
     private Map<Class<? extends Component>, ComponentProvider<? extends Component>> providers;
     private Class<T> componentClass;
@@ -20,7 +20,7 @@ class DefaultComponentMapper<T extends Component> implements ComponentMapper<T> 
      * @param providers      The providers that the mapping will belong to
      * @param componentClass The component class for the mapping
      */
-    DefaultComponentMapper(Map<Class<? extends Component>, ComponentProvider<? extends Component>> providers, Class<T> componentClass) {
+    DefaultComponentMapping(Map<Class<? extends Component>, ComponentProvider<? extends Component>> providers, Class<T> componentClass) {
         this.providers = providers;
         this.componentClass = componentClass;
         withType(componentClass);
@@ -33,7 +33,7 @@ class DefaultComponentMapper<T extends Component> implements ComponentMapper<T> 
      * @param component The component instance to use for the mapping
      * @return This ComponentMapping, so more modifications can be applied
      */
-    public DefaultComponentMapper<T> withInstance(T component) {
+    public DefaultComponentMapping<T> withInstance(T component) {
         setProvider(new ComponentInstanceProvider<>(component));
         return this;
     }
@@ -46,7 +46,7 @@ class DefaultComponentMapper<T extends Component> implements ComponentMapper<T> 
      * @param componentClass The type of components to be created by this mapping
      * @return This ComponentMapping, so more modifications can be applied
      */
-    public DefaultComponentMapper<T> withType(Class<T> componentClass) {
+    public DefaultComponentMapping<T> withType(Class<T> componentClass) {
         setProvider(new ComponentTypeProvider<>(componentClass));
         return this;
     }
@@ -61,7 +61,7 @@ class DefaultComponentMapper<T extends Component> implements ComponentMapper<T> 
      *                       mapping is used.
      * @return This ComponentMapping, so more modifications can be applied
      */
-    public DefaultComponentMapper<T> withSingleton(Class<T> componentClass) {
+    public DefaultComponentMapping<T> withSingleton(Class<T> componentClass) {
         setProvider(new ComponentSingletonProvider<>(componentClass));
         return this;
     }
@@ -72,7 +72,7 @@ class DefaultComponentMapper<T extends Component> implements ComponentMapper<T> 
      * @param provider The component provider to use.
      * @return This ComponentMapping, so more modifications can be applied.
      */
-    public DefaultComponentMapper<T> withProvider(ComponentProvider<T> provider) {
+    public DefaultComponentMapping<T> withProvider(ComponentProvider<T> provider) {
         setProvider(provider);
         return this;
     }
