@@ -2,7 +2,6 @@ package com.acme.server.entities;
 
 import com.acme.engine.ecs.core.EntityBuilder;
 import com.acme.engine.mechanics.brains.Brain;
-import com.acme.engine.mechanics.timer.SchedulerHolder;
 import com.acme.server.combat.Combat;
 import com.acme.server.combat.HateList;
 import com.acme.server.combat.Stats;
@@ -27,8 +26,7 @@ public final class EntityBuilders {
         BASE_TYPE
                 .addComponentType(Transform.class)
                 .addComponentType(WorldComponent.class)
-                .addComponentType(EntityType.class)
-                .addComponentType(SchedulerHolder.class);
+                .addComponentType(EntityType.class);
     }
 
     public static final EntityBuilder PLAYER_TYPE = new EntityBuilder(BASE_TYPE);

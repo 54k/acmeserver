@@ -1,16 +1,17 @@
 package com.acme.engine.mechanics.timer;
 
-import com.acme.engine.ecs.core.*;
-import com.acme.engine.ecs.utils.ImmutableList;
+import com.acme.engine.ecs.core.Engine;
+import com.acme.engine.ecs.core.Entity;
+import com.acme.engine.ecs.core.EntityListener;
+import com.acme.engine.ecs.core.EntitySystem;
 
-@Wire
-public final class SchedulerSystem extends EntitySystem {
+import java.util.HashMap;
+import java.util.Map;
 
-    private static final Family schedulerFamily = Family.all(SchedulerHolder.class).get();
+public final class SchedulerSystem extends EntitySystem implements EntityListener {
 
-    private ComponentMapper<SchedulerHolder> schedulerCm;
     private final Scheduler globalScheduler;
-    private ImmutableList<Entity> entities;
+    private final Map<Entity, Scheduler> schedulersByEntity;
 
     public SchedulerSystem() {
         this(0);
@@ -19,19 +20,28 @@ public final class SchedulerSystem extends EntitySystem {
     public SchedulerSystem(int priority) {
         super(priority);
         globalScheduler = new Scheduler();
+        schedulersByEntity = new HashMap<>();
     }
 
     @Override
     public void addedToEngine(Engine engine) {
-        super.addedToEngine(engine);
-        entities = engine.getEntitiesFor(schedulerFamily);
+        engine.addEntityListener(this);
+    }
+
+    @Override
+    public void entityAdded(Entity entity) {
+    }
+
+    @Override
+    public void entityRemoved(Entity entity) {
+        schedulersByEntity.remove(entity);
     }
 
     @Override
     public void update(float deltaTime) {
         globalScheduler.update(deltaTime);
-        for (Entity entity : entities) {
-            schedulerCm.get(entity).scheduler.update(deltaTime);
+        for (Scheduler scheduler : schedulersByEntity.values()) {
+            scheduler.update(deltaTime);
         }
     }
 
@@ -56,7 +66,16 @@ public final class SchedulerSystem extends EntitySystem {
     }
 
     public Scheduler.Cancellable scheduleForEntity(Entity entity, Scheduler.Task task, float delay, float period) {
-        Scheduler scheduler = schedulerCm.get(entity).scheduler;
+        Scheduler scheduler = getSchedulerFor(entity);
         return scheduler.schedule(task, delay, period);
+    }
+
+    private Scheduler getSchedulerFor(Entity entity) {
+        Scheduler scheduler = schedulersByEntity.get(entity);
+        if (scheduler == null) {
+            scheduler = new Scheduler();
+            schedulersByEntity.put(entity, scheduler);
+        }
+        return scheduler;
     }
 }
