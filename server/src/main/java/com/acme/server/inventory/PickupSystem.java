@@ -36,11 +36,11 @@ public class PickupSystem extends PassiveSystem {
                 shouldDecayPickup = inventory.tryEquipWeapon(entity, type.getId());
                 break;
             case HEALTH_POTION:
-                entity.add(new HealImpact(pickup.getAmount() / 5, 5, 500));
+                entity.addComponent(new HealImpact(pickup.getAmount() / 5, 5, 500));
                 shouldDecayPickup = true;
                 break;
             case FIREFOX_POTION:
-                entity.add(new InvulImpact(pickup.getAmount()));
+                entity.addComponent(new InvulImpact(pickup.getAmount()));
                 shouldDecayPickup = true;
                 break;
         }

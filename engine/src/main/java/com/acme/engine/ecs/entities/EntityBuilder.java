@@ -38,7 +38,7 @@ public class EntityBuilder {
         Entity entity = new Entity();
         for (ComponentProvider<? extends Component> componentProvider : providers.values()) {
             Component component = componentProvider.getComponent();
-            entity.add(component);
+            entity.addComponent(component);
         }
         return entity;
     }

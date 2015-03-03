@@ -69,7 +69,7 @@ public class Entity {
      *
      * @return The Entity for easy chaining
      */
-    public Entity add(Component component) {
+    public Entity addComponent(Component component) {
         if (componentOperationHandler != null) {
             componentOperationHandler.add(this, component);
         } else {
@@ -84,7 +84,7 @@ public class Entity {
      *
      * @return The removed {@link Component}, or null if the Entity did no contain such a component.
      */
-    public Component remove(Class<? extends Component> componentClass) {
+    public Component removeComponent(Class<? extends Component> componentClass) {
         ComponentType componentType = ComponentType.getFor(componentClass);
         int componentTypeIndex = componentType.getIndex();
         Component removeComponent = components.get(componentTypeIndex);
@@ -149,6 +149,10 @@ public class Entity {
         } else {
             return null;
         }
+    }
+
+    public boolean hasComponent(Class<? extends Component> componentClass) {
+        return hasComponent(ComponentType.getFor(componentClass));
     }
 
     /**
@@ -237,6 +241,14 @@ public class Entity {
                 listener.componentRemoved(this, component);
             }
         }
+    }
+
+    public <T extends Node> T getNode(Class<T> nodeClass) {
+        return NodeMapper.getFor(nodeClass).get(this);
+    }
+
+    public boolean hasNode(Class<? extends Node> nodeClass) {
+        return NodeMapper.getFor(nodeClass).has(this);
     }
 
     @Override

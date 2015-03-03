@@ -51,7 +51,7 @@ public class SpawnManager extends PassiveSystem {
                     roamingAreaTemplate.getY(),
                     roamingAreaTemplate.getWidth(),
                     roamingAreaTemplate.getHeight()));
-            entity.add(spawnComponent);
+            entity.addComponent(spawnComponent);
             worldManager.bringIntoWorld(entity);
         }
     }
@@ -67,7 +67,7 @@ public class SpawnManager extends PassiveSystem {
         worldComponent.setInstance(instance);
         Spawn spawnComponent = new Spawn();
         spawnComponent.setArea(new Area(position.getX(), position.getY(), 0, 0));
-        entity.add(spawnComponent);
+        entity.addComponent(spawnComponent);
         worldManager.bringIntoWorld(entity);
     }
 
@@ -81,7 +81,7 @@ public class SpawnManager extends PassiveSystem {
         worldComponent.setInstance(instance);
         Spawn spawnComponent = new Spawn();
         spawnComponent.setArea(new Area(ct.getX(), ct.getY(), 0, 0));
-        entity.add(spawnComponent);
+        entity.addComponent(spawnComponent);
         LootTable lootTable = lootTableCm.get(entity);
         List<LootTable.LootEntry> lootEntries = ct.getI().stream()
                 .map(i -> new LootTable.LootEntry(Type.fromId(i), 100))

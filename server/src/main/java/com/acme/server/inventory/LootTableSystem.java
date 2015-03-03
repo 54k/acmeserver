@@ -72,7 +72,7 @@ public class LootTableSystem extends PassiveSystem implements CombatListener {
 
     private void scheduleDecay(Entity dropEntity) {
         schedulerSystem.scheduleForEntity(dropEntity,
-                ($1) -> dropEntity.add(new BlinkImpact()), 12000);
+                ($1) -> dropEntity.addComponent(new BlinkImpact()), 12000);
 
         schedulerSystem.scheduleForEntity(dropEntity, ($1) -> {
             worldManager.decay(dropEntity);

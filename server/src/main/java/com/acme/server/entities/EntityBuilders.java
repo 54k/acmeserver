@@ -35,6 +35,7 @@ public final class EntityBuilders {
         PLAYER_TYPE.add(KnownList.class);
         PLAYER_TYPE.add(Inventory.class);
         PLAYER_TYPE.add(Stats.class);
+        PLAYER_TYPE.add(Combat.class);
     }
 
     public static final EntityBuilder CREATURE_TYPE = new EntityBuilder(BASE_TYPE);

@@ -32,7 +32,7 @@ public abstract class NetworkSystem extends IteratingSystem implements SessionLi
         sessionComponent.setPacketReader(getPacketReader());
         Entity entity = createEntity(session);
         if (entity != null) {
-            entity.add(sessionComponent);
+            entity.addComponent(sessionComponent);
             session.setListener(this);
             entitiesBySession.put(session, entity);
             connected(entity);

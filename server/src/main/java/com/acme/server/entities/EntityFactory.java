@@ -45,7 +45,7 @@ public final class EntityFactory extends PassiveSystem {
 
     public Entity createPlayer() {
         Entity entity = create(Type.WARRIOR);
-        entity.add(new RegenImpact());
+        entity.addComponent(new RegenImpact());
         engine.addEntity(entity);
         return entity;
     }
@@ -124,7 +124,7 @@ public final class EntityFactory extends PassiveSystem {
 
         applyBrain(entity);
 
-        entity.add(new RegenImpact());
+        entity.addComponent(new RegenImpact());
         engine.addEntity(entity);
         return entity;
     }

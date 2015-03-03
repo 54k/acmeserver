@@ -18,7 +18,7 @@ public class HealthPotionHandler implements ConsumableHandler {
 
     @Override
     public void consume(Entity consumer, Entity consumable) {
-        consumer.add(new HealImpact(healthAmount / 5, 5, 500));
+        consumer.addComponent(new HealImpact(healthAmount / 5, 5, 500));
         worldManager.decay(consumable);
     }
 }

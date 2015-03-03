@@ -83,6 +83,9 @@ class EngineProcessor implements Processor {
         } else if (ComponentMapper.class.isAssignableFrom(type)) {
             Class<? extends Component> elementType = (Class<? extends Component>) field.getElementType(0);
             return ComponentMapper.getFor(elementType);
+        } else if (NodeMapper.class.isAssignableFrom(type)) {
+            Class<? extends Node> elementType = (Class<? extends Node>) field.getElementType(0);
+            return NodeMapper.getFor(elementType);
         }
         return null;
     }

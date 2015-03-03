@@ -51,13 +51,13 @@ public class EntityStateMachine {
                 if (provider != null && provider.getComponentType() == entry.getValue().getComponentType()) {
                     toAdd.remove(componentClass);
                 } else {
-                    entity.remove(componentClass);
+                    entity.removeComponent(componentClass);
                 }
             }
         }
 
         for (ComponentProvider<? extends Component> componentProvider : toAdd.values()) {
-            entity.add(componentProvider.getComponent());
+            entity.addComponent(componentProvider.getComponent());
         }
     }
 

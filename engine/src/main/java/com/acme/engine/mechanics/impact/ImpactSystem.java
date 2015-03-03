@@ -80,7 +80,7 @@ public abstract class ImpactSystem<I extends Impact> extends EntitySystem {
             impactTicked(impact, target);
             if (impact.isReady()) {
                 impactReady(impact, target);
-                target.remove(impact.getClass());
+                target.removeComponent(impact.getClass());
             }
             impact.timer += impact.interval;
         }
