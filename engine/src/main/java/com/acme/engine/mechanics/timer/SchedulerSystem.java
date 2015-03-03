@@ -70,7 +70,7 @@ public final class SchedulerSystem extends EntitySystem implements EntityListene
         return scheduler.schedule(task, delay, period);
     }
 
-    private Scheduler getSchedulerFor(Entity entity) {
+    public Scheduler getSchedulerFor(Entity entity) {
         Scheduler scheduler = schedulersByEntity.get(entity);
         if (scheduler == null) {
             scheduler = new Scheduler();

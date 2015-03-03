@@ -5,15 +5,28 @@ import java.util.Queue;
 
 public class Scheduler {
 
+    private static final long ORIGIN_NANOS = System.nanoTime();
+
     private final Queue<Task> scheduledTasks;
     private final Queue<Task> tasksToRun;
+    private long lastNanos;
 
     public Scheduler() {
         scheduledTasks = new PriorityQueue<>();
         tasksToRun = new PriorityQueue<>();
+        lastNanos = System.nanoTime();
+    }
+
+    static long nanos() {
+        return System.nanoTime() - ORIGIN_NANOS;
     }
 
     public void update(float deltaTime) {
+        if (scheduledTasks.isEmpty()) {
+            return;
+        }
+        long nanos = nanos();
+
         tasksToRun.addAll(scheduledTasks);
         scheduledTasks.clear();
         while (!tasksToRun.isEmpty()) {
@@ -33,6 +46,23 @@ public class Scheduler {
         ScheduledTask t = new ScheduledTask(task, delay, period, scheduledTasks);
         scheduledTasks.add(t);
         return t;
+    }
+
+    private static final class SchedulerRecord {
+
+        private final long period;
+        private long nextExecution;
+        private final Runnable task;
+
+        SchedulerRecord(long period, long nextExecution, Runnable task) {
+            this.period = period;
+            this.nextExecution = nextExecution;
+            this.task = task;
+        }
+
+        void run(long currentTime) {
+
+        }
     }
 
     private static final class ScheduledTask implements Task, Cancellable, Comparable<ScheduledTask> {
