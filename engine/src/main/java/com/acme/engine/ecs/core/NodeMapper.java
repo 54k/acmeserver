@@ -1,9 +1,9 @@
 package com.acme.engine.ecs.core;
 
 import com.acme.engine.ecs.utils.reflection.ClassReflection;
+import com.acme.engine.ecs.utils.reflection.Method;
 
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,8 +35,8 @@ public class NodeMapper<T extends Node> {
         List<Class<Component>> components = new ArrayList<>();
         Class<?>[] interfaces = nodeClass.getInterfaces();
         for (Class<?> anInterface : interfaces) {
-            for (Method method : anInterface.getDeclaredMethods()) {
-                if (!isValidMethod(method)) {
+            for (Method method : ClassReflection.getDeclaredMethods(anInterface)) {
+                if (!method.isValidNodeMethod()) {
                     throw new IllegalArgumentException();
                 }
                 Class<?> returnType = method.getReturnType();
@@ -58,41 +58,11 @@ public class NodeMapper<T extends Node> {
     }
 
     public T get(Entity entity) {
-        return ClassReflection.newProxyInstance(nodeClass, new NodeHandler(entity));
+        return ClassReflection.newProxyInstance(nodeClass, new NodeProxyHandler(entity));
     }
 
     public boolean has(Entity entity) {
         return family.matches(entity);
-    }
-
-    private static boolean isValidMethod(Method method) {
-        return isComponentMethod(method) || isGetEntityMethod(method) ||
-                isEqualsMethod(method) || isHashCodeMethod(method) ||
-                isToStringMethod(method);
-    }
-
-    private static boolean isComponentMethod(Method method) {
-        return Component.class.isAssignableFrom(method.getReturnType());
-    }
-
-    private static boolean isGetEntityMethod(Method method) {
-        return method.getName().equals("getEntity") &&
-                method.getReturnType() == Entity.class;
-    }
-
-    private static boolean isEqualsMethod(Method method) {
-        return method.getName().equals("equals") &&
-                method.getReturnType() == boolean.class;
-    }
-
-    private static boolean isHashCodeMethod(Method method) {
-        return method.getName().equals("hashCode") &&
-                method.getReturnType() == int.class;
-    }
-
-    private static boolean isToStringMethod(Method method) {
-        return method.getName().equals("toString") &&
-                method.getReturnType() == String.class;
     }
 
     @Override
@@ -104,37 +74,41 @@ public class NodeMapper<T extends Node> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         NodeMapper that = (NodeMapper) o;
 
-        if (family != null ? !family.equals(that.family) : that.family != null) return false;
+        if (family != null ? !family.equals(that.family) : that.family != null) {
+            return false;
+        }
         return !(nodeClass != null ? !nodeClass.equals(that.nodeClass) : that.nodeClass != null);
     }
 
-    private static final class NodeHandler implements InvocationHandler {
+    private static final class NodeProxyHandler implements InvocationHandler {
 
         private final Entity entity;
 
-        public NodeHandler(Entity entity) {
+        public NodeProxyHandler(Entity entity) {
             this.entity = entity;
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (isComponentMethod(method)) {
+        public Object invoke(Object proxy, java.lang.reflect.Method m, Object[] args) throws Throwable {
+            Method method = new Method(m);
+
+            if (method.isComponentMethod()) {
                 Class<Component> componentClass = (Class<Component>) method.getReturnType();
                 return ComponentMapper.getFor(componentClass).get(entity);
-            } else if (isGetEntityMethod(method)) {
+            } else if (method.isGetEntityMethod()) {
                 return entity;
-            } else if (isHashCodeMethod(method)) {
-                return entity.hashCode();
-            } else if (isEqualsMethod(method)) {
-                return entity.equals(args[0]);
-            } else if (isToStringMethod(method)) {
-                return entity.toString();
+            } else if (method.isObjectMethod()) {
+                return method.invoke(entity, args);
             }
 
             throw new RuntimeException("Unknown method " + method);

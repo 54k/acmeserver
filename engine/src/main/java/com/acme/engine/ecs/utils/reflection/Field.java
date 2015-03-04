@@ -8,7 +8,7 @@ public final class Field {
 
     private final java.lang.reflect.Field field;
 
-    Field(java.lang.reflect.Field field) {
+    public Field(java.lang.reflect.Field field) {
         this.field = field;
     }
 
@@ -54,10 +54,11 @@ public final class Field {
             Type[] actualTypes = ((ParameterizedType) genericType).getActualTypeArguments();
             if (actualTypes.length - 1 >= index) {
                 Type actualType = actualTypes[index];
-                if (actualType instanceof Class)
+                if (actualType instanceof Class) {
                     return (Class) actualType;
-                else if (actualType instanceof ParameterizedType)
+                } else if (actualType instanceof ParameterizedType) {
                     return (Class) ((ParameterizedType) actualType).getRawType();
+                }
             }
         }
         return null;

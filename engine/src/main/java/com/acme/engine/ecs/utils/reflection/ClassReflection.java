@@ -40,6 +40,15 @@ public final class ClassReflection {
         return result;
     }
 
+    public static Method[] getDeclaredMethods(Class c) {
+        java.lang.reflect.Method[] methods = c.getDeclaredMethods();
+        Method[] result = new Method[methods.length];
+        for (int i = 0; i < methods.length; i++) {
+            result[i] = new Method(methods[i]);
+        }
+        return result;
+    }
+
     /**
      * Returns true if the supplied class includes an annotation of the given class type.
      */
