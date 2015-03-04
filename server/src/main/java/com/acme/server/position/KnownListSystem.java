@@ -1,8 +1,8 @@
 package com.acme.server.position;
 
-import com.acme.engine.ecs.core.ComponentMapper;
 import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Family;
+import com.acme.engine.ecs.core.NodeMapper;
 import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.ecs.systems.IteratingSystem;
 import com.acme.server.managers.WorldComponent;
@@ -13,13 +13,12 @@ import com.acme.server.utils.EntityContainer;
 import com.acme.server.utils.PositionUtils;
 import com.acme.server.world.Region;
 
-@Wire
 public class KnownListSystem extends IteratingSystem {
 
     private static final Family KNOWN_LIST_OWNERS_FAMILY = Family.all(KnownList.class, Transform.class, WorldComponent.class).get();
 
-    private ComponentMapper<KnownList> kcm;
-    private ComponentMapper<Transform> pcm;
+    @Wire
+    private NodeMapper<KnownListNode> knownListMapper;
 
     private PacketSystem packetSystem;
 
@@ -29,9 +28,38 @@ public class KnownListSystem extends IteratingSystem {
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        if (pcm.get(entity).isSpawned()) {
-            updateKnownList(entity);
+        KnownListNode node = knownListMapper.get(entity);
+        if (!node.getTransform().isSpawned()) {
+            updateKnownList(node);
         }
+    }
+
+    private void updateKnownList(KnownListNode node) {
+        forgetEntities(node);
+        findEntities(node);
+    }
+
+    private void forgetEntities(KnownListNode node) {
+        EntityContainer knownEntities = node.getKnownList().getKnownEntities();
+        for (int i = knownEntities.size() - 1; i >= 0; i--) {
+            Entity entity = knownEntities.get(i);
+            if (forgetEntity(node, entity)) {
+                event(KnownListListener.class).dispatch().entityRemoved(node, entity);
+                packetSystem.sendPacket(node.getEntity(), new DespawnPacket(entity));
+            }
+        }
+    }
+
+    private boolean forgetEntity(KnownListNode node, Entity entity) {
+        if (!node.getTransform().isSpawned() || (isKnownEntity(node, entity) && isOutOfRange(node, entity))) {
+            removeFromKnownList(node, entity);
+            return true;
+        }
+        return false;
+    }
+
+    private void findEntities(KnownListNode node) {
+
     }
 
     public void clearKnownList(Entity owner) {
