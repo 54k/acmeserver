@@ -65,18 +65,18 @@ public final class ClassReflection {
     @SuppressWarnings("unchecked")
     public static Iterable<Class<Component>> getComponentsFor(Class<? extends Node> nodeClass) {
         Set<Class<Component>> components = new HashSet<>();
-        getComponents0(components, nodeClass);
+        getComponentsFor0(components, nodeClass);
         Class<?>[] interfaces = nodeClass.getInterfaces();
         for (Class<?> parentNodeClass : interfaces) {
             if (Node.class.isAssignableFrom(parentNodeClass)) {
-                getComponents0(components, (Class<? extends Node>) parentNodeClass);
+                getComponentsFor0(components, (Class<? extends Node>) parentNodeClass);
             }
         }
         return components;
     }
 
     @SuppressWarnings("unchecked")
-    private static void getComponents0(Collection<Class<Component>> components, Class<? extends Node> nodeClass) {
+    private static void getComponentsFor0(Collection<Class<Component>> components, Class<? extends Node> nodeClass) {
         for (Method method : getDeclaredMethods(nodeClass)) {
             if (!method.isValidNodeMethod()) {
                 throw new IllegalArgumentException();
