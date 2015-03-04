@@ -1,7 +1,7 @@
 package com.acme.server.position;
 
 import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.NodeMapper;
+import com.acme.engine.ecs.core.NodeFamily;
 import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.mechanics.timer.TimerSystem;
 import com.acme.server.combat.StatsSystem;
@@ -19,7 +19,7 @@ public class SpawnSystem extends TimerSystem<Spawn> {
     //    private ComponentMapper<Spawn> spawnCm;
     //    private ComponentMapper<Transform> transformCm;
     @Wire
-    private NodeMapper<WorldNode> worldMapper;
+    private NodeFamily<WorldNode> worldMapper;
     @Wire
     private StatsSystem statsSystem;
     @Wire

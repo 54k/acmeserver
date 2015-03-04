@@ -9,14 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NodeMapper<T extends Node> {
+public class NodeFamily<T extends Node> {
 
-    private static final Map<Class<? extends Node>, NodeMapper> nodeMappers = new HashMap<>();
+    private static final Map<Class<? extends Node>, NodeFamily> nodeMappers = new HashMap<>();
 
     private final Class<T> nodeClass;
     private final Family family;
 
-    private NodeMapper(Class<T> nodeClass) {
+    private NodeFamily(Class<T> nodeClass) {
         this.nodeClass = nodeClass;
         family = getFamilyFor(nodeClass);
     }
@@ -48,20 +48,24 @@ public class NodeMapper<T extends Node> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Node> NodeMapper<T> getFor(Class<T> nodeClass) {
-        NodeMapper<T> nodeMapper = (NodeMapper<T>) nodeMappers.get(nodeClass);
-        if (nodeMapper == null) {
-            nodeMapper = new NodeMapper<>(nodeClass);
-            nodeMappers.put(nodeClass, nodeMapper);
+    public static <T extends Node> NodeFamily<T> getFor(Class<T> nodeClass) {
+        NodeFamily<T> nodeFamily = (NodeFamily<T>) nodeMappers.get(nodeClass);
+        if (nodeFamily == null) {
+            nodeFamily = new NodeFamily<>(nodeClass);
+            nodeMappers.put(nodeClass, nodeFamily);
         }
-        return nodeMapper;
+        return nodeFamily;
+    }
+
+    public int getIndex() {
+        return family.getIndex();
     }
 
     public T get(Entity entity) {
         return ClassReflection.newProxyInstance(nodeClass, new NodeProxyHandler(entity));
     }
 
-    public boolean has(Entity entity) {
+    public boolean matches(Entity entity) {
         return family.matches(entity);
     }
 
@@ -81,7 +85,7 @@ public class NodeMapper<T extends Node> {
             return false;
         }
 
-        NodeMapper that = (NodeMapper) o;
+        NodeFamily that = (NodeFamily) o;
 
         if (family != null ? !family.equals(that.family) : that.family != null) {
             return false;

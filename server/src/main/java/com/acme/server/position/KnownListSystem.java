@@ -2,7 +2,7 @@ package com.acme.server.position;
 
 import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Family;
-import com.acme.engine.ecs.core.NodeMapper;
+import com.acme.engine.ecs.core.NodeFamily;
 import com.acme.engine.ecs.core.Wire;
 import com.acme.engine.ecs.systems.IteratingSystem;
 import com.acme.server.managers.WorldComponent;
@@ -18,7 +18,7 @@ public class KnownListSystem extends IteratingSystem {
     private static final Family KNOWN_LIST_OWNERS_FAMILY = Family.all(KnownList.class, Transform.class, WorldComponent.class).get();
 
     @Wire
-    private NodeMapper<KnownListNode> knownListMapper;
+    private NodeFamily<KnownListNode> knownListMapper;
 
     private PacketSystem packetSystem;
 
