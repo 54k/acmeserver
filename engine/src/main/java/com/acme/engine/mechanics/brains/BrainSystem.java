@@ -4,10 +4,10 @@ import com.acme.engine.ecs.core.ComponentMapper;
 import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Family;
 import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.ecs.systems.IteratingSystem;
+import com.acme.engine.ecs.systems.FamilySystem;
 
 @Wire
-public class BrainSystem extends IteratingSystem {
+public class BrainSystem extends FamilySystem {
 
     private static final Family brainFamily = Family.all(Brain.class).get();
 

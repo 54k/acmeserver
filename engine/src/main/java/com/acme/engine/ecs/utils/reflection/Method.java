@@ -2,7 +2,6 @@ package com.acme.engine.ecs.utils.reflection;
 
 import com.acme.engine.ecs.core.Component;
 import com.acme.engine.ecs.core.Entity;
-import sun.reflect.CallerSensitive;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -50,7 +49,6 @@ public final class Method {
         return method.getReturnType();
     }
 
-    @CallerSensitive
     public Object invoke(Object obj, Object... args) {
         try {
             return method.invoke(obj, args);

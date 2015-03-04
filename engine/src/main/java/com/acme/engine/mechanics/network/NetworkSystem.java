@@ -3,13 +3,13 @@ package com.acme.engine.mechanics.network;
 import com.acme.engine.ecs.core.ComponentMapper;
 import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Family;
-import com.acme.engine.ecs.systems.IteratingSystem;
+import com.acme.engine.ecs.systems.FamilySystem;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class NetworkSystem extends IteratingSystem implements SessionListener {
+public abstract class NetworkSystem extends FamilySystem implements SessionListener {
 
     private ComponentMapper<SessionComponent> scm = ComponentMapper.getFor(SessionComponent.class);
 

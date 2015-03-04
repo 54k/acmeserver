@@ -4,7 +4,7 @@ import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Family;
 import com.acme.engine.ecs.core.NodeFamily;
 import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.ecs.systems.IteratingSystem;
+import com.acme.engine.ecs.systems.FamilySystem;
 import com.acme.server.managers.WorldComponent;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.DespawnPacket;
@@ -13,7 +13,7 @@ import com.acme.server.utils.EntityContainer;
 import com.acme.server.utils.PositionUtils;
 import com.acme.server.world.Region;
 
-public class KnownListSystem extends IteratingSystem {
+public class KnownListSystem extends FamilySystem {
 
     private static final Family KNOWN_LIST_OWNERS_FAMILY = Family.all(KnownList.class, Transform.class, WorldComponent.class).get();
 
