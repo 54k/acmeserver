@@ -27,7 +27,7 @@ import com.acme.server.managers.SpawnManager;
 import com.acme.server.managers.WorldManager;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.position.KnownListSystem;
-import com.acme.server.position.SpawnSystem;
+import com.acme.server.position.SpawnISystem;
 import com.acme.server.position.TransformSystem;
 import com.acme.server.templates.CreatureTemplate;
 import com.acme.server.templates.WorldTemplate;
@@ -57,9 +57,9 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addProcessor(new ApplicationProcessor(context));
         PacketSystem packetSystem = new PacketSystem(objectMapper);
         engine.addSystem(packetSystem);
-
+        engine.addSystem(new SampleNodeSystem());
         engine.addSystem(new SchedulerSystem());
-        engine.addSystem(new SpawnSystem());
+        engine.addSystem(new SpawnISystem());
         engine.addSystem(new CreatureBrainSystem());
         engine.addSystem(new KnownListSystem());
 

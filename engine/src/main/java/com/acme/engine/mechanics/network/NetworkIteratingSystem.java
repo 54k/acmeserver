@@ -3,19 +3,19 @@ package com.acme.engine.mechanics.network;
 import com.acme.engine.ecs.core.ComponentMapper;
 import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Family;
-import com.acme.engine.ecs.systems.FamilySystem;
+import com.acme.engine.ecs.systems.FamilyIteratingSystem;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class NetworkSystem extends FamilySystem implements SessionListener {
+public abstract class NetworkIteratingSystem extends FamilyIteratingSystem implements SessionListener {
 
     private ComponentMapper<SessionComponent> scm = ComponentMapper.getFor(SessionComponent.class);
 
     private final Map<Session, Entity> entitiesBySession = new HashMap<>();
 
-    public NetworkSystem() {
+    public NetworkIteratingSystem() {
         //noinspection unchecked
         super(Family.all(SessionComponent.class).get(), Integer.MAX_VALUE);
     }

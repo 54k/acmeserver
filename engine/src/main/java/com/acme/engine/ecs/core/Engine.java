@@ -7,15 +7,8 @@ import com.acme.engine.ecs.utils.ImmutableList;
 import com.acme.engine.ecs.utils.Pool;
 import com.acme.engine.ecs.utils.Pool.Disposable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Queue;
 
 public class Engine {
 
@@ -84,7 +77,7 @@ public class Engine {
         immutableNodes = new HashMap<>();
         nodeListeners = new HashMap<>();
 
-        componentListener = new FamilyMembershipUpdater(this);
+        componentListener = new MembershipUpdater(this);
 
         updating = false;
         notifying = false;
@@ -219,7 +212,7 @@ public class Engine {
 
     /**
      * Adds an {@link EntityListener}
-     * <p/>
+     * <p>
      * The listener will be notified every time an entities is added/removed to/from the engine
      */
     public void addEntityListener(EntityListener listener) {
@@ -228,7 +221,7 @@ public class Engine {
 
     /**
      * Adds an {@link EntityListener} for a specific {@link Family}
-     * <p/>
+     * <p>
      * The listener will be notified every time an entities is added/removed to/from the given family
      */
     public void addEntityListener(Family family, EntityListener listener) {
@@ -253,8 +246,8 @@ public class Engine {
         }
     }
 
-    public <T extends Node> void addNodeListener(Class<T> node, NodeListener<T> listener) {
-        NodeFamily<T> nodeFamily = NodeFamily.getFor(node);
+    public void addNodeListener(Class<? extends Node> node, NodeListener listener) {
+        NodeFamily nodeFamily = NodeFamily.getFor(node);
         registerNode(nodeFamily);
         List<NodeListener> listeners = nodeListeners.get(nodeFamily);
 
@@ -434,6 +427,24 @@ public class Engine {
             }
         }
 
+        if (!entity.getNodeBits().isEmpty()) {
+            for (Entry<NodeFamily, List<Node>> entry : nodes.entrySet()) {
+                NodeFamily nodeFamily = entry.getKey();
+                List<Node> nodeEntities = entry.getValue();
+
+                if (nodeFamily.matches(entity)) {
+                    for (int i = nodeEntities.size() - 1; i >= 0; i--) {
+                        Node node = nodeEntities.get(i);
+                        if (node.getEntity() == entity) {
+                            nodeEntities.remove(i);
+                            entity.getNodeBits().clear(nodeFamily.getIndex());
+                            notifyNodeListenersRemove(nodeFamily, node);
+                        }
+                    }
+                }
+            }
+        }
+
         entity.removeComponentListener(componentListener);
         entity.componentOperationHandler = null;
 
@@ -502,7 +513,7 @@ public class Engine {
                 for (int i = nodeEntities.size() - 1; i >= 0; i--) {
                     Node node = nodeEntities.get(i);
                     if (node.getEntity() == entity) {
-                        nodeEntities.remove(node);
+                        nodeEntities.remove(i);
                         entity.getNodeBits().clear(nodeIndex);
                         notifyNodeListenersRemove(nodeFamily, node);
                     }
@@ -511,6 +522,7 @@ public class Engine {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void notifyNodeListenersAdd(NodeFamily nodeFamily, Node node) {
         List<NodeListener> listeners = nodeListeners.get(nodeFamily);
 
@@ -523,6 +535,7 @@ public class Engine {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void notifyNodeListenersRemove(NodeFamily nodeFamily, Node node) {
         List<NodeListener> listeners = nodeListeners.get(nodeFamily);
 
@@ -581,10 +594,10 @@ public class Engine {
         }
     }
 
-    private static class FamilyMembershipUpdater implements ComponentListener {
+    private static class MembershipUpdater implements ComponentListener {
         private Engine engine;
 
-        public FamilyMembershipUpdater(Engine engine) {
+        public MembershipUpdater(Engine engine) {
             this.engine = engine;
         }
 

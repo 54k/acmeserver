@@ -3,9 +3,9 @@ package com.acme.engine.mechanics.timer;
 import com.acme.engine.ecs.core.ComponentMapper;
 import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Family;
-import com.acme.engine.ecs.systems.FamilySystem;
+import com.acme.engine.ecs.systems.FamilyIteratingSystem;
 
-public abstract class TimerSystem<T extends Timer> extends FamilySystem {
+public abstract class TimerSystem<T extends Timer> extends FamilyIteratingSystem {
 
     private ComponentMapper<T> timerCm;
 

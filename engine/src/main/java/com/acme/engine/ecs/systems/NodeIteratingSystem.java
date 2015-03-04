@@ -5,7 +5,7 @@ import com.acme.engine.ecs.core.EntitySystem;
 import com.acme.engine.ecs.core.Node;
 import com.acme.engine.ecs.utils.ImmutableList;
 
-public abstract class NodeSystem<T extends Node> extends EntitySystem {
+public abstract class NodeIteratingSystem<T extends Node> extends EntitySystem {
 
     private Class<T> nodeClass;
     private ImmutableList<T> nodes;
@@ -15,7 +15,7 @@ public abstract class NodeSystem<T extends Node> extends EntitySystem {
      *
      * @param nodeClass The node type of entities iterated over in this System
      */
-    public NodeSystem(Class<T> nodeClass) {
+    public NodeIteratingSystem(Class<T> nodeClass) {
         this(nodeClass, 0);
     }
 
@@ -25,7 +25,7 @@ public abstract class NodeSystem<T extends Node> extends EntitySystem {
      * @param nodeClass The node type of entities iterated over in this System
      * @param priority  The priority to execute this system with (lower means higher priority)
      */
-    public NodeSystem(Class<T> nodeClass, int priority) {
+    public NodeIteratingSystem(Class<T> nodeClass, int priority) {
         super(priority);
         this.nodeClass = nodeClass;
     }

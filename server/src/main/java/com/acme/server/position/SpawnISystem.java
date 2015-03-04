@@ -13,7 +13,7 @@ import com.acme.server.world.Instance;
 import com.acme.server.world.Orientation;
 import com.acme.server.world.Position;
 
-public class SpawnSystem extends TimerSystem<Spawn> {
+public class SpawnISystem extends TimerSystem<Spawn> {
 
     //    private ComponentMapper<WorldComponent> worldCm;
     //    private ComponentMapper<Spawn> spawnCm;
@@ -25,7 +25,7 @@ public class SpawnSystem extends TimerSystem<Spawn> {
     @Wire
     private WorldManager worldManager;
 
-    public SpawnSystem() {
+    public SpawnISystem() {
         super(Spawn.class);
     }
 

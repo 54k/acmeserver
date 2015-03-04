@@ -4,9 +4,7 @@ import com.acme.engine.ecs.utils.reflection.ClassReflection;
 import com.acme.engine.ecs.utils.reflection.Method;
 
 import java.lang.reflect.InvocationHandler;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class NodeFamily<T extends Node> {
@@ -22,29 +20,12 @@ public class NodeFamily<T extends Node> {
     }
 
     private static Family getFamilyFor(Class<? extends Node> nodeClass) {
-        List<Class<Component>> components = getComponents(nodeClass);
+        Iterable<Class<Component>> components = ClassReflection.getComponentsFor(nodeClass);
         Family.Builder builder = new Family.Builder();
         for (Class<Component> component : components) {
             builder.all(component);
         }
         return builder.get();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static List<Class<Component>> getComponents(Class<? extends Node> nodeClass) {
-        List<Class<Component>> components = new ArrayList<>();
-        Class<?>[] interfaces = nodeClass.getInterfaces();
-        for (Class<?> anInterface : interfaces) {
-            for (Method method : ClassReflection.getDeclaredMethods(anInterface)) {
-                if (!method.isValidNodeMethod()) {
-                    throw new IllegalArgumentException();
-                }
-                Class<?> returnType = method.getReturnType();
-                Class<Component> componentClass = (Class<Component>) returnType;
-                components.add(componentClass);
-            }
-        }
-        return components;
     }
 
     @SuppressWarnings("unchecked")

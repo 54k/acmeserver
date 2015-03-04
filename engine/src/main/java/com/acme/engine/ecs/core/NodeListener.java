@@ -1,8 +1,8 @@
 package com.acme.engine.ecs.core;
 
-public interface NodeListener<T extends Node> {
+public interface NodeListener {
 
-    void nodeAdded(T node);
+    void nodeAdded(Node node);
 
-    void nodeRemoved(T node);
+    void nodeRemoved(Node node);
 }

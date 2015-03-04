@@ -6,7 +6,7 @@ import com.acme.engine.ecs.core.EntitySystem;
 import com.acme.engine.ecs.core.Family;
 import com.acme.engine.ecs.utils.ImmutableList;
 
-public abstract class FamilySystem extends EntitySystem {
+public abstract class FamilyIteratingSystem extends EntitySystem {
 
     private Family family;
     private ImmutableList<Entity> entities;
@@ -16,7 +16,7 @@ public abstract class FamilySystem extends EntitySystem {
      *
      * @param family The family of entities iterated over in this System
      */
-    public FamilySystem(Family family) {
+    public FamilyIteratingSystem(Family family) {
         this(family, 0);
     }
 
@@ -26,7 +26,7 @@ public abstract class FamilySystem extends EntitySystem {
      * @param family   The family of entities iterated over in this System
      * @param priority The priority to execute this system with (lower means higher priority)
      */
-    public FamilySystem(Family family, int priority) {
+    public FamilyIteratingSystem(Family family, int priority) {
         super(priority);
         this.family = family;
     }
