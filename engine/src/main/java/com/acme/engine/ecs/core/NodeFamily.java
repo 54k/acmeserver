@@ -4,28 +4,34 @@ import com.acme.engine.ecs.utils.reflection.ClassReflection;
 import com.acme.engine.ecs.utils.reflection.Method;
 
 import java.lang.reflect.InvocationHandler;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
 public class NodeFamily<T extends Node> {
 
     private static final Map<Class<? extends Node>, NodeFamily> nodeMappers = new HashMap<>();
+    private static int nodeIndex = 0;
 
     private final Class<T> nodeClass;
-    private final Family family;
+    private final BitSet nodeBits;
+
+    private final int index;
 
     private NodeFamily(Class<T> nodeClass) {
         this.nodeClass = nodeClass;
-        family = getFamilyFor(nodeClass);
+        this.nodeBits = getBitsFor(nodeClass);
+        index = nodeIndex++;
     }
 
-    private static Family getFamilyFor(Class<? extends Node> nodeClass) {
+    private static BitSet getBitsFor(Class<? extends Node> nodeClass) {
+        BitSet bitSet = new BitSet();
         Iterable<Class<Component>> components = ClassReflection.getComponentsFor(nodeClass);
-        Family.Builder builder = new Family.Builder();
         for (Class<Component> component : components) {
-            builder.all(component);
+            int index = ComponentType.getFor(component).getIndex();
+            bitSet.set(index);
         }
-        return builder.get();
+        return bitSet;
     }
 
     @SuppressWarnings("unchecked")
@@ -39,7 +45,7 @@ public class NodeFamily<T extends Node> {
     }
 
     public int getIndex() {
-        return family.getIndex();
+        return index;
     }
 
     public T get(Entity entity) {
@@ -47,14 +53,12 @@ public class NodeFamily<T extends Node> {
     }
 
     public boolean matches(Entity entity) {
-        return family.matches(entity);
+        return entity.getComponentBits().intersects(nodeBits);
     }
 
     @Override
     public int hashCode() {
-        int result = nodeClass != null ? nodeClass.hashCode() : 0;
-        result = 31 * result + (family != null ? family.hashCode() : 0);
-        return result;
+        return nodeClass.hashCode();
     }
 
     @Override
@@ -65,13 +69,8 @@ public class NodeFamily<T extends Node> {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         NodeFamily that = (NodeFamily) o;
-
-        if (family != null ? !family.equals(that.family) : that.family != null) {
-            return false;
-        }
-        return !(nodeClass != null ? !nodeClass.equals(that.nodeClass) : that.nodeClass != null);
+        return nodeClass.equals(that.nodeClass);
     }
 
     private static final class NodeProxyHandler implements InvocationHandler {
@@ -82,7 +81,6 @@ public class NodeFamily<T extends Node> {
             this.entity = entity;
         }
 
-        // TODO proxy equals method properly
         @SuppressWarnings("unchecked")
         @Override
         public Object invoke(Object proxy, java.lang.reflect.Method m, Object[] args) throws Throwable {
@@ -90,14 +88,41 @@ public class NodeFamily<T extends Node> {
 
             if (method.isComponentMethod()) {
                 Class<Component> componentClass = (Class<Component>) method.getReturnType();
-                return ComponentMapper.getFor(componentClass).get(entity);
+                return entity.getComponent(ComponentType.getFor(componentClass));
             } else if (method.isGetEntityMethod()) {
                 return entity;
-            } else if (method.isObjectMethod()) {
-                return method.invoke(entity, args);
+            } else if (method.isEqualsMethod()) {
+                return equals(args[0]);
+            } else if (method.isHashCodeMethod()) {
+                return hashCode();
+            } else if (method.isToStringMethod()) {
+                return entity.toString();
             }
 
             throw new RuntimeException("Unknown method " + method);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+
+            if (o == null) {
+                return false;
+            }
+
+            if (o instanceof Entity) {
+                return entity.equals(o);
+            }
+
+            NodeProxyHandler that = (NodeProxyHandler) o;
+            return entity.equals(that.entity);
+        }
+
+        @Override
+        public int hashCode() {
+            return entity.hashCode();
         }
     }
 }

@@ -257,8 +257,15 @@ public class Entity {
         return NodeFamily.getFor(nodeClass).get(this);
     }
 
-    public boolean hasNode(Class<? extends Node> nodeClass) {
+    public boolean matchesNode(Class<? extends Node> nodeClass) {
         return NodeFamily.getFor(nodeClass).matches(this);
+    }
+
+    /**
+     * @return true if the entities is scheduled to be removed
+     */
+    public boolean isScheduledForRemoval() {
+        return scheduledForRemoval;
     }
 
     @Override
@@ -276,12 +283,5 @@ public class Entity {
         }
         Entity other = (Entity) obj;
         return id == other.id;
-    }
-
-    /**
-     * @return true if the entities is scheduled to be removed
-     */
-    public boolean isScheduledForRemoval() {
-        return scheduledForRemoval;
     }
 }

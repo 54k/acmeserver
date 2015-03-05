@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class ComponentType {
 
-    private static Map<Class<? extends Component>, ComponentType> componentTypes = new HashMap<>();
+    private static final Map<Class<? extends Component>, ComponentType> componentTypes = new HashMap<>();
     private static int typeIndex = 0;
 
     private final int index;
