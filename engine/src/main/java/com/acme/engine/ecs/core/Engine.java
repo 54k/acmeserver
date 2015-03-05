@@ -434,6 +434,7 @@ public class Engine {
                             nodeEntities.remove(i);
                             entity.getNodeBits().clear(nodeFamily.getIndex());
                             notifyNodeListenersRemove(nodeFamily, node);
+                            break;
                         }
                     }
                 }
@@ -523,6 +524,7 @@ public class Engine {
                         nodeEntities.remove(i);
                         entity.getNodeBits().clear(nodeIndex);
                         notifyNodeListenersRemove(nodeFamily, node);
+                        break;
                     }
                 }
             }
