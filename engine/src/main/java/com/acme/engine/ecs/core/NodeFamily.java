@@ -82,6 +82,7 @@ public class NodeFamily<T extends Node> {
             this.entity = entity;
         }
 
+        // TODO proxy equals method properly
         @SuppressWarnings("unchecked")
         @Override
         public Object invoke(Object proxy, java.lang.reflect.Method m, Object[] args) throws Throwable {
