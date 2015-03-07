@@ -4,6 +4,8 @@ import com.acme.engine.ecs.events.Event;
 import com.acme.engine.ecs.events.EventListener;
 import com.acme.engine.ecs.events.Signal;
 
+import java.util.concurrent.Callable;
+
 /**
  * Abstract class for disabled sets of {@link Entity} objects.
  */
@@ -66,11 +68,43 @@ public abstract class EntitySystem {
         this.enabled = enabled;
     }
 
-    public final <T> Signal<T> signal(Class<T> type) {
+    public <T> Signal<T> signal(Class<T> type) {
         return engine.signal(type);
     }
 
-    public final <T extends EventListener> Event<T> event(Class<T> listenerType) {
+    public <T extends EventListener> Event<T> event(Class<T> listenerType) {
         return engine.event(listenerType);
+    }
+
+    public PromiseTask<Void> schedule(Runnable task) {
+        return engine.schedule(task);
+    }
+
+    public <T> PromiseTask<T> schedule(Callable<T> task) {
+        return engine.schedule(task);
+    }
+
+    public PromiseTask<Void> schedule(Runnable task, float delay) {
+        return engine.schedule(task, delay);
+    }
+
+    public <T> PromiseTask<T> schedule(Callable<T> task, float delay) {
+        return engine.schedule(task, delay);
+    }
+
+    public PromiseTask<Void> scheduleForEntity(Entity entity, Runnable task) {
+        return engine.scheduleForEntity(entity, task);
+    }
+
+    public <T> PromiseTask<T> scheduleForEntity(Entity entity, Callable<T> task) {
+        return engine.scheduleForEntity(entity, task);
+    }
+
+    public PromiseTask<Void> scheduleForEntity(Entity entity, Runnable task, float delay) {
+        return engine.scheduleForEntity(entity, task, delay);
+    }
+
+    public <T> PromiseTask<T> scheduleForEntity(Entity entity, Callable<T> task, float delay) {
+        return engine.scheduleForEntity(entity, task, delay);
     }
 }

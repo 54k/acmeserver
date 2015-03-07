@@ -7,15 +7,9 @@ import com.acme.engine.ecs.utils.ImmutableList;
 import com.acme.engine.ecs.utils.Pool;
 import com.acme.engine.ecs.utils.Pool.Disposable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Queue;
+import java.util.concurrent.Callable;
 
 public class Engine {
 
@@ -61,6 +55,9 @@ public class Engine {
     private Map<Class<? extends EventListener>, Event<? extends EventListener>> events;
 
     private List<Processor> processors;
+    private Scheduler scheduler;
+    private Map<Entity, Scheduler> entitySchedulers;
+    private SchedulerPool schedulerPool;
 
     private boolean initialized;
 
@@ -98,6 +95,9 @@ public class Engine {
 
         processors = new ArrayList<>();
         processors.add(engineProcessor);
+        scheduler = new Scheduler();
+        entitySchedulers = new HashMap<>();
+        schedulerPool = new SchedulerPool();
 
         initialized = false;
     }
@@ -219,7 +219,7 @@ public class Engine {
 
     /**
      * Adds an {@link EntityListener}
-     * <p/>
+     * <p>
      * The listener will be notified every time an entities is added/removed to/from the engine
      */
     public void addEntityListener(EntityListener listener) {
@@ -228,7 +228,7 @@ public class Engine {
 
     /**
      * Adds an {@link EntityListener} for a specific {@link Family}
-     * <p/>
+     * <p>
      * The listener will be notified every time an entities is added/removed to/from the given family
      */
     public void addEntityListener(Family family, EntityListener listener) {
@@ -282,6 +282,38 @@ public class Engine {
         processors.add(processor);
     }
 
+    public PromiseTask<Void> schedule(Runnable task) {
+        return scheduler.schedule(task);
+    }
+
+    public <T> PromiseTask<T> schedule(Callable<T> task) {
+        return scheduler.schedule(task);
+    }
+
+    public PromiseTask<Void> schedule(Runnable task, float delay) {
+        return scheduler.schedule(task, delay);
+    }
+
+    public <T> PromiseTask<T> schedule(Callable<T> task, float delay) {
+        return scheduler.schedule(task, delay);
+    }
+
+    public PromiseTask<Void> scheduleForEntity(Entity entity, Runnable task) {
+        return entitySchedulers.get(entity).schedule(task);
+    }
+
+    public <T> PromiseTask<T> scheduleForEntity(Entity entity, Callable<T> task) {
+        return entitySchedulers.get(entity).schedule(task);
+    }
+
+    public PromiseTask<Void> scheduleForEntity(Entity entity, Runnable task, float delay) {
+        return entitySchedulers.get(entity).schedule(task, delay);
+    }
+
+    public <T> PromiseTask<T> scheduleForEntity(Entity entity, Callable<T> task, float delay) {
+        return entitySchedulers.get(entity).schedule(task, delay);
+    }
+
     private void checkInitialized() {
         if (initialized) {
             throw new IllegalStateException("Engine has been initialized");
@@ -316,6 +348,7 @@ public class Engine {
     public void update(float deltaTime) {
         initialize();
         updating = true;
+        updateSchedulers(deltaTime);
         for (EntitySystem system : systems) {
             if (system.isEnabled()) {
                 system.update(deltaTime);
@@ -324,6 +357,13 @@ public class Engine {
             processPendingEntityOperations();
         }
         updating = false;
+    }
+
+    private void updateSchedulers(float deltaTime) {
+        scheduler.update(deltaTime);
+        for (Scheduler s : entitySchedulers.values()) {
+            s.update(deltaTime);
+        }
     }
 
     /**
@@ -391,7 +431,7 @@ public class Engine {
     protected void addEntityInternal(Entity entity) {
         entities.add(entity);
         entitiesById.put(entity.getId(), entity);
-
+        entitySchedulers.put(entity, schedulerPool.newObject());
         updateMembership(entity);
 
         entity.addComponentListener(componentListener);
@@ -408,6 +448,11 @@ public class Engine {
         entity.scheduledForRemoval = false;
         entities.remove(entity);
         entitiesById.remove(entity.getId());
+
+        Scheduler s = entitySchedulers.remove(entity);
+        if (s != null) {
+            schedulerPool.free(s);
+        }
 
         if (!entity.getFamilyBits().isEmpty()) {
             for (Entry<Family, List<Entity>> entry : families.entrySet()) {
@@ -727,6 +772,13 @@ public class Engine {
         @Override
         protected EntityOperation newObject() {
             return new EntityOperation();
+        }
+    }
+
+    private static class SchedulerPool extends Pool<Scheduler> {
+        @Override
+        protected Scheduler newObject() {
+            return new Scheduler();
         }
     }
 }
