@@ -7,8 +7,15 @@ import com.acme.engine.ecs.utils.ImmutableList;
 import com.acme.engine.ecs.utils.Pool;
 import com.acme.engine.ecs.utils.Pool.Disposable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 
 public class Engine {
 
@@ -31,6 +38,10 @@ public class Engine {
 
     private List<EntityListener> entityListeners;
     private Map<Family, List<EntityListener>> familyListeners;
+
+    private Map<NodeFamily, List<Node>> nodes;
+    private Map<NodeFamily, ImmutableList<Node>> immutableNodes;
+    private Map<NodeFamily, List<NodeListener>> nodeListeners;
 
     private ComponentListener componentListener;
 
@@ -69,7 +80,11 @@ public class Engine {
         entityListeners = new ArrayList<>(16);
         familyListeners = new HashMap<>();
 
-        componentListener = new FamilyMembershipUpdater(this);
+        nodes = new HashMap<>();
+        immutableNodes = new HashMap<>();
+        nodeListeners = new HashMap<>();
+
+        componentListener = new MembershipUpdater(this);
 
         updating = false;
         notifying = false;
@@ -105,7 +120,7 @@ public class Engine {
      */
     public void addEntity(Entity entity) {
         entity.id = obtainEntityId();
-        if (notifying) {
+        if (updating || notifying) {
             EntityOperation operation = entityOperationPool.obtain();
             operation.entity = entity;
             operation.type = EntityOperation.Type.Add;
@@ -198,9 +213,13 @@ public class Engine {
         return registerFamily(family);
     }
 
+    public <T extends Node> ImmutableList<T> getNodesFor(Class<T> node) {
+        return registerNode(NodeFamily.getFor(node));
+    }
+
     /**
      * Adds an {@link EntityListener}
-     * <p>
+     * <p/>
      * The listener will be notified every time an entities is added/removed to/from the engine
      */
     public void addEntityListener(EntityListener listener) {
@@ -209,7 +228,7 @@ public class Engine {
 
     /**
      * Adds an {@link EntityListener} for a specific {@link Family}
-     * <p>
+     * <p/>
      * The listener will be notified every time an entities is added/removed to/from the given family
      */
     public void addEntityListener(Family family, EntityListener listener) {
@@ -229,9 +248,27 @@ public class Engine {
      */
     public void removeEntityListener(EntityListener listener) {
         entityListeners.remove(listener);
-
         for (List<EntityListener> familyListenerArray : familyListeners.values()) {
             familyListenerArray.remove(listener);
+        }
+    }
+
+    public void addNodeListener(Class<? extends Node> node, NodeListener listener) {
+        NodeFamily nodeFamily = NodeFamily.getFor(node);
+        registerNode(nodeFamily);
+        List<NodeListener> listeners = nodeListeners.get(nodeFamily);
+
+        if (listeners == null) {
+            listeners = new ArrayList<>(16);
+            nodeListeners.put(nodeFamily, listeners);
+        }
+
+        listeners.add(listener);
+    }
+
+    public void removeNodeListener(NodeListener listener) {
+        for (List<NodeListener> listeners : nodeListeners.values()) {
+            listeners.remove(listener);
         }
     }
 
@@ -351,6 +388,74 @@ public class Engine {
         }
     }
 
+    protected void addEntityInternal(Entity entity) {
+        entities.add(entity);
+        entitiesById.put(entity.getId(), entity);
+
+        updateMembership(entity);
+
+        entity.addComponentListener(componentListener);
+        entity.componentOperationHandler = componentOperationHandler;
+
+        notifying = true;
+        for (EntityListener listener : new ArrayList<>(entityListeners)) {
+            listener.entityAdded(entity);
+        }
+        notifying = false;
+    }
+
+    protected void removeEntityInternal(Entity entity) {
+        entity.scheduledForRemoval = false;
+        entities.remove(entity);
+        entitiesById.remove(entity.getId());
+
+        if (!entity.getFamilyBits().isEmpty()) {
+            for (Entry<Family, List<Entity>> entry : families.entrySet()) {
+                Family family = entry.getKey();
+                List<Entity> familyEntities = entry.getValue();
+
+                if (family.matches(entity)) {
+                    familyEntities.remove(entity);
+                    entity.getFamilyBits().clear(family.getIndex());
+                    notifyFamilyListenersRemove(family, entity);
+                }
+            }
+        }
+
+        if (!entity.getNodeBits().isEmpty()) {
+            for (Entry<NodeFamily, List<Node>> entry : nodes.entrySet()) {
+                NodeFamily nodeFamily = entry.getKey();
+                List<Node> nodeEntities = entry.getValue();
+
+                if (nodeFamily.matches(entity)) {
+                    for (int i = nodeEntities.size() - 1; i >= 0; i--) {
+                        Node node = nodeEntities.get(i);
+                        if (node.getEntity() == entity) {
+                            nodeEntities.remove(i);
+                            entity.getNodeBits().clear(nodeFamily.getIndex());
+                            notifyNodeListenersRemove(nodeFamily, node);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        entity.removeComponentListener(componentListener);
+        entity.componentOperationHandler = null;
+
+        notifying = true;
+        for (EntityListener listener : new ArrayList<>(entityListeners)) {
+            listener.entityRemoved(entity);
+        }
+        notifying = false;
+    }
+
+    private void updateMembership(Entity entity) {
+        updateFamilyMembership(entity);
+        updateNodeMembership(entity);
+    }
+
     private void updateFamilyMembership(Entity entity) {
         for (Entry<Family, List<Entity>> entry : families.entrySet()) {
             Family family = entry.getKey();
@@ -372,50 +477,6 @@ public class Engine {
                 notifyFamilyListenersRemove(family, entity);
             }
         }
-    }
-
-    protected void removeEntityInternal(Entity entity) {
-        entity.scheduledForRemoval = false;
-        entities.remove(entity);
-        entitiesById.remove(entity.getId());
-
-        if (!entity.getFamilyBits().isEmpty()) {
-            for (Entry<Family, List<Entity>> entry : families.entrySet()) {
-                Family family = entry.getKey();
-                List<Entity> familyEntities = entry.getValue();
-
-                if (family.matches(entity)) {
-                    familyEntities.remove(entity);
-                    entity.getFamilyBits().clear(family.getIndex());
-                    notifyFamilyListenersRemove(family, entity);
-                }
-            }
-        }
-
-        entity.removeComponentListener(componentListener);
-        entity.componentOperationHandler = null;
-
-        notifying = true;
-        for (EntityListener listener : new ArrayList<>(entityListeners)) {
-            listener.entityRemoved(entity);
-        }
-        notifying = false;
-    }
-
-    protected void addEntityInternal(Entity entity) {
-        entities.add(entity);
-        entitiesById.put(entity.getId(), entity);
-
-        updateFamilyMembership(entity);
-
-        entity.addComponentListener(componentListener);
-        entity.componentOperationHandler = componentOperationHandler;
-
-        notifying = true;
-        for (EntityListener listener : new ArrayList<>(entityListeners)) {
-            listener.entityAdded(entity);
-        }
-        notifying = false;
     }
 
     private void notifyFamilyListenersAdd(Family family, Entity entity) {
@@ -442,6 +503,60 @@ public class Engine {
         }
     }
 
+    private void updateNodeMembership(Entity entity) {
+        for (Entry<NodeFamily, List<Node>> entry : nodes.entrySet()) {
+            NodeFamily nodeFamily = entry.getKey();
+            List<Node> nodeEntities = entry.getValue();
+            int nodeIndex = nodeFamily.getIndex();
+
+            boolean belongsToNode = entity.getNodeBits().get(nodeIndex);
+            boolean matches = nodeFamily.matches(entity);
+
+            if (!belongsToNode && matches) {
+                Node node = nodeFamily.get(entity);
+                nodeEntities.add(node);
+                entity.getNodeBits().set(nodeIndex);
+                notifyNodeListenersAdd(nodeFamily, node);
+            } else if (belongsToNode && !matches) {
+                for (int i = nodeEntities.size() - 1; i >= 0; i--) {
+                    Node node = nodeEntities.get(i);
+                    if (node.getEntity() == entity) {
+                        nodeEntities.remove(i);
+                        entity.getNodeBits().clear(nodeIndex);
+                        notifyNodeListenersRemove(nodeFamily, node);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void notifyNodeListenersAdd(NodeFamily nodeFamily, Node node) {
+        List<NodeListener> listeners = nodeListeners.get(nodeFamily);
+
+        if (listeners != null) {
+            notifying = true;
+            for (NodeListener listener : new ArrayList<>(listeners)) {
+                listener.nodeAdded(node);
+            }
+            notifying = false;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void notifyNodeListenersRemove(NodeFamily nodeFamily, Node node) {
+        List<NodeListener> listeners = nodeListeners.get(nodeFamily);
+
+        if (listeners != null) {
+            notifying = true;
+            for (NodeListener listener : new ArrayList<>(listeners)) {
+                listener.nodeRemoved(node);
+            }
+            notifying = false;
+        }
+    }
+
     private ImmutableList<Entity> registerFamily(Family family) {
         ImmutableList<Entity> immutableEntities = immutableFamilies.get(family);
 
@@ -451,7 +566,7 @@ public class Engine {
             families.put(family, familyEntities);
             immutableFamilies.put(family, immutableEntities);
 
-            for (Entity e : this.entities) {
+            for (Entity e : entities) {
                 if (family.matches(e)) {
                     familyEntities.add(e);
                     e.getFamilyBits().set(family.getIndex());
@@ -462,6 +577,25 @@ public class Engine {
         return immutableEntities;
     }
 
+    @SuppressWarnings("unchecked")
+    private <T extends Node> ImmutableList<T> registerNode(NodeFamily<T> nodeFamily) {
+        ImmutableList<T> immutableNodeEntities = (ImmutableList<T>) immutableNodes.get(nodeFamily);
+        if (immutableNodeEntities == null) {
+            List<T> nodeEntities = new ArrayList<>(16);
+            immutableNodeEntities = new ImmutableList<>(nodeEntities);
+            nodes.put(nodeFamily, (List<Node>) nodeEntities);
+            immutableNodes.put(nodeFamily, (ImmutableList<Node>) immutableNodeEntities);
+
+            for (Entity e : entities) {
+                if (nodeFamily.matches(e)) {
+                    nodeEntities.add(nodeFamily.get(e));
+                    e.getNodeBits().set(nodeFamily.getIndex());
+                }
+            }
+        }
+        return immutableNodeEntities;
+    }
+
     private static class SystemComparator implements Comparator<EntitySystem> {
         @Override
         public int compare(EntitySystem a, EntitySystem b) {
@@ -469,21 +603,21 @@ public class Engine {
         }
     }
 
-    private static class FamilyMembershipUpdater implements ComponentListener {
+    private static class MembershipUpdater implements ComponentListener {
         private Engine engine;
 
-        public FamilyMembershipUpdater(Engine engine) {
+        public MembershipUpdater(Engine engine) {
             this.engine = engine;
         }
 
         @Override
         public void componentAdded(Entity entity, Component component) {
-            engine.updateFamilyMembership(entity);
+            engine.updateMembership(entity);
         }
 
         @Override
         public void componentRemoved(Entity entity, Component component) {
-            engine.updateFamilyMembership(entity);
+            engine.updateMembership(entity);
         }
     }
 

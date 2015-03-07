@@ -1,7 +1,13 @@
 package com.acme.engine.ecs.utils.reflection;
 
+import com.acme.engine.ecs.core.Component;
+import com.acme.engine.ecs.core.Node;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Utilities for Class reflection.
@@ -54,5 +60,32 @@ public final class ClassReflection {
      */
     public static boolean isAnnotationPresent(Class c, Class<? extends java.lang.annotation.Annotation> annotationType) {
         return c.isAnnotationPresent(annotationType);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Iterable<Class<Component>> getComponentsFor(Class<? extends Node> nodeClass) {
+        Set<Class<Component>> components = new HashSet<>();
+        getComponentsFor0(components, nodeClass);
+        Class<?>[] interfaces = nodeClass.getInterfaces();
+        for (Class<?> parentNodeClass : interfaces) {
+            if (Node.class.isAssignableFrom(parentNodeClass)) {
+                getComponentsFor0(components, (Class<? extends Node>) parentNodeClass);
+            }
+        }
+        return components;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void getComponentsFor0(Collection<Class<Component>> components, Class<? extends Node> nodeClass) {
+        for (Method method : getDeclaredMethods(nodeClass)) {
+            if (!method.isValidNodeMethod()) {
+                throw new IllegalArgumentException();
+            }
+            if (method.isComponentMethod()) {
+                Class<?> returnType = method.getReturnType();
+                Class<Component> componentClass = (Class<Component>) returnType;
+                components.add(componentClass);
+            }
+        }
     }
 }

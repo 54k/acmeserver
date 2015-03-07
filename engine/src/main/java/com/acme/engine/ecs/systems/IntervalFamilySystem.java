@@ -5,16 +5,16 @@ import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.Family;
 import com.acme.engine.ecs.utils.ImmutableList;
 
-public abstract class IntervalIteratingSystem extends IntervalSystem {
+public abstract class IntervalFamilySystem extends IntervalSystem {
 
     private Family family;
     private ImmutableList<Entity> entities;
 
-    public IntervalIteratingSystem(Family family, float interval) {
+    public IntervalFamilySystem(Family family, float interval) {
         this(family, interval, 0);
     }
 
-    public IntervalIteratingSystem(Family family, float interval, int priority) {
+    public IntervalFamilySystem(Family family, float interval, int priority) {
         super(interval, priority);
         this.family = family;
     }

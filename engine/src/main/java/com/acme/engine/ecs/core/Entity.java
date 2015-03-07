@@ -3,7 +3,11 @@ package com.acme.engine.ecs.core;
 import com.acme.engine.ecs.utils.Bag;
 import com.acme.engine.ecs.utils.ImmutableList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Entity {
 
@@ -19,6 +23,7 @@ public class Entity {
     private ImmutableList<Component> immutableComponentsArray;
     private BitSet componentBits;
     private BitSet familyBits;
+    private BitSet nodeBits;
 
     /**
      * Creates an empty Entity.
@@ -32,6 +37,7 @@ public class Entity {
         immutableComponentsArray = new ImmutableList<>(componentsArray);
         componentBits = new BitSet();
         familyBits = new BitSet();
+        nodeBits = new BitSet();
     }
 
     /**
@@ -180,6 +186,10 @@ public class Entity {
         return familyBits;
     }
 
+    BitSet getNodeBits() {
+        return nodeBits;
+    }
+
     Entity addInternal(Component component) {
         Class<? extends Component> componentClass = component.getClass();
 
@@ -244,11 +254,18 @@ public class Entity {
     }
 
     public <T extends Node> T getNode(Class<T> nodeClass) {
-        return NodeMapper.getFor(nodeClass).get(this);
+        return NodeFamily.getFor(nodeClass).get(this);
     }
 
-    public boolean hasNode(Class<? extends Node> nodeClass) {
-        return NodeMapper.getFor(nodeClass).has(this);
+    public boolean matchesNode(Class<? extends Node> nodeClass) {
+        return NodeFamily.getFor(nodeClass).matches(this);
+    }
+
+    /**
+     * @return true if the entities is scheduled to be removed
+     */
+    public boolean isScheduledForRemoval() {
+        return scheduledForRemoval;
     }
 
     @Override
@@ -266,12 +283,5 @@ public class Entity {
         }
         Entity other = (Entity) obj;
         return id == other.id;
-    }
-
-    /**
-     * @return true if the entities is scheduled to be removed
-     */
-    public boolean isScheduledForRemoval() {
-        return scheduledForRemoval;
     }
 }

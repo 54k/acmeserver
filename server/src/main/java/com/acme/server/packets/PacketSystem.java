@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 
 @Wire
-public class PacketSystem extends NetworkSystem {
+public class PacketSystem extends NetworkIteratingSystem {
 
     private ComponentMapper<SessionComponent> scm;
     private ComponentMapper<KnownList> kcm;
