@@ -13,8 +13,9 @@ import com.acme.server.combat.HateListSystem;
 import com.acme.server.combat.StatsSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.MovePacket;
+import com.acme.server.position.MovementSystem;
 import com.acme.server.position.Spawn;
-import com.acme.server.position.TransformSystem;
+import com.acme.server.position.WorldNode;
 import com.acme.server.world.Position;
 
 @Wire
@@ -26,7 +27,7 @@ public class GlobalState implements BrainState<Entity>, HateListListener {
     private Engine engine;
 
     private StatsSystem statsSystem;
-    private TransformSystem transformSystem;
+    private MovementSystem movementSystem;
     private CombatSystem combatSystem;
     private HateListSystem hateListSystem;
     private PacketSystem packetSystem;
@@ -57,7 +58,7 @@ public class GlobalState implements BrainState<Entity>, HateListListener {
     }
 
     private boolean isToFarAwayFromSpawn(Entity entity) {
-        Position position = transformSystem.getPosition(entity);
+        Position position = movementSystem.getPosition(entity);
         // TODO this should go into spawn manager
         Position spawnPosition = spawnCm.get(entity).getSpawnPosition();
 
@@ -98,7 +99,7 @@ public class GlobalState implements BrainState<Entity>, HateListListener {
 
     private void returnToSpawnPoint(Entity entity) {
         Position spawnPosition = spawnCm.get(entity).getSpawnPosition();
-        transformSystem.moveEntity(entity, spawnPosition);
+        movementSystem.moveTo(entity.getNode(WorldNode.class), spawnPosition);
     }
 
     private BrainStateMachine<Entity> getBrain(Entity entity) {

@@ -7,7 +7,8 @@ import com.acme.engine.mechanics.brains.BrainStateMachine;
 import com.acme.server.combat.CombatSystem;
 import com.acme.server.combat.HateListSystem;
 import com.acme.server.packets.PacketSystem;
-import com.acme.server.position.TransformSystem;
+import com.acme.server.position.MovementSystem;
+import com.acme.server.position.WorldNode;
 import com.acme.server.world.Position;
 
 @Wire
@@ -15,7 +16,7 @@ public class CombatState implements BrainState<Entity> {
 
     private CombatSystem combatSystem;
     private HateListSystem hateListSystem;
-    private TransformSystem transformSystem;
+    private MovementSystem movementSystem;
     private PacketSystem packetSystem;
 
     @Override
@@ -36,8 +37,8 @@ public class CombatState implements BrainState<Entity> {
             combatSystem.setTarget(owner, mostHated);
             combatSystem.engage(owner, mostHated);
         } else {
-            Position targetPosition = transformSystem.getPosition(target);
-            transformSystem.updatePosition(owner, targetPosition);
+            Position targetPosition = movementSystem.getPosition(target);
+            movementSystem.setPosition(owner.getNode(WorldNode.class), targetPosition);
         }
     }
 

@@ -12,8 +12,8 @@ import com.acme.server.packets.outbound.HitPointsPacket;
 import com.acme.server.packets.outbound.WelcomePacket;
 import com.acme.server.position.KnownList;
 import com.acme.server.position.KnownListSystem;
+import com.acme.server.position.MovementSystem;
 import com.acme.server.position.Transform;
-import com.acme.server.position.TransformSystem;
 import com.acme.server.utils.PositionUtils;
 import com.acme.server.utils.Rnd;
 import com.acme.server.world.Area;
@@ -34,7 +34,7 @@ public class LoginManager extends PassiveSystem {
 
     private Context context;
 
-    private TransformSystem transformSystem;
+    private MovementSystem movementSystem;
     private StatsSystem statsSystem;
     private WorldManager worldManager;
     private KnownListSystem knownListSystem;

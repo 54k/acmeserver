@@ -107,7 +107,6 @@ public class NodeFamily<T extends Node> {
             if (this == o) {
                 return true;
             }
-
             if (o == null) {
                 return false;
             }
@@ -115,9 +114,8 @@ public class NodeFamily<T extends Node> {
             if (o instanceof Entity) {
                 return entity.equals(o);
             }
-
-            NodeProxyHandler that = (NodeProxyHandler) o;
-            return entity.equals(that.entity);
+            Node that = (Node) o;
+            return entity.equals(that.getEntity());
         }
 
         @Override

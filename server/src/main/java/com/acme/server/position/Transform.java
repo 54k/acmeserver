@@ -7,10 +7,11 @@ import com.acme.server.world.Region;
 
 public final class Transform extends Component {
 
-    private final Position position = new Position();
-    private Orientation orientation = Orientation.BOTTOM;
-    private Region region;
-    private boolean spawned;
+    public final Position position = new Position();
+    public Orientation orientation = Orientation.BOTTOM;
+    public Region region;
+    // TODO migrate this to spawn component
+    public boolean spawned;
 
     public int getX() {
         return position.getX();
@@ -18,10 +19,6 @@ public final class Transform extends Component {
 
     public void setX(int x) {
         position.setX(x);
-    }
-
-    public void setXY(int x, int y) {
-        position.setXY(x, y);
     }
 
     public int getY() {
