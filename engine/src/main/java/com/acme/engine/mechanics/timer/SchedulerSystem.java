@@ -34,7 +34,9 @@ public class SchedulerSystem extends EntitySystem implements EntityListener {
 
     @Override
     public void entityAdded(Entity entity) {
-        entitySchedulers.putIfAbsent(entity, schedulerPool.newObject());
+        if (entitySchedulers.get(entity) == null) {
+            entitySchedulers.put(entity, schedulerPool.newObject());
+        }
     }
 
     @Override
@@ -96,7 +98,7 @@ public class SchedulerSystem extends EntitySystem implements EntityListener {
     private Scheduler getScheduler(Entity entity) {
         Scheduler scheduler = entitySchedulers.get(entity);
         if (scheduler == null) {
-            scheduler = new Scheduler();
+            scheduler = schedulerPool.newObject();
             entitySchedulers.put(entity, scheduler);
         }
         return scheduler;

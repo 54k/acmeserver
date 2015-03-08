@@ -37,6 +37,8 @@ public class Scheduler implements Pool.Disposable {
                 } catch (Throwable t) {
                     task.reject(t);
                 }
+            } else {
+                scheduledTasks.add(task);
             }
         }
     }
