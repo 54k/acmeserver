@@ -2,7 +2,7 @@ package com.acme.server.position;
 
 import com.acme.engine.ecs.core.*;
 import com.acme.engine.ecs.systems.PassiveSystem;
-import com.acme.engine.mechanics.timer.Scheduler;
+import com.acme.engine.mechanics.timer.PromiseTask;
 import com.acme.engine.mechanics.timer.SchedulerSystem;
 import com.acme.server.managers.WorldComponent;
 import com.acme.server.packets.PacketSystem;
@@ -16,10 +16,10 @@ import java.util.Map;
 @Wire
 public class MovementSystem extends PassiveSystem implements NodeListener {
 
-    private SchedulerSystem schedulerSystem;
     private PacketSystem packetSystem;
+    private SchedulerSystem schedulerSystem;
 
-    private final Map<WorldNode, Scheduler.Cancellable> scheduledMoves = new HashMap<>();
+    private final Map<WorldNode, PromiseTask<Void>> scheduledMoves = new HashMap<>();
 
     @Override
     public void addedToEngine(Engine engine) {
@@ -46,9 +46,9 @@ public class MovementSystem extends PassiveSystem implements NodeListener {
      * @param node     node
      * @param position new position
      */
-    public void moveTo(WorldNode node, Position position) {
+    public PromiseTask<Void> moveTo(WorldNode node, Position position) {
         stopMove(node);
-        submitMoveTask(node, position);
+        return submitMoveTask(node, position);
     }
 
     /**
@@ -57,16 +57,17 @@ public class MovementSystem extends PassiveSystem implements NodeListener {
      * @param node node
      */
     public void stopMove(WorldNode node) {
-        Scheduler.Cancellable moveTask = scheduledMoves.remove(node);
+        PromiseTask<Void> moveTask = scheduledMoves.remove(node);
         if (moveTask != null) {
             moveTask.cancel();
         }
     }
 
-    private void submitMoveTask(WorldNode node, Position position) {
+    private PromiseTask<Void> submitMoveTask(WorldNode node, Position position) {
         MoveTask moveTask = new MoveTask(node, position);
-        Scheduler.Cancellable scheduledTask = schedulerSystem.schedule(moveTask, 0);
+        PromiseTask<Void> scheduledTask = schedulerSystem.schedule(moveTask);
         scheduledMoves.put(node, scheduledTask);
+        return scheduledTask;
     }
 
     /**
@@ -95,7 +96,7 @@ public class MovementSystem extends PassiveSystem implements NodeListener {
         }
     }
 
-    private class MoveTask implements Scheduler.Task {
+    private class MoveTask implements Runnable {
         private final WorldNode node;
         private final Position destination;
 
@@ -105,7 +106,7 @@ public class MovementSystem extends PassiveSystem implements NodeListener {
         }
 
         @Override
-        public void run(float deltaTime) {
+        public void run() {
             Entity entity = node.getEntity();
             packetSystem.sendToSelfAndRegion(entity, new MovePacket(entity));
             setPosition(node, destination);

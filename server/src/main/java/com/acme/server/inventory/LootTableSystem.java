@@ -70,21 +70,24 @@ public class LootTableSystem extends PassiveSystem implements CombatListener {
         return lootEntry.getWeight() >= Rnd.between(0, 100);
     }
 
-    private void scheduleDecay(Entity dropEntity) {
-        schedulerSystem.scheduleForEntity(dropEntity,
-                ($1) -> dropEntity.addComponent(new BlinkImpact()), 12000);
-
-        schedulerSystem.scheduleForEntity(dropEntity, ($1) -> {
-            worldManager.decay(dropEntity);
-            worldManager.removeFromWorld(dropEntity);
-            engine.removeEntity(dropEntity);
-        }, 15000);
+    private void scheduleDecay(Entity entity) {
+        schedulerSystem.scheduleForEntity(entity, () -> entity.addComponent(new BlinkImpact()), 5000)
+                .done(this::scheduleDecay0);
     }
 
-    private void spawnDrop(Entity dropEntity) {
-        schedulerSystem.schedule(($1) -> {
-            worldManager.bringIntoWorld(dropEntity);
-            worldManager.spawn(dropEntity);
-        });
+    private void scheduleDecay0(Entity entity) {
+        schedulerSystem.scheduleForEntity(entity, () -> {
+            worldManager.decay(entity);
+            worldManager.removeFromWorld(entity);
+            engine.removeEntity(entity);
+        }, 3000);
+    }
+
+    private void spawnDrop(Entity entity) {
+        schedulerSystem.scheduleForEntity(entity, () -> {
+            worldManager.bringIntoWorld(entity);
+            worldManager.spawn(entity);
+            return entity;
+        }).done(this::scheduleDecay);
     }
 }

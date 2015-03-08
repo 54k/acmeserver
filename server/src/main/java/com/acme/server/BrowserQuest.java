@@ -57,7 +57,6 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addProcessor(new ApplicationProcessor(context));
         PacketSystem packetSystem = new PacketSystem(objectMapper);
         engine.addSystem(packetSystem);
-        engine.addSystem(new SampleNodeSystem());
         engine.addSystem(new SchedulerSystem());
         engine.addSystem(new SpawnSystem());
         engine.addSystem(new CreatureBrainSystem());

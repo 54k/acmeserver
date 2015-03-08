@@ -66,11 +66,11 @@ public abstract class EntitySystem {
         this.enabled = enabled;
     }
 
-    public final <T> Signal<T> signal(Class<T> type) {
+    public <T> Signal<T> signal(Class<T> type) {
         return engine.signal(type);
     }
 
-    public final <T extends EventListener> Event<T> event(Class<T> listenerType) {
+    public <T extends EventListener> Event<T> event(Class<T> listenerType) {
         return engine.event(listenerType);
     }
 }

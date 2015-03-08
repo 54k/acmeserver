@@ -1,136 +1,76 @@
 package com.acme.engine.mechanics.timer;
 
-import java.util.PriorityQueue;
+import com.acme.engine.ecs.utils.Pool;
+
+import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 
-public class Scheduler {
+public class Scheduler implements Pool.Disposable {
 
-    private static final long ORIGIN_NANOS = System.nanoTime();
+    private final Queue<DeferredTask<?>> scheduledTasks = new LinkedList<>();
+    private final Queue<DeferredTask<?>> tasksToRun = new LinkedList<>();
 
-    private final Queue<Task> scheduledTasks;
-    private final Queue<Task> tasksToRun;
-    private long lastNanos;
-
-    public Scheduler() {
-        scheduledTasks = new PriorityQueue<>();
-        tasksToRun = new PriorityQueue<>();
-        lastNanos = System.nanoTime();
-    }
-
-    static long nanos() {
-        return System.nanoTime() - ORIGIN_NANOS;
-    }
-
+    @SuppressWarnings("unchecked")
     public void update(float deltaTime) {
-        if (scheduledTasks.isEmpty()) {
-            return;
-        }
-        long nanos = nanos();
-
         tasksToRun.addAll(scheduledTasks);
         scheduledTasks.clear();
         while (!tasksToRun.isEmpty()) {
-            tasksToRun.poll().run(deltaTime);
+            DeferredTask task = tasksToRun.poll();
+            executeTask(deltaTime, task);
         }
     }
 
-    public Cancellable schedule(Task task) {
+    private void executeTask(float deltaTime, DeferredTask<? super Object> task) {
+        if (!task.cancelled) {
+            task.age += deltaTime;
+            if (task.age >= task.atAge) {
+                try {
+                    Object result = task.task.call();
+                    if (task.period > 0) {
+                        task.atAge += task.period;
+                        scheduledTasks.add(task);
+                    } else {
+                        task.resolve(result);
+                    }
+                } catch (Throwable t) {
+                    task.reject(t);
+                }
+            } else {
+                scheduledTasks.add(task);
+            }
+        }
+    }
+
+    public PromiseTask<Void> schedule(Runnable task) {
         return schedule(task, 0);
     }
 
-    public Cancellable schedule(Task task, float delay) {
-        return schedule(task, delay, 0);
+    public <T> PromiseTask<T> schedule(Callable<T> task) {
+        return schedule(task, 0);
     }
 
-    public Cancellable schedule(Task task, float delay, float period) {
-        ScheduledTask t = new ScheduledTask(task, delay, period, scheduledTasks);
+    public PromiseTask<Void> schedule(Runnable task, float delay) {
+        return schedule(Executors.callable(task, null), delay);
+    }
+
+    public <T> PromiseTask<T> schedule(Callable<T> task, float delay) {
+        DeferredTask<T> t = new DeferredTask<>(task, delay, 0);
         scheduledTasks.add(t);
         return t;
     }
 
-    private static final class SchedulerRecord {
-
-        private final long period;
-        private long nextExecution;
-        private final Runnable task;
-
-        SchedulerRecord(long period, long nextExecution, Runnable task) {
-            this.period = period;
-            this.nextExecution = nextExecution;
-            this.task = task;
-        }
-
-        void run(long currentTime) {
-
-        }
+    public PromiseTask<Void> schedule(Runnable task, float delay, float period) {
+        DeferredTask<Void> t = new DeferredTask<>(Executors.callable(task, null), delay, period);
+        scheduledTasks.add(t);
+        return t;
     }
 
-    private static final class ScheduledTask implements Task, Cancellable, Comparable<ScheduledTask> {
-
-        private final Task task;
-        private final Queue<Task> queue;
-
-        private final float period;
-        private float atAge;
-        private float age;
-
-        private boolean cancelled;
-
-        ScheduledTask(Task task, float atAge, float period, Queue<Task> queue) {
-            this.task = task;
-            this.queue = queue;
-            this.period = period;
-            this.atAge = atAge;
+    @Override
+    public void dispose() {
+        while (!scheduledTasks.isEmpty()) {
+            scheduledTasks.poll().cancel();
         }
-
-        @Override
-        public void run(float deltaTime) {
-            if (!isCancelled()) {
-                age += deltaTime;
-                run0(deltaTime);
-            }
-        }
-
-        private void run0(float deltaTime) {
-            if (age >= atAge) {
-                task.run(deltaTime);
-                if (period > 0) {
-                    atAge += period;
-                    queue.add(this);
-                }
-            } else {
-                queue.add(this);
-            }
-        }
-
-        @Override
-        public void cancel() {
-            cancelled = true;
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return cancelled;
-        }
-
-        @Override
-        public int compareTo(ScheduledTask o) {
-            if (this == o) {
-                return 0;
-            }
-            return atAge > o.atAge ? -1 : atAge == o.atAge ? 0 : 1;
-        }
-    }
-
-    public static interface Cancellable {
-
-        void cancel();
-
-        boolean isCancelled();
-    }
-
-    public static interface Task {
-
-        void run(float deltaTime);
     }
 }

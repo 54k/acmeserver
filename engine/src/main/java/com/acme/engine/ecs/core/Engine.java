@@ -7,15 +7,8 @@ import com.acme.engine.ecs.utils.ImmutableList;
 import com.acme.engine.ecs.utils.Pool;
 import com.acme.engine.ecs.utils.Pool.Disposable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Queue;
 
 public class Engine {
 
@@ -219,7 +212,7 @@ public class Engine {
 
     /**
      * Adds an {@link EntityListener}
-     * <p/>
+     * <p>
      * The listener will be notified every time an entities is added/removed to/from the engine
      */
     public void addEntityListener(EntityListener listener) {
@@ -228,7 +221,7 @@ public class Engine {
 
     /**
      * Adds an {@link EntityListener} for a specific {@link Family}
-     * <p/>
+     * <p>
      * The listener will be notified every time an entities is added/removed to/from the given family
      */
     public void addEntityListener(Family family, EntityListener listener) {
@@ -391,7 +384,6 @@ public class Engine {
     protected void addEntityInternal(Entity entity) {
         entities.add(entity);
         entitiesById.put(entity.getId(), entity);
-
         updateMembership(entity);
 
         entity.addComponentListener(componentListener);
