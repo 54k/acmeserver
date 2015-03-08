@@ -3,13 +3,14 @@ package com.acme.engine.ecs.core;
 import com.acme.engine.ecs.events.Event;
 import com.acme.engine.ecs.events.EventListener;
 import com.acme.engine.ecs.events.Signal;
+import com.acme.engine.ecs.promises.Deferred;
+import com.acme.engine.ecs.promises.Promise;
 import com.acme.engine.ecs.utils.ImmutableList;
 import com.acme.engine.ecs.utils.Pool;
 import com.acme.engine.ecs.utils.Pool.Disposable;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
 
 public class Engine {
 
@@ -55,9 +56,6 @@ public class Engine {
     private Map<Class<? extends EventListener>, Event<? extends EventListener>> events;
 
     private List<Processor> processors;
-    private Scheduler scheduler;
-    private Map<Entity, Scheduler> entitySchedulers;
-    private SchedulerPool schedulerPool;
 
     private boolean initialized;
 
@@ -95,9 +93,6 @@ public class Engine {
 
         processors = new ArrayList<>();
         processors.add(engineProcessor);
-        scheduler = new Scheduler();
-        entitySchedulers = new HashMap<>();
-        schedulerPool = new SchedulerPool();
 
         initialized = false;
     }
@@ -118,34 +113,40 @@ public class Engine {
     /**
      * Adds an entities to this Engine
      */
-    public void addEntity(Entity entity) {
+    public Promise<Entity, Void> addEntity(Entity entity) {
+        Deferred<Entity, Void> deferred = new Deferred<>();
         entity.id = obtainEntityId();
         if (updating || notifying) {
             EntityOperation operation = entityOperationPool.obtain();
+            operation.deferred = deferred;
             operation.entity = entity;
             operation.type = EntityOperation.Type.Add;
             entityOperations.add(operation);
         } else {
-            addEntityInternal(entity);
+            addEntityInternal(entity, deferred);
         }
+        return deferred;
     }
 
     /**
      * Removes an entities from this Engine
      */
-    public void removeEntity(Entity entity) {
+    public Promise<Entity, Void> removeEntity(Entity entity) {
+        Deferred<Entity, Void> deferred = new Deferred<>();
         if (updating || notifying) {
             if (entity.scheduledForRemoval) {
-                return;
+                return deferred.reject(null);
             }
             entity.scheduledForRemoval = true;
             EntityOperation operation = entityOperationPool.obtain();
+            operation.deferred = deferred;
             operation.entity = entity;
             operation.type = EntityOperation.Type.Remove;
             entityOperations.add(operation);
         } else {
-            removeEntityInternal(entity);
+            removeEntityInternal(entity, deferred);
         }
+        return deferred;
     }
 
     /**
@@ -282,38 +283,6 @@ public class Engine {
         processors.add(processor);
     }
 
-    public PromiseTask<Void> schedule(Runnable task) {
-        return scheduler.schedule(task);
-    }
-
-    public <T> PromiseTask<T> schedule(Callable<T> task) {
-        return scheduler.schedule(task);
-    }
-
-    public PromiseTask<Void> schedule(Runnable task, float delay) {
-        return scheduler.schedule(task, delay);
-    }
-
-    public <T> PromiseTask<T> schedule(Callable<T> task, float delay) {
-        return scheduler.schedule(task, delay);
-    }
-
-    public PromiseTask<Void> scheduleForEntity(Entity entity, Runnable task) {
-        return entitySchedulers.get(entity).schedule(task);
-    }
-
-    public <T> PromiseTask<T> scheduleForEntity(Entity entity, Callable<T> task) {
-        return entitySchedulers.get(entity).schedule(task);
-    }
-
-    public PromiseTask<Void> scheduleForEntity(Entity entity, Runnable task, float delay) {
-        return entitySchedulers.get(entity).schedule(task, delay);
-    }
-
-    public <T> PromiseTask<T> scheduleForEntity(Entity entity, Callable<T> task, float delay) {
-        return entitySchedulers.get(entity).schedule(task, delay);
-    }
-
     private void checkInitialized() {
         if (initialized) {
             throw new IllegalStateException("Engine has been initialized");
@@ -348,7 +317,6 @@ public class Engine {
     public void update(float deltaTime) {
         initialize();
         updating = true;
-        updateSchedulers(deltaTime);
         for (EntitySystem system : systems) {
             if (system.isEnabled()) {
                 system.update(deltaTime);
@@ -357,13 +325,6 @@ public class Engine {
             processPendingEntityOperations();
         }
         updating = false;
-    }
-
-    private void updateSchedulers(float deltaTime) {
-        scheduler.update(deltaTime);
-        for (Scheduler s : entitySchedulers.values()) {
-            s.update(deltaTime);
-        }
     }
 
     /**
@@ -413,14 +374,14 @@ public class Engine {
 
             switch (operation.type) {
                 case Add:
-                    addEntityInternal(entity);
+                    addEntityInternal(entity, operation.deferred);
                     break;
                 case Remove:
-                    removeEntityInternal(entity);
+                    removeEntityInternal(entity, operation.deferred);
                     break;
                 case RemoveAll:
                     while (entities.size() > 0) {
-                        removeEntityInternal(entities.get(0));
+                        removeEntityInternal(entities.get(0), operation.deferred);
                     }
                     break;
             }
@@ -428,10 +389,9 @@ public class Engine {
         }
     }
 
-    protected void addEntityInternal(Entity entity) {
+    protected void addEntityInternal(Entity entity, Deferred<Entity, Void> deferred) {
         entities.add(entity);
         entitiesById.put(entity.getId(), entity);
-        entitySchedulers.put(entity, schedulerPool.newObject());
         updateMembership(entity);
 
         entity.addComponentListener(componentListener);
@@ -442,17 +402,13 @@ public class Engine {
             listener.entityAdded(entity);
         }
         notifying = false;
+        deferred.resolve(entity);
     }
 
-    protected void removeEntityInternal(Entity entity) {
+    protected void removeEntityInternal(Entity entity, Deferred<Entity, Void> deferred) {
         entity.scheduledForRemoval = false;
         entities.remove(entity);
         entitiesById.remove(entity.getId());
-
-        Scheduler s = entitySchedulers.remove(entity);
-        if (s != null) {
-            schedulerPool.free(s);
-        }
 
         if (!entity.getFamilyBits().isEmpty()) {
             for (Entry<Family, List<Entity>> entry : families.entrySet()) {
@@ -494,6 +450,7 @@ public class Engine {
             listener.entityRemoved(entity);
         }
         notifying = false;
+        deferred.resolve(entity);
     }
 
     private void updateMembership(Entity entity) {
@@ -758,6 +715,7 @@ public class Engine {
             RemoveAll
         }
 
+        Deferred<Entity, Void> deferred;
         Type type;
         Entity entity;
 
@@ -772,13 +730,6 @@ public class Engine {
         @Override
         protected EntityOperation newObject() {
             return new EntityOperation();
-        }
-    }
-
-    private static class SchedulerPool extends Pool<Scheduler> {
-        @Override
-        protected Scheduler newObject() {
-            return new Scheduler();
         }
     }
 }

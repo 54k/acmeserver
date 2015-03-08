@@ -2,6 +2,8 @@ package com.acme.server.position;
 
 import com.acme.engine.ecs.core.*;
 import com.acme.engine.ecs.systems.PassiveSystem;
+import com.acme.engine.mechanics.timer.PromiseTask;
+import com.acme.engine.mechanics.timer.SchedulerSystem;
 import com.acme.server.managers.WorldComponent;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.MovePacket;
@@ -15,6 +17,7 @@ import java.util.Map;
 public class MovementSystem extends PassiveSystem implements NodeListener {
 
     private PacketSystem packetSystem;
+    private SchedulerSystem schedulerSystem;
 
     private final Map<WorldNode, PromiseTask<Void>> scheduledMoves = new HashMap<>();
 
@@ -62,7 +65,7 @@ public class MovementSystem extends PassiveSystem implements NodeListener {
 
     private PromiseTask<Void> submitMoveTask(WorldNode node, Position position) {
         MoveTask moveTask = new MoveTask(node, position);
-        PromiseTask<Void> scheduledTask = schedule(moveTask);
+        PromiseTask<Void> scheduledTask = schedulerSystem.schedule(moveTask);
         scheduledMoves.put(node, scheduledTask);
         return scheduledTask;
     }

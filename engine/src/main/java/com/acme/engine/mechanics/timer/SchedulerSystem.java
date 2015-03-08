@@ -4,14 +4,17 @@ import com.acme.engine.ecs.core.Engine;
 import com.acme.engine.ecs.core.Entity;
 import com.acme.engine.ecs.core.EntityListener;
 import com.acme.engine.ecs.core.EntitySystem;
+import com.acme.engine.ecs.utils.Pool;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
-public final class SchedulerSystem extends EntitySystem implements EntityListener {
+public class SchedulerSystem extends EntitySystem implements EntityListener {
 
-    private final Scheduler globalScheduler;
-    private final Map<Entity, Scheduler> schedulersByEntity;
+    private Scheduler scheduler;
+    private Map<Entity, Scheduler> entitySchedulers;
+    private SchedulerPool schedulerPool;
 
     public SchedulerSystem() {
         this(0);
@@ -19,8 +22,9 @@ public final class SchedulerSystem extends EntitySystem implements EntityListene
 
     public SchedulerSystem(int priority) {
         super(priority);
-        globalScheduler = new Scheduler();
-        schedulersByEntity = new HashMap<>();
+        scheduler = new Scheduler();
+        entitySchedulers = new HashMap<>();
+        schedulerPool = new SchedulerPool();
     }
 
     @Override
@@ -30,52 +34,78 @@ public final class SchedulerSystem extends EntitySystem implements EntityListene
 
     @Override
     public void entityAdded(Entity entity) {
+        entitySchedulers.putIfAbsent(entity, schedulerPool.newObject());
     }
 
     @Override
     public void entityRemoved(Entity entity) {
-        schedulersByEntity.remove(entity);
+        Scheduler s = entitySchedulers.remove(entity);
+        if (s != null) {
+            schedulerPool.free(s);
+        }
     }
 
     @Override
     public void update(float deltaTime) {
-        globalScheduler.update(deltaTime);
-        for (Scheduler scheduler : schedulersByEntity.values()) {
-            scheduler.update(deltaTime);
+        scheduler.update(deltaTime);
+        for (Scheduler s : entitySchedulers.values()) {
+            s.update(deltaTime);
         }
     }
 
-    public Scheduler.Cancellable schedule(Scheduler.Task task) {
-        return globalScheduler.schedule(task);
+    public PromiseTask<Void> schedule(Runnable task) {
+        return scheduler.schedule(task);
     }
 
-    public Scheduler.Cancellable schedule(Scheduler.Task task, float delay) {
-        return globalScheduler.schedule(task, delay);
+    public <T> PromiseTask<T> schedule(Callable<T> task) {
+        return scheduler.schedule(task);
     }
 
-    public Scheduler.Cancellable schedule(Scheduler.Task task, float delay, float period) {
-        return globalScheduler.schedule(task, delay, period);
+    public PromiseTask<Void> schedule(Runnable task, float delay) {
+        return scheduler.schedule(task, delay);
     }
 
-    public Scheduler.Cancellable scheduleForEntity(Entity entity, Scheduler.Task task) {
-        return scheduleForEntity(entity, task, 0);
+    public <T> PromiseTask<T> schedule(Callable<T> task, float delay) {
+        return scheduler.schedule(task, delay);
     }
 
-    public Scheduler.Cancellable scheduleForEntity(Entity entity, Scheduler.Task task, float delay) {
-        return scheduleForEntity(entity, task, delay, 0);
-    }
-
-    public Scheduler.Cancellable scheduleForEntity(Entity entity, Scheduler.Task task, float delay, float period) {
-        Scheduler scheduler = getSchedulerFor(entity);
+    public PromiseTask<Void> schedule(Runnable task, float delay, float period) {
         return scheduler.schedule(task, delay, period);
     }
 
-    public Scheduler getSchedulerFor(Entity entity) {
-        Scheduler scheduler = schedulersByEntity.get(entity);
+    public PromiseTask<Void> scheduleForEntity(Entity entity, Runnable task) {
+        return getScheduler(entity).schedule(task);
+    }
+
+    public <T> PromiseTask<T> scheduleForEntity(Entity entity, Callable<T> task) {
+        return getScheduler(entity).schedule(task);
+    }
+
+    public PromiseTask<Void> scheduleForEntity(Entity entity, Runnable task, float delay) {
+        return getScheduler(entity).schedule(task, delay);
+    }
+
+    public <T> PromiseTask<T> scheduleForEntity(Entity entity, Callable<T> task, float delay) {
+        return getScheduler(entity).schedule(task, delay);
+    }
+
+    public PromiseTask<Void> scheduleForEntity(Entity entity, Runnable task, float delay, float period) {
+        return getScheduler(entity).schedule(task, delay, period);
+    }
+
+    private Scheduler getScheduler(Entity entity) {
+        Scheduler scheduler = entitySchedulers.get(entity);
         if (scheduler == null) {
             scheduler = new Scheduler();
-            schedulersByEntity.put(entity, scheduler);
+            entitySchedulers.put(entity, scheduler);
         }
         return scheduler;
+    }
+
+    private static class SchedulerPool extends Pool<Scheduler> {
+        @Override
+        protected Scheduler newObject() {
+            return new Scheduler();
+        }
     }
 }
