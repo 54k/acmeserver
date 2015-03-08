@@ -3,8 +3,6 @@ package com.acme.engine.ecs.core;
 import com.acme.engine.ecs.events.Event;
 import com.acme.engine.ecs.events.EventListener;
 import com.acme.engine.ecs.events.Signal;
-import com.acme.engine.ecs.promises.Deferred;
-import com.acme.engine.ecs.promises.Promise;
 import com.acme.engine.ecs.utils.ImmutableList;
 import com.acme.engine.ecs.utils.Pool;
 import com.acme.engine.ecs.utils.Pool.Disposable;
@@ -113,40 +111,34 @@ public class Engine {
     /**
      * Adds an entities to this Engine
      */
-    public Promise<Entity, Void> addEntity(Entity entity) {
-        Deferred<Entity, Void> deferred = new Deferred<>();
+    public void addEntity(Entity entity) {
         entity.id = obtainEntityId();
         if (updating || notifying) {
             EntityOperation operation = entityOperationPool.obtain();
-            operation.deferred = deferred;
             operation.entity = entity;
             operation.type = EntityOperation.Type.Add;
             entityOperations.add(operation);
         } else {
-            addEntityInternal(entity, deferred);
+            addEntityInternal(entity);
         }
-        return deferred;
     }
 
     /**
      * Removes an entities from this Engine
      */
-    public Promise<Entity, Void> removeEntity(Entity entity) {
-        Deferred<Entity, Void> deferred = new Deferred<>();
+    public void removeEntity(Entity entity) {
         if (updating || notifying) {
             if (entity.scheduledForRemoval) {
-                return deferred.reject(null);
+                return;
             }
             entity.scheduledForRemoval = true;
             EntityOperation operation = entityOperationPool.obtain();
-            operation.deferred = deferred;
             operation.entity = entity;
             operation.type = EntityOperation.Type.Remove;
             entityOperations.add(operation);
         } else {
-            removeEntityInternal(entity, deferred);
+            removeEntityInternal(entity);
         }
-        return deferred;
     }
 
     /**
@@ -374,14 +366,14 @@ public class Engine {
 
             switch (operation.type) {
                 case Add:
-                    addEntityInternal(entity, operation.deferred);
+                    addEntityInternal(entity);
                     break;
                 case Remove:
-                    removeEntityInternal(entity, operation.deferred);
+                    removeEntityInternal(entity);
                     break;
                 case RemoveAll:
                     while (entities.size() > 0) {
-                        removeEntityInternal(entities.get(0), operation.deferred);
+                        removeEntityInternal(entities.get(0));
                     }
                     break;
             }
@@ -389,7 +381,7 @@ public class Engine {
         }
     }
 
-    protected void addEntityInternal(Entity entity, Deferred<Entity, Void> deferred) {
+    protected void addEntityInternal(Entity entity) {
         entities.add(entity);
         entitiesById.put(entity.getId(), entity);
         updateMembership(entity);
@@ -402,10 +394,9 @@ public class Engine {
             listener.entityAdded(entity);
         }
         notifying = false;
-        deferred.resolve(entity);
     }
 
-    protected void removeEntityInternal(Entity entity, Deferred<Entity, Void> deferred) {
+    protected void removeEntityInternal(Entity entity) {
         entity.scheduledForRemoval = false;
         entities.remove(entity);
         entitiesById.remove(entity.getId());
@@ -450,7 +441,6 @@ public class Engine {
             listener.entityRemoved(entity);
         }
         notifying = false;
-        deferred.resolve(entity);
     }
 
     private void updateMembership(Entity entity) {
@@ -715,7 +705,6 @@ public class Engine {
             RemoveAll
         }
 
-        Deferred<Entity, Void> deferred;
         Type type;
         Entity entity;
 

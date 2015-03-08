@@ -1,7 +1,7 @@
 package com.acme.engine.mechanics.timer;
 
-import com.acme.engine.ecs.promises.Promise;
-import com.acme.engine.ecs.promises.PromiseHandler;
+import com.acme.engine.mechanics.promises.Promise;
+import com.acme.engine.mechanics.promises.PromiseHandler;
 
 public interface PromiseTask<T> extends Promise<T, Throwable> {
 

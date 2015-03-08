@@ -1,4 +1,4 @@
-package com.acme.engine.ecs.promises;
+package com.acme.engine.mechanics.promises;
 
 public interface PromiseHandler<T> {
 

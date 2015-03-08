@@ -1,7 +1,7 @@
 package com.acme.engine.mechanics.timer;
 
-import com.acme.engine.ecs.promises.Deferred;
-import com.acme.engine.ecs.promises.PromiseHandler;
+import com.acme.engine.mechanics.promises.Deferred;
+import com.acme.engine.mechanics.promises.PromiseHandler;
 
 import java.util.ArrayList;
 import java.util.List;

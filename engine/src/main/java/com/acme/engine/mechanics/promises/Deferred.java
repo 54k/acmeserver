@@ -1,4 +1,4 @@
-package com.acme.engine.ecs.promises;
+package com.acme.engine.mechanics.promises;
 
 import java.util.ArrayList;
 

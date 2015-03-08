@@ -1,4 +1,4 @@
-package com.acme.engine.ecs.promises;
+package com.acme.engine.mechanics.promises;
 
 public interface Promise<D, F> {
 
@@ -7,13 +7,6 @@ public interface Promise<D, F> {
     Promise<D, F> fail(PromiseHandler<F> reject);
 
     Promise<D, F> then(PromiseHandler<D> resolve, PromiseHandler<F> reject);
-
-    /**
-     * Returns current status of this promise
-     *
-     * @return current status
-     */
-    PromiseStatus status();
 
     /**
      * Checks whether this promise is pending for resolution

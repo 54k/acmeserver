@@ -1,4 +1,4 @@
-package com.acme.engine.ecs.promises;
+package com.acme.engine.mechanics.promises;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +43,6 @@ abstract class AbstractPromise<D, F> implements Promise<D, F> {
     @Override
     public Promise<D, F> then(PromiseHandler<D> resolve, PromiseHandler<F> reject) {
         return done(resolve).fail(reject);
-    }
-
-    @Override
-    public PromiseStatus status() {
-        return status;
     }
 
     @Override
