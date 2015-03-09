@@ -1,7 +1,7 @@
 package com.acme.server.utils;
 
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Entity;
+import com.acme.ecs.core.ComponentMapper;
+import com.acme.ecs.core.Entity;
 import com.acme.server.position.Transform;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;

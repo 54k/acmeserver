@@ -1,9 +1,9 @@
 package com.acme.server.packets;
 
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.mechanics.network.InboundPacket;
+import com.acme.ecs.core.Entity;
+import com.acme.commons.network.InboundPacket;
 
-public class PacketReader extends com.acme.engine.mechanics.network.PacketReader {
+public class PacketReader extends com.acme.commons.network.PacketReader {
 
     @Override
     public InboundPacket readPacket(Entity entity, Object[] data) {

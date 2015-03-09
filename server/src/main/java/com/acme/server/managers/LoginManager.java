@@ -1,10 +1,10 @@
 package com.acme.server.managers;
 
-import com.acme.engine.application.Context;
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.ecs.systems.PassiveSystem;
+import com.acme.commons.application.Context;
+import com.acme.ecs.core.ComponentMapper;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Wire;
+import com.acme.ecs.systems.PassiveSystem;
 import com.acme.server.combat.StatsSystem;
 import com.acme.server.inventory.Inventory;
 import com.acme.server.packets.PacketSystem;
@@ -12,7 +12,7 @@ import com.acme.server.packets.outbound.HitPointsPacket;
 import com.acme.server.packets.outbound.WelcomePacket;
 import com.acme.server.position.KnownList;
 import com.acme.server.position.KnownListSystem;
-import com.acme.server.position.MovementSystem;
+import com.acme.server.position.PositionSystem;
 import com.acme.server.position.Transform;
 import com.acme.server.utils.PositionUtils;
 import com.acme.server.utils.Rnd;
@@ -29,12 +29,12 @@ public class LoginManager extends PassiveSystem {
     private ComponentMapper<Inventory> icm;
     private ComponentMapper<PlayerComponent> pcm;
     private ComponentMapper<Transform> poscm;
-    private ComponentMapper<WorldComponent> wcm;
+    private ComponentMapper<WorldTransform> wcm;
     private ComponentMapper<KnownList> kcm;
 
     private Context context;
 
-    private MovementSystem movementSystem;
+    private PositionSystem positionSystem;
     private StatsSystem statsSystem;
     private WorldManager worldManager;
     private KnownListSystem knownListSystem;
@@ -61,9 +61,9 @@ public class LoginManager extends PassiveSystem {
         transform.setPosition(position);
         transform.setOrientation(Orientation.BOTTOM);
 
-        WorldComponent worldComponent = wcm.get(entity);
+        WorldTransform worldTransform = wcm.get(entity);
         Instance instance = worldManager.getAvailableInstance();
-        worldComponent.setInstance(instance);
+        worldTransform.setInstance(instance);
 
         Inventory inventory = icm.get(entity);
         inventory.setWeapon(weapon);

@@ -1,6 +1,6 @@
 package com.acme.server.packets.outbound;
 
-import com.acme.engine.mechanics.network.OutboundPacket;
+import com.acme.commons.network.OutboundPacket;
 import com.acme.server.entities.Type;
 import com.acme.server.packets.OpCodes;
 

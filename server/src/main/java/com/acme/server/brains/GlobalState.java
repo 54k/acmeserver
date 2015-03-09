@@ -1,33 +1,34 @@
 package com.acme.server.brains;
 
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Engine;
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.mechanics.brains.Brain;
-import com.acme.engine.mechanics.brains.BrainState;
-import com.acme.engine.mechanics.brains.BrainStateMachine;
+import com.acme.ecs.core.ComponentMapper;
+import com.acme.ecs.core.Engine;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Wire;
+import com.acme.commons.brains.Brain;
+import com.acme.commons.brains.BrainState;
+import com.acme.commons.brains.BrainStateMachine;
 import com.acme.server.combat.CombatSystem;
 import com.acme.server.combat.HateListListener;
 import com.acme.server.combat.HateListSystem;
 import com.acme.server.combat.StatsSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.MovePacket;
-import com.acme.server.position.MovementSystem;
-import com.acme.server.position.Spawn;
-import com.acme.server.position.WorldNode;
+import com.acme.server.position.PositionSystem;
+import com.acme.server.position.SpawnPoint;
+import com.acme.server.position.Transform;
+import com.acme.server.position.PositionNode;
 import com.acme.server.world.Position;
 
 @Wire
 public class GlobalState implements BrainState<Entity>, HateListListener {
 
     private ComponentMapper<Brain> brainHolderCm;
-    private ComponentMapper<Spawn> spawnCm;
+    private ComponentMapper<SpawnPoint> spawnCm;
 
     private Engine engine;
 
     private StatsSystem statsSystem;
-    private MovementSystem movementSystem;
+    private PositionSystem positionSystem;
     private CombatSystem combatSystem;
     private HateListSystem hateListSystem;
     private PacketSystem packetSystem;
@@ -58,9 +59,9 @@ public class GlobalState implements BrainState<Entity>, HateListListener {
     }
 
     private boolean isToFarAwayFromSpawn(Entity entity) {
-        Position position = movementSystem.getPosition(entity);
+        Position position = entity.getComponent(Transform.class).position;
         // TODO this should go into spawn manager
-        Position spawnPosition = spawnCm.get(entity).getSpawnPosition();
+        Position spawnPosition = spawnCm.get(entity).getLastSpawnPosition();
 
         int distanceToFollow = 15;
         return Math.abs(position.getX() - spawnPosition.getX()) >= distanceToFollow
@@ -92,14 +93,14 @@ public class GlobalState implements BrainState<Entity>, HateListListener {
         }
     }
 
-//    private void startPatrol(Entity entities) {
-//        returnToSpawnPoint(entities);
-//        getBrain(entities).changeState(PatrolState.class);
-//    }
+    //    private void startPatrol(Entity entities) {
+    //        returnToSpawnPoint(entities);
+    //        getBrain(entities).changeState(PatrolState.class);
+    //    }
 
     private void returnToSpawnPoint(Entity entity) {
-        Position spawnPosition = spawnCm.get(entity).getSpawnPosition();
-        movementSystem.moveTo(entity.getNode(WorldNode.class), spawnPosition);
+        Position spawnPosition = spawnCm.get(entity).getLastSpawnPosition();
+        positionSystem.moveTo(entity.getNode(PositionNode.class), spawnPosition);
     }
 
     private BrainStateMachine<Entity> getBrain(Entity entity) {

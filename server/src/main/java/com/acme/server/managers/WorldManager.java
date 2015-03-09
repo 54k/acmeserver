@@ -1,11 +1,11 @@
 package com.acme.server.managers;
 
-import com.acme.engine.application.Context;
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Family;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.ecs.systems.PassiveSystem;
+import com.acme.ecs.core.ComponentMapper;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Family;
+import com.acme.ecs.core.Wire;
+import com.acme.ecs.systems.PassiveSystem;
+import com.acme.commons.timer.SchedulerSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.PopulationPacket;
 import com.acme.server.position.Transform;
@@ -17,15 +17,17 @@ import com.acme.server.world.World;
 
 import java.util.Collection;
 
-@Wire
 public class WorldManager extends PassiveSystem {
 
-    private static final Family worldEntitiesFamily = Family.all(Transform.class, WorldComponent.class).get();
+    private static final Family worldEntitiesFamily = Family.all(Transform.class, WorldTransform.class).get();
 
+    @Wire
     private ComponentMapper<Transform> pcm;
-    private ComponentMapper<WorldComponent> wcm;
-
-    private Context context;
+    @Wire
+    private ComponentMapper<WorldTransform> wcm;
+    @Wire
+    private SchedulerSystem schedulerSystem;
+    @Wire
     private PacketSystem packetSystem;
 
     private final EntityContainer entities = new EntityContainer();
@@ -41,17 +43,17 @@ public class WorldManager extends PassiveSystem {
     }
 
     public void bringIntoWorld(Entity entity) {
-        WorldComponent worldComponent = wcm.get(entity);
-        Instance instance = worldComponent.getInstance();
+        WorldTransform worldTransform = wcm.get(entity);
+        Instance instance = worldTransform.getInstance();
         instance.addEntity(entity);
         addEntity(entity);
         broadcastPopulation();
     }
 
     public void spawn(Entity entity) {
-        WorldComponent worldComponent = wcm.get(entity);
+        WorldTransform worldTransform = wcm.get(entity);
         Transform transform = pcm.get(entity);
-        Instance instance = worldComponent.getInstance();
+        Instance instance = worldTransform.getInstance();
         Region newRegion = instance.findRegion(transform.getPosition());
         newRegion.addEntity(entity);
         transform.setRegion(newRegion);
@@ -61,8 +63,8 @@ public class WorldManager extends PassiveSystem {
 
     public void removeFromWorld(Entity entity) {
         decay(entity);
-        WorldComponent worldComponent = wcm.get(entity);
-        Instance instance = worldComponent.getInstance();
+        WorldTransform worldTransform = wcm.get(entity);
+        Instance instance = worldTransform.getInstance();
         instance.removeEntity(entity);
         removeEntity(entity);
         broadcastPopulation();
@@ -82,7 +84,7 @@ public class WorldManager extends PassiveSystem {
 
     private void broadcastPopulation() {
         if (!entities.getPlayers().isEmpty()) {
-            context.schedule(this::broadcastPopulation0);
+            schedulerSystem.schedule(this::broadcastPopulation0);
         }
     }
 

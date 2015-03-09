@@ -1,11 +1,11 @@
 package com.acme.server.position;
 
-import com.acme.engine.ecs.core.Component;
+import com.acme.ecs.core.Component;
 import com.acme.server.world.Orientation;
 import com.acme.server.world.Position;
 import com.acme.server.world.Region;
 
-public final class Transform extends Component {
+public class Transform extends Component {
 
     public final Position position = new Position();
     public Orientation orientation = Orientation.BOTTOM;

@@ -1,8 +1,8 @@
 package com.acme.server.combat;
 
-import com.acme.engine.ecs.core.*;
-import com.acme.engine.ecs.systems.PassiveSystem;
-import com.acme.engine.ecs.utils.ImmutableList;
+import com.acme.ecs.core.*;
+import com.acme.ecs.systems.PassiveSystem;
+import com.acme.ecs.utils.ImmutableList;
 import com.acme.server.utils.EntityContainer;
 
 import java.util.HashSet;

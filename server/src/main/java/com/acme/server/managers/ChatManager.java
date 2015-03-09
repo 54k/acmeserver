@@ -1,8 +1,8 @@
 package com.acme.server.managers;
 
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.ecs.systems.PassiveSystem;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Wire;
+import com.acme.ecs.systems.PassiveSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.ChatPacket;
 

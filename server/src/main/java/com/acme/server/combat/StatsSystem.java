@@ -1,10 +1,10 @@
 package com.acme.server.combat;
 
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Family;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.ecs.systems.PassiveSystem;
+import com.acme.ecs.core.ComponentMapper;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Family;
+import com.acme.ecs.core.Wire;
+import com.acme.ecs.systems.PassiveSystem;
 import com.acme.server.impacts.InvulImpactSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.HealthPacket;

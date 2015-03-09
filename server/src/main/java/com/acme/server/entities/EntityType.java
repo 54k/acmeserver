@@ -1,6 +1,6 @@
 package com.acme.server.entities;
 
-import com.acme.engine.ecs.core.Component;
+import com.acme.ecs.core.Component;
 
 public class EntityType extends Component {
 

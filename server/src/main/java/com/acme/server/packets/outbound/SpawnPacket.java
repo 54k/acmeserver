@@ -1,9 +1,9 @@
 package com.acme.server.packets.outbound;
 
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.mechanics.network.OutboundPacket;
+import com.acme.ecs.core.ComponentMapper;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Wire;
+import com.acme.commons.network.OutboundPacket;
 import com.acme.server.entities.EntityType;
 import com.acme.server.entities.Type;
 import com.acme.server.inventory.Inventory;

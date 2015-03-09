@@ -1,7 +1,7 @@
 package com.acme.server.brains;
 
-import com.acme.engine.ecs.core.*;
-import com.acme.engine.mechanics.brains.BrainSystem;
+import com.acme.ecs.core.*;
+import com.acme.commons.brains.BrainSystem;
 import com.acme.server.combat.HateListSystem;
 import com.acme.server.entities.EntityBuilders;
 import com.acme.server.position.Transform;

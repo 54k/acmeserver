@@ -1,13 +1,13 @@
 package com.acme.server.inventory;
 
-import com.acme.engine.ecs.core.*;
-import com.acme.engine.ecs.systems.PassiveSystem;
-import com.acme.engine.mechanics.timer.SchedulerSystem;
+import com.acme.ecs.core.*;
+import com.acme.ecs.systems.PassiveSystem;
+import com.acme.commons.timer.SchedulerSystem;
 import com.acme.server.combat.CombatListener;
 import com.acme.server.entities.EntityFactory;
 import com.acme.server.impacts.BlinkImpact;
 import com.acme.server.inventory.LootTable.LootEntry;
-import com.acme.server.managers.WorldComponent;
+import com.acme.server.managers.WorldTransform;
 import com.acme.server.managers.WorldManager;
 import com.acme.server.position.Transform;
 import com.acme.server.utils.PositionUtils;
@@ -23,7 +23,7 @@ public class LootTableSystem extends PassiveSystem implements CombatListener {
 
     private static final Family lootTableFamily = Family.all(LootTable.class).get();
 
-    private ComponentMapper<WorldComponent> worldCm;
+    private ComponentMapper<WorldTransform> worldCm;
     private ComponentMapper<LootTable> lootTableCm;
     private ComponentMapper<Transform> transformCm;
 
@@ -46,13 +46,13 @@ public class LootTableSystem extends PassiveSystem implements CombatListener {
     public void dropItemsFrom(Entity entity) {
         List<LootEntry> lootEntries = getSucceedDrops(entity);
 
-        WorldComponent worldComponent = worldCm.get(entity);
+        WorldTransform worldTransform = worldCm.get(entity);
         Transform transform = transformCm.get(entity);
         Area dropArea = new Area(transform.getX() - 1, transform.getY() - 1, 2, 2);
 
         for (LootEntry lootEntry : lootEntries) {
             Entity dropEntity = entityFactory.createEntity(lootEntry.getType());
-            worldCm.get(dropEntity).setInstance(worldComponent.getInstance());
+            worldCm.get(dropEntity).setInstance(worldTransform.getInstance());
             Position dropPosition = PositionUtils.getRandomPositionInside(dropArea);
             transformCm.get(dropEntity).setPosition(dropPosition);
             scheduleDecay(dropEntity);

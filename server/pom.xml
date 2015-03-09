@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>com.acme</groupId>
-            <artifactId>engine</artifactId>
+            <artifactId>commons</artifactId>
         </dependency>
     </dependencies>
 

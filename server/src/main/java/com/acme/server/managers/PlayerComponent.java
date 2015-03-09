@@ -1,6 +1,6 @@
 package com.acme.server.managers;
 
-import com.acme.engine.ecs.core.Component;
+import com.acme.ecs.core.Component;
 import com.acme.server.world.Area;
 
 public class PlayerComponent extends Component {

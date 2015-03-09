@@ -1,14 +1,23 @@
 package com.acme.server.position;
 
-import com.acme.engine.ecs.core.Component;
+import com.acme.ecs.core.Component;
 import com.acme.server.utils.EntityContainer;
 
-public final class KnownList extends Component {
+public class KnownList extends Component {
 
-    private final EntityContainer entityContainer = new EntityContainer();
+    public final EntityContainer entityContainer;
+    public int distanceToFindObject;
+    public int distanceToForgetObject;
 
-    private int distanceToFindObject;
-    private int distanceToForgetObject;
+    public KnownList() {
+        this(-1, -1);
+    }
+
+    public KnownList(int distanceToFindObject, int distanceToForgetObject) {
+        entityContainer = new EntityContainer();
+        this.distanceToFindObject = distanceToFindObject;
+        this.distanceToForgetObject = distanceToForgetObject;
+    }
 
     public EntityContainer getKnownEntities() {
         return entityContainer;

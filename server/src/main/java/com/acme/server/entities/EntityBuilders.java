@@ -1,7 +1,7 @@
 package com.acme.server.entities;
 
-import com.acme.engine.ecs.entities.EntityBuilder;
-import com.acme.engine.mechanics.brains.Brain;
+import com.acme.ecs.entities.EntityBuilder;
+import com.acme.commons.brains.Brain;
 import com.acme.server.combat.Combat;
 import com.acme.server.combat.HateList;
 import com.acme.server.combat.Stats;
@@ -12,7 +12,7 @@ import com.acme.server.items.Armor;
 import com.acme.server.items.Consumable;
 import com.acme.server.items.Weapon;
 import com.acme.server.managers.PlayerComponent;
-import com.acme.server.managers.WorldComponent;
+import com.acme.server.managers.WorldTransform;
 import com.acme.server.position.KnownList;
 import com.acme.server.position.Transform;
 
@@ -24,7 +24,7 @@ public final class EntityBuilders {
 
     static {
         BASE_TYPE.add(Transform.class);
-        BASE_TYPE.add(WorldComponent.class);
+        BASE_TYPE.add(WorldTransform.class);
         BASE_TYPE.add(EntityType.class);
     }
 

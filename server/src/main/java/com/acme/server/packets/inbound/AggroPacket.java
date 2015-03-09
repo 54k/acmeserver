@@ -1,7 +1,7 @@
 package com.acme.server.packets.inbound;
 
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.mechanics.network.InboundPacket;
+import com.acme.ecs.core.Wire;
+import com.acme.commons.network.InboundPacket;
 import com.acme.server.combat.HateListSystem;
 import com.acme.server.managers.WorldManager;
 

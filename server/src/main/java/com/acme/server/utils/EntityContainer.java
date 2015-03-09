@@ -1,7 +1,7 @@
 package com.acme.server.utils;
 
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Family;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Family;
 import com.acme.server.entities.EntityBuilders;
 
 import java.util.ArrayList;

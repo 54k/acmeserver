@@ -1,6 +1,6 @@
 package com.acme.server.entities;
 
-import com.acme.engine.ecs.entities.EntityBuilder;
+import com.acme.ecs.entities.EntityBuilder;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 

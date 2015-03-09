@@ -1,11 +1,11 @@
 package com.acme.server.position;
 
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Family;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.ecs.systems.FamilyIteratingSystem;
-import com.acme.server.managers.WorldComponent;
+import com.acme.ecs.core.ComponentMapper;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Family;
+import com.acme.ecs.core.Wire;
+import com.acme.ecs.systems.FamilyIteratingSystem;
+import com.acme.server.managers.WorldTransform;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.DespawnPacket;
 import com.acme.server.packets.outbound.SpawnPacket;
@@ -16,7 +16,7 @@ import com.acme.server.world.Region;
 @Wire
 public class KnownListSystem extends FamilyIteratingSystem {
 
-    private static final Family KNOWN_LIST_OWNERS_FAMILY = Family.all(KnownList.class, Transform.class, WorldComponent.class).get();
+    private static final Family KNOWN_LIST_OWNERS_FAMILY = Family.all(KnownList.class, Transform.class, WorldTransform.class).get();
 
     private ComponentMapper<KnownList> kcm;
     private ComponentMapper<Transform> pcm;

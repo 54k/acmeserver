@@ -1,14 +1,13 @@
 package com.acme.server.managers;
 
-import com.acme.engine.application.Context;
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.ecs.systems.PassiveSystem;
+import com.acme.ecs.core.ComponentMapper;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Wire;
+import com.acme.ecs.systems.PassiveSystem;
 import com.acme.server.entities.EntityFactory;
 import com.acme.server.entities.Type;
 import com.acme.server.inventory.LootTable;
-import com.acme.server.position.Spawn;
+import com.acme.server.position.SpawnPoint;
 import com.acme.server.position.Transform;
 import com.acme.server.templates.RoamingAreaTemplate;
 import com.acme.server.templates.StaticChestTemplate;
@@ -22,11 +21,10 @@ import java.util.stream.Collectors;
 @Wire
 public class SpawnManager extends PassiveSystem {
 
-    private ComponentMapper<WorldComponent> worldCm;
+    private ComponentMapper<WorldTransform> worldCm;
     private ComponentMapper<Transform> transformCm;
     private ComponentMapper<LootTable> lootTableCm;
 
-    private Context context;
     private EntityFactory entityFactory;
     private WorldManager worldManager;
 
@@ -44,14 +42,14 @@ public class SpawnManager extends PassiveSystem {
     private void spawnCreatures(Instance instance, RoamingAreaTemplate roamingAreaTemplate) {
         for (int i = 0; i < roamingAreaTemplate.getNb(); i++) {
             Entity entity = entityFactory.createEntity(roamingAreaTemplate.getType());
-            WorldComponent worldComponent = worldCm.get(entity);
-            worldComponent.setInstance(instance);
-            Spawn spawnComponent = new Spawn();
-            spawnComponent.setArea(new Area(roamingAreaTemplate.getX(),
+            WorldTransform worldTransform = worldCm.get(entity);
+            worldTransform.setInstance(instance);
+            SpawnPoint spawnPointComponent = new SpawnPoint();
+            spawnPointComponent.setSpawnArea(new Area(roamingAreaTemplate.getX(),
                     roamingAreaTemplate.getY(),
                     roamingAreaTemplate.getWidth(),
                     roamingAreaTemplate.getHeight()));
-            entity.addComponent(spawnComponent);
+            entity.addComponent(spawnPointComponent);
             worldManager.bringIntoWorld(entity);
         }
     }
@@ -63,11 +61,11 @@ public class SpawnManager extends PassiveSystem {
 
     private void spawnStaticObject(Instance instance, Position position, Type type) {
         Entity entity = entityFactory.createEntity(type);
-        WorldComponent worldComponent = worldCm.get(entity);
-        worldComponent.setInstance(instance);
-        Spawn spawnComponent = new Spawn();
-        spawnComponent.setArea(new Area(position.getX(), position.getY(), 0, 0));
-        entity.addComponent(spawnComponent);
+        WorldTransform worldTransform = worldCm.get(entity);
+        worldTransform.setInstance(instance);
+        SpawnPoint spawnPointComponent = new SpawnPoint();
+        spawnPointComponent.setSpawnArea(new Area(position.getX(), position.getY(), 0, 0));
+        entity.addComponent(spawnPointComponent);
         worldManager.bringIntoWorld(entity);
     }
 
@@ -77,11 +75,11 @@ public class SpawnManager extends PassiveSystem {
 
     private void spawnStaticChest(StaticChestTemplate ct, Instance instance) {
         Entity entity = entityFactory.createEntity(Type.CHEST);
-        WorldComponent worldComponent = worldCm.get(entity);
-        worldComponent.setInstance(instance);
-        Spawn spawnComponent = new Spawn();
-        spawnComponent.setArea(new Area(ct.getX(), ct.getY(), 0, 0));
-        entity.addComponent(spawnComponent);
+        WorldTransform worldTransform = worldCm.get(entity);
+        worldTransform.setInstance(instance);
+        SpawnPoint spawnPointComponent = new SpawnPoint();
+        spawnPointComponent.setSpawnArea(new Area(ct.getX(), ct.getY(), 0, 0));
+        entity.addComponent(spawnPointComponent);
         LootTable lootTable = lootTableCm.get(entity);
         List<LootTable.LootEntry> lootEntries = ct.getI().stream()
                 .map(i -> new LootTable.LootEntry(Type.fromId(i), 100))

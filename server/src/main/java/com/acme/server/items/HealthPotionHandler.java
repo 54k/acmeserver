@@ -1,7 +1,7 @@
 package com.acme.server.items;
 
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Wire;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Wire;
 import com.acme.server.impacts.HealImpact;
 import com.acme.server.managers.WorldManager;
 

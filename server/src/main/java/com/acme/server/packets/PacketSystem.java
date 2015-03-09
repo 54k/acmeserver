@@ -1,10 +1,10 @@
 package com.acme.server.packets;
 
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Engine;
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.mechanics.network.*;
+import com.acme.ecs.core.ComponentMapper;
+import com.acme.ecs.core.Engine;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Wire;
+import com.acme.commons.network.*;
 import com.acme.server.entities.EntityFactory;
 import com.acme.server.packets.inbound.*;
 import com.acme.server.position.KnownList;
@@ -78,7 +78,7 @@ public class PacketSystem extends NetworkIteratingSystem {
     }
 
     @Override
-    protected com.acme.engine.mechanics.network.PacketReader getPacketReader() {
+    protected com.acme.commons.network.PacketReader getPacketReader() {
         return packetReader;
     }
 

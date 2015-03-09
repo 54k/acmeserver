@@ -1,7 +1,7 @@
 package com.acme.server.combat;
 
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.events.EventListener;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.events.EventListener;
 
 public interface HateListListener extends EventListener {
 

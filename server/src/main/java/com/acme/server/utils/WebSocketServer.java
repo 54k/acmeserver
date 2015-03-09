@@ -1,7 +1,7 @@
 package com.acme.server.utils;
 
-import com.acme.engine.mechanics.network.NetworkServer;
-import com.acme.engine.mechanics.network.Session;
+import com.acme.commons.network.NetworkServer;
+import com.acme.commons.network.Session;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;

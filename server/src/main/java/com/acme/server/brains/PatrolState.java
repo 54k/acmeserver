@@ -1,13 +1,13 @@
 package com.acme.server.brains;
 
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.mechanics.brains.BrainState;
-import com.acme.engine.mechanics.brains.BrainStateMachine;
-import com.acme.server.position.MovementSystem;
-import com.acme.server.position.Spawn;
-import com.acme.server.position.WorldNode;
+import com.acme.ecs.core.ComponentMapper;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Wire;
+import com.acme.commons.brains.BrainState;
+import com.acme.commons.brains.BrainStateMachine;
+import com.acme.server.position.PositionSystem;
+import com.acme.server.position.SpawnPoint;
+import com.acme.server.position.PositionNode;
 import com.acme.server.utils.PositionUtils;
 import com.acme.server.utils.Rnd;
 import com.acme.server.world.Area;
@@ -19,8 +19,8 @@ public class PatrolState implements BrainState<Entity> {
     private float interval;
     private float accumulator;
 
-    private ComponentMapper<Spawn> spawnCm;
-    private MovementSystem movementSystem;
+    private ComponentMapper<SpawnPoint> spawnCm;
+    private PositionSystem positionSystem;
 
     public PatrolState() {
         resetInterval();
@@ -41,9 +41,9 @@ public class PatrolState implements BrainState<Entity> {
     }
 
     private void moveEntity(Entity entity) {
-        Area spawnArea = spawnCm.get(entity).getArea();
+        Area spawnArea = spawnCm.get(entity).getSpawnArea();
         Position rndPos = PositionUtils.getRandomPositionInside(spawnArea);
-        movementSystem.moveTo(entity.getNode(WorldNode.class), rndPos);
+        positionSystem.moveTo(entity.getNode(PositionNode.class), rndPos);
     }
 
     private void resetInterval() {

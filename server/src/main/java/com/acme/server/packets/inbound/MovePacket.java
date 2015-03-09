@@ -1,15 +1,15 @@
 package com.acme.server.packets.inbound;
 
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.mechanics.network.InboundPacket;
-import com.acme.server.position.MovementSystem;
-import com.acme.server.position.WorldNode;
+import com.acme.ecs.core.Wire;
+import com.acme.commons.network.InboundPacket;
+import com.acme.server.position.PositionSystem;
+import com.acme.server.position.PositionNode;
 import com.acme.server.world.Position;
 
 public class MovePacket extends InboundPacket {
 
     @Wire
-    private MovementSystem movementSystem;
+    private PositionSystem positionSystem;
 
     private int x;
     private int y;
@@ -22,6 +22,6 @@ public class MovePacket extends InboundPacket {
 
     @Override
     public void run() {
-        movementSystem.moveTo(getClient().getNode(WorldNode.class), new Position(x, y));
+        positionSystem.moveTo(getClient().getNode(PositionNode.class), new Position(x, y));
     }
 }

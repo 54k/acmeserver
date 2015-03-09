@@ -1,13 +1,13 @@
 package com.acme.server;
 
-import com.acme.engine.application.ApplicationAdapter;
-import com.acme.engine.application.Context;
-import com.acme.engine.ecs.core.Engine;
-import com.acme.engine.ecs.core.Processor;
-import com.acme.engine.ecs.utils.reflection.ClassReflection;
-import com.acme.engine.ecs.utils.reflection.Field;
-import com.acme.engine.mechanics.network.NetworkServer;
-import com.acme.engine.mechanics.timer.SchedulerSystem;
+import com.acme.commons.application.ApplicationAdapter;
+import com.acme.commons.application.Context;
+import com.acme.ecs.core.Engine;
+import com.acme.ecs.core.Processor;
+import com.acme.ecs.utils.reflection.ClassReflection;
+import com.acme.ecs.utils.reflection.Field;
+import com.acme.commons.network.NetworkServer;
+import com.acme.commons.timer.SchedulerSystem;
 import com.acme.server.brains.CreatureBrainSystem;
 import com.acme.server.combat.CombatSystem;
 import com.acme.server.combat.HateListSystem;
@@ -27,7 +27,7 @@ import com.acme.server.managers.SpawnManager;
 import com.acme.server.managers.WorldManager;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.position.KnownListSystem;
-import com.acme.server.position.MovementSystem;
+import com.acme.server.position.PositionSystem;
 import com.acme.server.position.SpawnSystem;
 import com.acme.server.templates.CreatureTemplate;
 import com.acme.server.templates.WorldTemplate;
@@ -62,7 +62,7 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addSystem(new CreatureBrainSystem());
         engine.addSystem(new KnownListSystem());
 
-        engine.addSystem(new MovementSystem());
+        engine.addSystem(new PositionSystem());
         engine.addSystem(new PickupSystem());
         engine.addSystem(new InventorySystem());
         engine.addSystem(new StatsSystem());

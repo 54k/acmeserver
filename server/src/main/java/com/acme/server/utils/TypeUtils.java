@@ -1,6 +1,6 @@
 package com.acme.server.utils;
 
-import com.acme.engine.ecs.core.Entity;
+import com.acme.ecs.core.Entity;
 import com.acme.server.entities.EntityBuilders;
 
 public final class TypeUtils {

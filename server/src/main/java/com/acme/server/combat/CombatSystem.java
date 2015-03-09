@@ -1,9 +1,9 @@
 package com.acme.server.combat;
 
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.ecs.systems.PassiveSystem;
+import com.acme.ecs.core.ComponentMapper;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Wire;
+import com.acme.ecs.systems.PassiveSystem;
 import com.acme.server.entities.EntityFactory;
 import com.acme.server.inventory.InventorySystem;
 import com.acme.server.managers.WorldManager;
@@ -11,8 +11,9 @@ import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.AttackPacket;
 import com.acme.server.packets.outbound.DamagePacket;
 import com.acme.server.packets.outbound.KillPacket;
-import com.acme.server.position.MovementSystem;
-import com.acme.server.position.WorldNode;
+import com.acme.server.position.PositionSystem;
+import com.acme.server.position.Transform;
+import com.acme.server.position.PositionNode;
 import com.acme.server.utils.Rnd;
 import com.acme.server.utils.TypeUtils;
 import com.acme.server.world.Position;
@@ -21,7 +22,7 @@ import com.acme.server.world.Position;
 public class CombatSystem extends PassiveSystem {
 
     private ComponentMapper<Combat> combatCm;
-    private MovementSystem movementSystem;
+    private PositionSystem positionSystem;
     private StatsSystem statsSystem;
     private InventorySystem inventorySystem;
     private EntityFactory entityFactory;
@@ -37,8 +38,8 @@ public class CombatSystem extends PassiveSystem {
     }
 
     public void engage(Entity attacker, Entity target) {
-        Position targetPosition = movementSystem.getPosition(target);
-        movementSystem.setPosition(attacker.getNode(WorldNode.class), targetPosition);
+        Position targetPosition = target.getComponent(Transform.class).position;
+        positionSystem.teleportTo(attacker.getNode(PositionNode.class), targetPosition);
         packetSystem.sendToSelfAndRegion(attacker, new AttackPacket(attacker.getId(), target.getId()));
     }
 

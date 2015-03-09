@@ -1,8 +1,8 @@
 package com.acme.server.impacts;
 
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.mechanics.impact.ImpactSystem;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Wire;
+import com.acme.commons.impact.ImpactSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.BlinkPacket;
 
