@@ -2,7 +2,7 @@ package com.acme.server.managers;
 
 import com.acme.ecs.core.ComponentMapper;
 import com.acme.ecs.core.Entity;
-import com.acme.ecs.core.Family;
+import com.acme.ecs.core.Aspect;
 import com.acme.ecs.core.Wire;
 import com.acme.ecs.systems.PassiveSystem;
 import com.acme.commons.timer.SchedulerSystem;
@@ -19,7 +19,7 @@ import java.util.Collection;
 
 public class WorldManager extends PassiveSystem {
 
-    private static final Family worldEntitiesFamily = Family.all(Transform.class, WorldTransform.class).get();
+    private static final Aspect WORLD_ENTITIES_ASPECT = Aspect.all(Transform.class, WorldTransform.class).get();
 
     @Wire
     private ComponentMapper<Transform> pcm;
@@ -34,7 +34,7 @@ public class WorldManager extends PassiveSystem {
     private final World world;
 
     public WorldManager(WorldTemplate template) {
-        super(worldEntitiesFamily);
+        super(WORLD_ENTITIES_ASPECT);
         this.world = new World(template);
     }
 

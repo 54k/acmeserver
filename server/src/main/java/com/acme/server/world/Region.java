@@ -1,7 +1,7 @@
 package com.acme.server.world;
 
+import com.acme.commons.utils.collections.EntityList;
 import com.acme.ecs.core.Entity;
-import com.acme.server.utils.EntityContainer;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,10 +9,10 @@ import java.util.Set;
 
 public class Region {
 
-    private final EntityContainer entities = new EntityContainer();
+    private final EntityList entities = new EntityList();
     private final Set<Region> surroundingRegions = new HashSet<>();
 
-    private boolean active;
+    private boolean active = true;
 
     public void addSurroundingRegion(Region region) {
         surroundingRegions.add(region);
@@ -24,9 +24,9 @@ public class Region {
 
     public void addEntity(Entity entity) {
         entities.add(entity);
-        if (entities.getPlayers().size() == 1) {
-            activateRegion();
-        }
+        //        if (entities.getPlayers().size() == 1) {
+        //            activateRegion();
+        //        }
     }
 
     private void activateRegion() {
@@ -35,21 +35,17 @@ public class Region {
 
     public void removeEntity(Entity entity) {
         entities.add(entity);
-        if (entities.getPlayers().isEmpty()) {
-            deactivateRegion();
-        }
+        //        if (entities.getPlayers().isEmpty()) {
+        //            deactivateRegion();
+        //        }
     }
 
     private void deactivateRegion() {
         active = false;
     }
 
-    public EntityContainer getEntities() {
+    public EntityList getEntities() {
         return entities;
-    }
-
-    public EntityContainer getPlayers() {
-        return entities.getPlayers();
     }
 
     public boolean isActive() {

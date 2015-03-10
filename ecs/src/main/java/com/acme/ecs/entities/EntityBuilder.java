@@ -2,7 +2,7 @@ package com.acme.ecs.entities;
 
 import com.acme.ecs.core.Component;
 import com.acme.ecs.core.Entity;
-import com.acme.ecs.core.Family;
+import com.acme.ecs.core.Aspect;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +26,8 @@ public class EntityBuilder {
         providers.remove(componentClass);
     }
 
-    public Family getFamily() {
-        Family.Builder builder = new Family.Builder();
+    public Aspect getAspect() {
+        Aspect.Builder builder = new Aspect.Builder();
         for (Class<? extends Component> componentClass : providers.keySet()) {
             builder.all(componentClass);
         }

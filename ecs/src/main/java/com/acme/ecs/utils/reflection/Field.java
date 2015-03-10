@@ -45,7 +45,7 @@ public final class Field {
     }
 
     /**
-     * If the type of the field is parameterized, returns the Class object representing the parameter type at the specified index,
+     * If the type of the field is parametrized, returns the Class object representing the parameter type at the specified index,
      * null otherwise.
      */
     public Class getElementType(int index) {

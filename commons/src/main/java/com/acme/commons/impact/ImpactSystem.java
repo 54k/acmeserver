@@ -11,7 +11,7 @@ import java.util.Map;
 public abstract class ImpactSystem<I extends Impact> extends EntitySystem {
 
     private Class<I> impactClass;
-    private Family impactFamily;
+    private Aspect impactAspect;
     private ComponentMapper<I> impactCm;
     private ImpactListener listener;
 
@@ -25,7 +25,7 @@ public abstract class ImpactSystem<I extends Impact> extends EntitySystem {
     public ImpactSystem(Class<I> impactClass, int priority) {
         super(priority);
         this.impactClass = impactClass;
-        impactFamily = Family.all(impactClass).get();
+        impactAspect = Aspect.all(impactClass).get();
         impactCm = ComponentMapper.getFor(impactClass);
         listener = new ImpactListener();
         prevTargets = new ArrayList<>(16);
@@ -34,7 +34,7 @@ public abstract class ImpactSystem<I extends Impact> extends EntitySystem {
     @Override
     public void addedToEngine(Engine engine) {
         engine.addEntityListener(listener);
-        targets = engine.getEntitiesFor(impactFamily);
+        targets = engine.getEntitiesFor(impactAspect);
     }
 
     @Override

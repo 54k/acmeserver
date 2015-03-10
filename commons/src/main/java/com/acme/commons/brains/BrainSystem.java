@@ -2,34 +2,34 @@ package com.acme.commons.brains;
 
 import com.acme.ecs.core.ComponentMapper;
 import com.acme.ecs.core.Entity;
-import com.acme.ecs.core.Family;
+import com.acme.ecs.core.Aspect;
 import com.acme.ecs.core.Wire;
-import com.acme.ecs.systems.FamilyIteratingSystem;
+import com.acme.ecs.systems.AspectIteratingSystem;
 
 @Wire
-public class BrainSystem extends FamilyIteratingSystem {
+public class BrainSystem extends AspectIteratingSystem {
 
-    private static final Family brainFamily = Family.all(Brain.class).get();
+    private static final Aspect BRAIN_ASPECT = Aspect.all(Brain.class).get();
 
     private ComponentMapper<Brain> brainCm;
-    private Family family;
+    private Aspect aspect;
 
     public BrainSystem() {
-        this(Family.ALL, 0);
+        this(Aspect.ALL, 0);
     }
 
-    public BrainSystem(Family family) {
-        this(family, 0);
+    public BrainSystem(Aspect aspect) {
+        this(aspect, 0);
     }
 
-    public BrainSystem(Family family, int priority) {
-        super(brainFamily, priority);
-        this.family = family;
+    public BrainSystem(Aspect aspect, int priority) {
+        super(BRAIN_ASPECT, priority);
+        this.aspect = aspect;
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        if (family.matches(entity) && shouldUpdateBrain(entity, deltaTime)) {
+        if (aspect.matches(entity) && shouldUpdateBrain(entity, deltaTime)) {
             updateBrain(entity, deltaTime);
         }
     }

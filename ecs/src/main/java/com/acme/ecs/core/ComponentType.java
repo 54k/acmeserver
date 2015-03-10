@@ -23,15 +23,15 @@ public class ComponentType {
     }
 
     /**
-     * @param componentType The {@link Component} class
+     * @param componentClass The {@link Component} class
      * @return A ComponentType matching the Component Class
      */
-    public static ComponentType getFor(Class<? extends Component> componentType) {
-        ComponentType type = componentTypes.get(componentType);
+    public static ComponentType getFor(Class<? extends Component> componentClass) {
+        ComponentType type = componentTypes.get(componentClass);
 
         if (type == null) {
             type = new ComponentType();
-            componentTypes.put(componentType, type);
+            componentTypes.put(componentClass, type);
         }
 
         return type;
@@ -40,24 +40,23 @@ public class ComponentType {
     /**
      * Quick helper method.
      *
-     * @param componentType The {@link Component} class
+     * @param componentClass The {@link Component} class
      * @return The index for the specified {@link Component} Class
      */
-    public static int getIndexFor(Class<? extends Component> componentType) {
-        return getFor(componentType).getIndex();
+    public static int getIndexFor(Class<? extends Component> componentClass) {
+        return getFor(componentClass).getIndex();
     }
 
     /**
-     * @param componentTypes list of {@link Component} classes
+     * @param componentClasses list of {@link Component} classes
      * @return Bits representing the collection of components for quick comparison and matching.
      */
     @SafeVarargs
-    public static BitSet getBitsFor(Class<? extends Component>... componentTypes) {
+    public static BitSet getBitsFor(Class<? extends Component>... componentClasses) {
         BitSet bits = new BitSet();
 
-        int typesLength = componentTypes.length;
-        for (int i = 0; i < typesLength; i++) {
-            bits.set(ComponentType.getIndexFor(componentTypes[i]));
+        for (Class<? extends Component> componentClass : componentClasses) {
+            bits.set(ComponentType.getIndexFor(componentClass));
         }
 
         return bits;

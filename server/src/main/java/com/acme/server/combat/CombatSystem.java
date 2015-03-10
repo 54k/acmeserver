@@ -13,7 +13,7 @@ import com.acme.server.packets.outbound.DamagePacket;
 import com.acme.server.packets.outbound.KillPacket;
 import com.acme.server.position.MoveSystem;
 import com.acme.server.position.Transform;
-import com.acme.server.position.PositionNode;
+import com.acme.server.position.TransformNode;
 import com.acme.server.utils.Rnd;
 import com.acme.server.utils.TypeUtils;
 import com.acme.server.world.Position;
@@ -39,7 +39,7 @@ public class CombatSystem extends PassiveSystem {
 
     public void engage(Entity attacker, Entity target) {
         Position targetPosition = target.getComponent(Transform.class).position;
-        moveSystem.teleportTo(attacker.getNode(PositionNode.class), targetPosition);
+        moveSystem.teleportTo(attacker.getNode(TransformNode.class), targetPosition);
         packetSystem.sendToSelfAndRegion(attacker, new AttackPacket(attacker.getId(), target.getId()));
     }
 

@@ -10,16 +10,16 @@ import java.util.Map;
  * directly but must be accessed via a builder ( start with {@code Family.all()}, {@code Family.one()} or {@code Family.exclude()}
  * ), this is to avoid duplicate families that describe the same components.
  */
-public class Family {
+public class Aspect {
 
     private static int familyIndex = 0;
 
-    private static final Map<String, Family> families = new HashMap<>();
+    private static final Map<String, Aspect> families = new HashMap<>();
     // zero bits should goes first for builder
     private static final BitSet zeroBits = new BitSet();
     private static final Builder builder = new Builder();
 
-    public static final Family ALL = Family.all().get();
+    public static final Aspect ALL = Aspect.all().get();
 
     private final BitSet all;
     private final BitSet one;
@@ -29,7 +29,7 @@ public class Family {
     /**
      * Private constructor, use static method Family.getFamilyFor()
      */
-    private Family(BitSet all, BitSet any, BitSet exclude) {
+    private Aspect(BitSet all, BitSet any, BitSet exclude) {
         this.all = all;
         this.one = any;
         this.exclude = exclude;
@@ -80,6 +80,15 @@ public class Family {
     }
 
     /**
+     * @param nodeClasses entities will have to contain all of the specified components.
+     * @return A Builder singleton instance to get a family
+     */
+    @SafeVarargs
+    public static Builder allNodes(Class<? extends Node>... nodeClasses) {
+        return builder.allNodes(nodeClasses);
+    }
+
+    /**
      * @param componentTypes entities will have to contain at least one of the specified components.
      * @return A Builder singleton instance to get a family
      */
@@ -89,12 +98,30 @@ public class Family {
     }
 
     /**
+     * @param nodeClasses entities will have to contain at least one of the specified nodes.
+     * @return A Builder singleton instance to get a family
+     */
+    @SafeVarargs
+    public static Builder oneNodes(Class<? extends Node>... nodeClasses) {
+        return builder.oneNodes(nodeClasses);
+    }
+
+    /**
      * @param componentTypes entities cannot contain any of the specified components.
      * @return A Builder singleton instance to get a family
      */
     @SafeVarargs
     public static Builder exclude(Class<? extends Component>... componentTypes) {
         return builder.exclude(componentTypes);
+    }
+
+    /**
+     * @param nodeClasses entities cannot contain any of the specified nodes.
+     * @return A Builder singleton instance to get a family
+     */
+    @SafeVarargs
+    public static Builder excludeNodes(Class<? extends Node>... nodeClasses) {
+        return builder.excludeNodes(nodeClasses);
     }
 
     public static class Builder {
@@ -115,36 +142,72 @@ public class Family {
         }
 
         /**
-         * @param componentTypes entities will have to contain all of the specified components.
-         * @return A Builder singleton instance to get a family
+         * @param componentClasses entities will have to contain all of the specified components.
          */
         @SafeVarargs
-        public final Builder all(Class<? extends Component>... componentTypes) {
-            BitSet bits = ComponentType.getBitsFor(componentTypes);
+        public final Builder all(Class<? extends Component>... componentClasses) {
+            BitSet bits = ComponentType.getBitsFor(componentClasses);
+            return all(bits);
+        }
+
+        /**
+         * @param nodeClasses entities will have to contain all of the specified nodes.
+         */
+        @SafeVarargs
+        public final Builder allNodes(Class<? extends Node>... nodeClasses) {
+            BitSet bits = NodeFamily.getBitsFor(nodeClasses);
+            return all(bits);
+        }
+
+        Builder all(BitSet bits) {
             bits.or(all);
             all = bits;
             return this;
         }
 
         /**
-         * @param componentTypes entities will have to contain at least one of the specified components.
-         * @return A Builder singleton instance to get a family
+         * @param componentClasses entities will have to contain at least one of the specified components.
          */
         @SafeVarargs
-        public final Builder one(Class<? extends Component>... componentTypes) {
-            BitSet bits = ComponentType.getBitsFor(componentTypes);
+        public final Builder one(Class<? extends Component>... componentClasses) {
+            BitSet bits = ComponentType.getBitsFor(componentClasses);
+            return one(bits);
+        }
+
+        /**
+         * @param nodeClasses entities will have to contain at least one of the specified nodes.
+         */
+        @SafeVarargs
+        public final Builder oneNodes(Class<? extends Node>... nodeClasses) {
+            BitSet bits = NodeFamily.getBitsFor(nodeClasses);
+            return one(bits);
+        }
+
+        Builder one(BitSet bits) {
             bits.or(one);
             one = bits;
             return this;
         }
 
         /**
-         * @param componentTypes entities cannot contain any of the specified components.
-         * @return A Builder singleton instance to get a family
+         * @param componentClasses entities cannot contain any of the specified components.
          */
         @SafeVarargs
-        public final Builder exclude(Class<? extends Component>... componentTypes) {
-            BitSet bits = ComponentType.getBitsFor(componentTypes);
+        public final Builder exclude(Class<? extends Component>... componentClasses) {
+            BitSet bits = ComponentType.getBitsFor(componentClasses);
+            return exclude(bits);
+        }
+
+        /**
+         * @param nodeClasses entities cannot contain any of the specified nodes.
+         */
+        @SafeVarargs
+        public final Builder excludeNodes(Class<? extends Node>... nodeClasses) {
+            BitSet bits = NodeFamily.getBitsFor(nodeClasses);
+            return exclude(bits);
+        }
+
+        Builder exclude(BitSet bits) {
             bits.or(exclude);
             exclude = bits;
             return this;
@@ -153,15 +216,15 @@ public class Family {
         /**
          * @return A family for the configured component types
          */
-        public Family get() {
+        public Aspect get() {
             String hash = getHash(all, one, exclude);
-            Family family = families.get(hash);
-            if (family == null) {
-                family = new Family(all, one, exclude);
-                families.put(hash, family);
+            Aspect aspect = families.get(hash);
+            if (aspect == null) {
+                aspect = new Aspect(all, one, exclude);
+                families.put(hash, aspect);
             }
             reset();
-            return family;
+            return aspect;
         }
     }
 
@@ -181,10 +244,10 @@ public class Family {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Family)) {
+        if (!(obj instanceof Aspect)) {
             return false;
         }
-        Family other = (Family) obj;
+        Aspect other = (Aspect) obj;
         return index == other.index && all.equals(other.all) && one.equals(other.one) && exclude.equals(other.exclude);
     }
 

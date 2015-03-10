@@ -3,7 +3,7 @@ package com.acme.server.position;
 import com.acme.ecs.core.Node;
 import com.acme.server.managers.WorldTransform;
 
-public interface PositionNode extends Node {
+public interface TransformNode extends Node {
 
     Transform getTransform();
 

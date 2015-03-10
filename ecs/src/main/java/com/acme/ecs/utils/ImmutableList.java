@@ -49,12 +49,21 @@ public final class ImmutableList<T> implements Iterable<T> {
     }
 
     @Override
-    public int hashCode() {
-        return wrapped.hashCode();
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ImmutableList that = (ImmutableList) o;
+
+        return wrapped.equals(that.wrapped);
     }
 
     @Override
-    public boolean equals(Object o) {
-        return wrapped.equals(o);
+    public int hashCode() {
+        return wrapped.hashCode();
     }
 }

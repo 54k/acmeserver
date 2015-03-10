@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Wire
 public class LootTableSystem extends PassiveSystem implements CombatListener {
 
-    private static final Family lootTableFamily = Family.all(LootTable.class).get();
+    private static final Aspect LOOT_TABLE_ASPECT = Aspect.all(LootTable.class).get();
 
     private ComponentMapper<WorldTransform> worldCm;
     private ComponentMapper<LootTable> lootTableCm;
@@ -38,7 +38,7 @@ public class LootTableSystem extends PassiveSystem implements CombatListener {
 
     @Override
     public void onEntityKilled(Entity killer, Entity victim) {
-        if (lootTableFamily.matches(victim)) {
+        if (LOOT_TABLE_ASPECT.matches(victim)) {
             dropItemsFrom(victim);
         }
     }

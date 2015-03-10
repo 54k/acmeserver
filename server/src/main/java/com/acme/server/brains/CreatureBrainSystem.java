@@ -9,20 +9,20 @@ import com.acme.server.position.Transform;
 @Wire
 public class CreatureBrainSystem extends BrainSystem implements EntityListener {
 
-    private static final Family creaturesFamily = EntityBuilders.CREATURE_TYPE.getFamily();
+    private static final Aspect CREATURES_ASPECT = EntityBuilders.CREATURE_TYPE.getAspect();
 
     private ComponentMapper<Transform> positionCm;
     private Engine engine;
     private HateListSystem hateListSystem;
 
     public CreatureBrainSystem() {
-        super(creaturesFamily);
+        super(CREATURES_ASPECT);
     }
 
     @Override
     public void addedToEngine(Engine engine) {
         super.addedToEngine(engine);
-        engine.addEntityListener(creaturesFamily, this);
+        engine.addEntityListener(CREATURES_ASPECT, this);
     }
 
     @Override

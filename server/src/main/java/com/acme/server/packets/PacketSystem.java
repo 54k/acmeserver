@@ -1,10 +1,13 @@
 package com.acme.server.packets;
 
+import com.acme.commons.utils.collections.Predicates;
 import com.acme.ecs.core.ComponentMapper;
 import com.acme.ecs.core.Engine;
 import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Aspect;
 import com.acme.ecs.core.Wire;
 import com.acme.commons.network.*;
+import com.acme.server.entities.EntityBuilders;
 import com.acme.server.entities.EntityFactory;
 import com.acme.server.packets.inbound.*;
 import com.acme.server.position.KnownList;
@@ -98,16 +101,17 @@ public class PacketSystem extends NetworkIteratingSystem {
         sendPacket(sender, packet);
         sendToKnownList(sender, packet);
     }
+    private static Aspect playerAspect = EntityBuilders.PLAYER_TYPE.getAspect();
 
     public void sendToKnownList(Entity sender, OutboundPacket packet) {
-        kcm.get(sender).getKnownEntities().getPlayers().forEach(e -> sendPacket(e, packet));
+        kcm.get(sender).getKnownEntities().query(Predicates.aspect(playerAspect)).transform().forEach(e -> sendPacket(e, packet));
     }
 
     public void sendToSelfAndRegion(Entity sender, OutboundPacket packet) {
         sendPacket(sender, packet);
         pcm.get(sender).getRegion()
                 //                .getSurroundingRegions()
-                .getEntities().getPlayers()
+                .getEntities().query(Predicates.aspect(playerAspect))
                 //                .stream().flatMap(r -> r.getPlayers().stream())
                 .forEach(e -> sendPacket(e, packet));
     }

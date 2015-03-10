@@ -2,7 +2,7 @@ package com.acme.server.combat;
 
 import com.acme.ecs.core.ComponentMapper;
 import com.acme.ecs.core.Entity;
-import com.acme.ecs.core.Family;
+import com.acme.ecs.core.Aspect;
 import com.acme.ecs.core.Wire;
 import com.acme.ecs.systems.PassiveSystem;
 import com.acme.server.impacts.InvulImpactSystem;
@@ -12,7 +12,7 @@ import com.acme.server.packets.outbound.HealthPacket;
 @Wire
 public class StatsSystem extends PassiveSystem {
 
-    public static final Family statsFamily = Family.all(Stats.class).get();
+    public static final Aspect STATS_ASPECT = Aspect.all(Stats.class).get();
 
     private ComponentMapper<Stats> statsCm;
     private InvulImpactSystem invulImpactSystem;

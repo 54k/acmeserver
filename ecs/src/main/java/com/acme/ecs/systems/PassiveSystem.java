@@ -4,20 +4,20 @@ import com.acme.ecs.core.*;
 
 public abstract class PassiveSystem extends EntitySystem implements EntityListener {
 
-    private Family family;
+    private Aspect aspect;
 
     public PassiveSystem() {
-        this(Family.ALL);
+        this(Aspect.ALL);
     }
 
-    public PassiveSystem(Family family) {
-        this.family = family;
+    public PassiveSystem(Aspect aspect) {
+        this.aspect = aspect;
         setEnabled(false);
     }
 
     @Override
     public void addedToEngine(Engine engine) {
-        engine.addEntityListener(family, this);
+        engine.addEntityListener(aspect, this);
     }
 
     @Override

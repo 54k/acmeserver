@@ -26,11 +26,11 @@ public class Engine {
     private ImmutableList<EntitySystem> immutableSystems;
     private Map<Class<? extends EntitySystem>, EntitySystem> systemsByClass;
 
-    private Map<Family, List<Entity>> families;
-    private Map<Family, ImmutableList<Entity>> immutableFamilies;
+    private Map<Aspect, List<Entity>> aspects;
+    private Map<Aspect, ImmutableList<Entity>> immutableAspects;
 
     private List<EntityListener> entityListeners;
-    private Map<Family, List<EntityListener>> familyListeners;
+    private Map<Aspect, List<EntityListener>> aspectListeners;
 
     private Map<NodeFamily, List<Node>> nodes;
     private Map<NodeFamily, ImmutableList<Node>> immutableNodes;
@@ -68,10 +68,10 @@ public class Engine {
         immutableSystems = new ImmutableList<>(systems);
         systemsByClass = new HashMap<>();
 
-        families = new HashMap<>();
-        immutableFamilies = new HashMap<>();
+        aspects = new HashMap<>();
+        immutableAspects = new HashMap<>();
         entityListeners = new ArrayList<>(16);
-        familyListeners = new HashMap<>();
+        aspectListeners = new HashMap<>();
 
         nodes = new HashMap<>();
         immutableNodes = new HashMap<>();
@@ -200,14 +200,14 @@ public class Engine {
     }
 
     /**
-     * Returns immutable collection of entities for the specified {@link Family}. Will return the same instance every time
+     * Returns immutable collection of entities for the specified {@link Aspect}. Will return the same instance every time
      */
-    public ImmutableList<Entity> getEntitiesFor(Family family) {
-        return registerFamily(family);
+    public ImmutableList<Entity> getEntitiesFor(Aspect aspect) {
+        return registerFamily(aspect);
     }
 
-    public <T extends Node> ImmutableList<T> getNodesFor(Class<T> node) {
-        return registerNode(NodeFamily.getFor(node));
+    public <T extends Node> ImmutableList<T> getNodesFor(Class<T> nodeClass) {
+        return registerNode(NodeFamily.getFor(nodeClass));
     }
 
     /**
@@ -220,17 +220,17 @@ public class Engine {
     }
 
     /**
-     * Adds an {@link EntityListener} for a specific {@link Family}
+     * Adds an {@link EntityListener} for a specific {@link Aspect}
      * <p>
      * The listener will be notified every time an entities is added/removed to/from the given family
      */
-    public void addEntityListener(Family family, EntityListener listener) {
-        registerFamily(family);
-        List<EntityListener> listeners = familyListeners.get(family);
+    public void addEntityListener(Aspect aspect, EntityListener listener) {
+        registerFamily(aspect);
+        List<EntityListener> listeners = aspectListeners.get(aspect);
 
         if (listeners == null) {
             listeners = new ArrayList<>(16);
-            familyListeners.put(family, listeners);
+            aspectListeners.put(aspect, listeners);
         }
 
         listeners.add(listener);
@@ -241,7 +241,7 @@ public class Engine {
      */
     public void removeEntityListener(EntityListener listener) {
         entityListeners.remove(listener);
-        for (List<EntityListener> familyListenerArray : familyListeners.values()) {
+        for (List<EntityListener> familyListenerArray : aspectListeners.values()) {
             familyListenerArray.remove(listener);
         }
     }
@@ -402,14 +402,14 @@ public class Engine {
         entitiesById.remove(entity.getId());
 
         if (!entity.getFamilyBits().isEmpty()) {
-            for (Entry<Family, List<Entity>> entry : families.entrySet()) {
-                Family family = entry.getKey();
+            for (Entry<Aspect, List<Entity>> entry : aspects.entrySet()) {
+                Aspect aspect = entry.getKey();
                 List<Entity> familyEntities = entry.getValue();
 
-                if (family.matches(entity)) {
+                if (aspect.matches(entity)) {
                     familyEntities.remove(entity);
-                    entity.getFamilyBits().clear(family.getIndex());
-                    notifyFamilyListenersRemove(family, entity);
+                    entity.getFamilyBits().clear(aspect.getIndex());
+                    notifyFamilyListenersRemove(aspect, entity);
                 }
             }
         }
@@ -449,30 +449,30 @@ public class Engine {
     }
 
     private void updateFamilyMembership(Entity entity) {
-        for (Entry<Family, List<Entity>> entry : families.entrySet()) {
-            Family family = entry.getKey();
+        for (Entry<Aspect, List<Entity>> entry : aspects.entrySet()) {
+            Aspect aspect = entry.getKey();
             List<Entity> familyEntities = entry.getValue();
-            int familyIndex = family.getIndex();
+            int familyIndex = aspect.getIndex();
 
             boolean belongsToFamily = entity.getFamilyBits().get(familyIndex);
-            boolean matches = family.matches(entity);
+            boolean matches = aspect.matches(entity);
 
             if (!belongsToFamily && matches) {
                 familyEntities.add(entity);
                 entity.getFamilyBits().set(familyIndex);
 
-                notifyFamilyListenersAdd(family, entity);
+                notifyFamilyListenersAdd(aspect, entity);
             } else if (belongsToFamily && !matches) {
                 familyEntities.remove(entity);
                 entity.getFamilyBits().clear(familyIndex);
 
-                notifyFamilyListenersRemove(family, entity);
+                notifyFamilyListenersRemove(aspect, entity);
             }
         }
     }
 
-    private void notifyFamilyListenersAdd(Family family, Entity entity) {
-        List<EntityListener> listeners = familyListeners.get(family);
+    private void notifyFamilyListenersAdd(Aspect aspect, Entity entity) {
+        List<EntityListener> listeners = aspectListeners.get(aspect);
 
         if (listeners != null) {
             notifying = true;
@@ -483,8 +483,8 @@ public class Engine {
         }
     }
 
-    private void notifyFamilyListenersRemove(Family family, Entity entity) {
-        List<EntityListener> listeners = familyListeners.get(family);
+    private void notifyFamilyListenersRemove(Aspect aspect, Entity entity) {
+        List<EntityListener> listeners = aspectListeners.get(aspect);
 
         if (listeners != null) {
             notifying = true;
@@ -549,19 +549,19 @@ public class Engine {
         }
     }
 
-    private ImmutableList<Entity> registerFamily(Family family) {
-        ImmutableList<Entity> immutableEntities = immutableFamilies.get(family);
+    private ImmutableList<Entity> registerFamily(Aspect aspect) {
+        ImmutableList<Entity> immutableEntities = immutableAspects.get(aspect);
 
         if (immutableEntities == null) {
             List<Entity> familyEntities = new ArrayList<>(16);
             immutableEntities = new ImmutableList<>(familyEntities);
-            families.put(family, familyEntities);
-            immutableFamilies.put(family, immutableEntities);
+            aspects.put(aspect, familyEntities);
+            immutableAspects.put(aspect, immutableEntities);
 
             for (Entity e : entities) {
-                if (family.matches(e)) {
+                if (aspect.matches(e)) {
                     familyEntities.add(e);
-                    e.getFamilyBits().set(family.getIndex());
+                    e.getFamilyBits().set(aspect.getIndex());
                 }
             }
         }

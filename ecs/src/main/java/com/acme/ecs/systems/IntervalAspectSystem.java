@@ -2,26 +2,26 @@ package com.acme.ecs.systems;
 
 import com.acme.ecs.core.Engine;
 import com.acme.ecs.core.Entity;
-import com.acme.ecs.core.Family;
+import com.acme.ecs.core.Aspect;
 import com.acme.ecs.utils.ImmutableList;
 
-public abstract class IntervalFamilySystem extends IntervalSystem {
+public abstract class IntervalAspectSystem extends IntervalSystem {
 
-    private Family family;
+    private Aspect aspect;
     private ImmutableList<Entity> entities;
 
-    public IntervalFamilySystem(Family family, float interval) {
-        this(family, interval, 0);
+    public IntervalAspectSystem(Aspect aspect, float interval) {
+        this(aspect, interval, 0);
     }
 
-    public IntervalFamilySystem(Family family, float interval, int priority) {
+    public IntervalAspectSystem(Aspect aspect, float interval, int priority) {
         super(interval, priority);
-        this.family = family;
+        this.aspect = aspect;
     }
 
     @Override
     public void addedToEngine(Engine engine) {
-        entities = engine.getEntitiesFor(family);
+        entities = engine.getEntitiesFor(aspect);
     }
 
     @Override

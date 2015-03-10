@@ -36,7 +36,7 @@ public class SpawnSystem extends TimerSystem<SpawnPoint> {
 
     @Override
     protected void timerReady(Entity entity, float deltaTime) {
-        if (StatsSystem.statsFamily.matches(entity)) {
+        if (StatsSystem.STATS_ASPECT.matches(entity)) {
             statsSystem.resetHitPoints(entity);
         }
         SpawnPointNode positionNode = worldMapper.get(entity);

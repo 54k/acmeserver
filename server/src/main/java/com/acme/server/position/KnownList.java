@@ -1,41 +1,41 @@
 package com.acme.server.position;
 
+import com.acme.commons.utils.collections.NodeList;
 import com.acme.ecs.core.Component;
-import com.acme.server.utils.EntityContainer;
 
 public class KnownList extends Component {
 
-    public final EntityContainer entityContainer;
-    public int distanceToFindObject;
-    public int distanceToForgetObject;
+    public final NodeList<VisibleNode> visibleNodes;
+    public int distanceToFind;
+    public int distanceToForget;
 
     public KnownList() {
         this(-1, -1);
     }
 
-    public KnownList(int distanceToFindObject, int distanceToForgetObject) {
-        entityContainer = new EntityContainer();
-        this.distanceToFindObject = distanceToFindObject;
-        this.distanceToForgetObject = distanceToForgetObject;
+    public KnownList(int distanceToFind, int distanceToForget) {
+        visibleNodes = new NodeList<>();
+        this.distanceToFind = distanceToFind;
+        this.distanceToForget = distanceToForget;
     }
 
-    public EntityContainer getKnownEntities() {
-        return entityContainer;
+    public NodeList<VisibleNode> getKnownEntities() {
+        return visibleNodes;
     }
 
     public int getDistanceToFindEntity() {
-        return distanceToFindObject;
+        return distanceToFind;
     }
 
-    public void setDistanceToFindObject(int distanceToFindObject) {
-        this.distanceToFindObject = distanceToFindObject;
+    public void setDistanceToFind(int distanceToFind) {
+        this.distanceToFind = distanceToFind;
     }
 
     public int getDistanceToForgetEntity() {
-        return distanceToForgetObject;
+        return distanceToForget;
     }
 
-    public void setDistanceToForgetObject(int distanceToForgetObject) {
-        this.distanceToForgetObject = distanceToForgetObject;
+    public void setDistanceToForget(int distanceToForget) {
+        this.distanceToForget = distanceToForget;
     }
 }

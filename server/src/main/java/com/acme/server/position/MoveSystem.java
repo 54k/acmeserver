@@ -1,15 +1,15 @@
 package com.acme.server.position;
 
+import com.acme.commons.timer.SchedulerSystem;
+import com.acme.commons.utils.promises.Deferred;
+import com.acme.commons.utils.promises.Promise;
+import com.acme.commons.utils.scheduler.PromiseTask;
 import com.acme.ecs.core.Engine;
 import com.acme.ecs.core.Entity;
 import com.acme.ecs.core.Node;
 import com.acme.ecs.core.NodeListener;
 import com.acme.ecs.core.Wire;
 import com.acme.ecs.systems.PassiveSystem;
-import com.acme.commons.utils.promises.Deferred;
-import com.acme.commons.utils.promises.Promise;
-import com.acme.commons.utils.scheduler.PromiseTask;
-import com.acme.commons.timer.SchedulerSystem;
 import com.acme.server.managers.WorldTransform;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.MovePacket;
@@ -26,11 +26,11 @@ public class MoveSystem extends PassiveSystem implements NodeListener {
     @Wire
     private SchedulerSystem schedulerSystem;
 
-    private final Map<PositionNode, MoveTask> scheduledMoves = new HashMap<>();
+    private final Map<TransformNode, MoveTask> scheduledMoves = new HashMap<>();
 
     @Override
     public void addedToEngine(Engine engine) {
-        engine.addNodeListener(PositionNode.class, this);
+        engine.addNodeListener(TransformNode.class, this);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class MoveSystem extends PassiveSystem implements NodeListener {
 
     @Override
     public void nodeRemoved(Node node) {
-        stopMove((PositionNode) node);
+        stopMove((TransformNode) node);
     }
 
     /**
@@ -48,7 +48,7 @@ public class MoveSystem extends PassiveSystem implements NodeListener {
      * @param node     node
      * @param position new position
      */
-    public Promise<PositionNode, PositionNode> moveTo(PositionNode node, Position position) {
+    public Promise<TransformNode, TransformNode> moveTo(TransformNode node, Position position) {
         stopMove(node);
         return submitMoveTask(node, position);
     }
@@ -58,14 +58,14 @@ public class MoveSystem extends PassiveSystem implements NodeListener {
      *
      * @param node node
      */
-    public void stopMove(PositionNode node) {
+    public void stopMove(TransformNode node) {
         MoveTask moveTask = scheduledMoves.remove(node);
         if (moveTask != null) {
             moveTask.cancel();
         }
     }
 
-    private Promise<PositionNode, PositionNode> submitMoveTask(PositionNode node, Position position) {
+    private Promise<TransformNode, TransformNode> submitMoveTask(TransformNode node, Position position) {
         MoveTask moveTask = new MoveTask(node, position);
         moveTask.schedule();
         scheduledMoves.put(node, moveTask);
@@ -79,24 +79,18 @@ public class MoveSystem extends PassiveSystem implements NodeListener {
      * @param node     node
      * @param position new position
      */
-    public void teleportTo(PositionNode node, Position position) {
+    public void teleportTo(TransformNode node, Position position) {
         stopMove(node);
         setPosition(node, position);
     }
 
-    /**
-     * Updates position and region membership of the given node
-     *
-     * @param node     node
-     * @param position new position
-     */
-    private void setPosition(PositionNode node, Position position) {
+    private void setPosition(TransformNode node, Position position) {
         Transform transform = node.getTransform();
         transform.setPosition(position);
         updateRegionMembership(node);
     }
 
-    private void updateRegionMembership(PositionNode node) {
+    private void updateRegionMembership(TransformNode node) {
         Transform transform = node.getTransform();
         WorldTransform worldTransform = node.getWorldTransform();
 
@@ -112,12 +106,12 @@ public class MoveSystem extends PassiveSystem implements NodeListener {
 
     private class MoveTask implements Runnable {
 
-        final PositionNode node;
+        final TransformNode node;
         final Position destination;
         PromiseTask<Void> scheduledTask;
-        Deferred<PositionNode, PositionNode> promise;
+        Deferred<TransformNode, TransformNode> promise;
 
-        MoveTask(PositionNode node, Position destination) {
+        MoveTask(TransformNode node, Position destination) {
             this.node = node;
             this.destination = destination;
         }

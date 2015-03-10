@@ -16,7 +16,7 @@ import com.acme.server.packets.outbound.MovePacket;
 import com.acme.server.position.MoveSystem;
 import com.acme.server.position.SpawnPoint;
 import com.acme.server.position.Transform;
-import com.acme.server.position.PositionNode;
+import com.acme.server.position.TransformNode;
 import com.acme.server.world.Position;
 
 @Wire
@@ -100,7 +100,7 @@ public class GlobalState implements BrainState<Entity>, HateListListener {
 
     private void returnToSpawnPoint(Entity entity) {
         Position spawnPosition = spawnCm.get(entity).getLastSpawnPosition();
-        moveSystem.moveTo(entity.getNode(PositionNode.class), spawnPosition);
+        moveSystem.moveTo(entity.getNode(TransformNode.class), spawnPosition);
     }
 
     private BrainStateMachine<Entity> getBrain(Entity entity) {

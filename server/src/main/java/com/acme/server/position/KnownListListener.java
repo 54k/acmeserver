@@ -1,11 +1,13 @@
 package com.acme.server.position;
 
-import com.acme.ecs.core.Entity;
 import com.acme.ecs.events.EventListener;
 
 public interface KnownListListener extends EventListener {
 
-    void entityAdded(KnownListNode to, Entity entity);
+    void entityAdded(KnownListNode knownListNode, VisibleNode visibleNode);
 
-    void entityRemoved(KnownListNode from, Entity entity);
+    /**
+     * Note that visibleNode's owner entity, could not contain required components.
+     */
+    void entityRemoved(KnownListNode knownListNode, VisibleNode visibleNode);
 }

@@ -10,17 +10,17 @@ import java.util.Map;
 
 public class NodeFamily<T extends Node> {
 
-    private static final Map<Class<? extends Node>, NodeFamily> nodeMappers = new HashMap<>();
+    private static final Map<Class<? extends Node>, NodeFamily> nodeFamilies = new HashMap<>();
     private static int nodeIndex = 0;
 
     private final Class<T> nodeClass;
-    private final BitSet nodeBits;
+    private final BitSet bits;
 
     private final int index;
 
     private NodeFamily(Class<T> nodeClass) {
         this.nodeClass = nodeClass;
-        this.nodeBits = getBitsFor(nodeClass);
+        this.bits = getBitsFor(nodeClass);
         index = nodeIndex++;
     }
 
@@ -28,18 +28,27 @@ public class NodeFamily<T extends Node> {
         BitSet bitSet = new BitSet();
         Iterable<Class<Component>> components = ClassReflection.getComponentsFor(nodeClass);
         for (Class<Component> component : components) {
-            int index = ComponentType.getFor(component).getIndex();
+            int index = ComponentType.getIndexFor(component);
             bitSet.set(index);
+        }
+        return bitSet;
+    }
+
+    @SafeVarargs
+    public static BitSet getBitsFor(Class<? extends Node>... nodeClasses) {
+        BitSet bitSet = new BitSet();
+        for (Class<? extends Node> nodeClass : nodeClasses) {
+            bitSet.or(getFor(nodeClass).bits);
         }
         return bitSet;
     }
 
     @SuppressWarnings("unchecked")
     public static <T extends Node> NodeFamily<T> getFor(Class<T> nodeClass) {
-        NodeFamily<T> nodeFamily = (NodeFamily<T>) nodeMappers.get(nodeClass);
+        NodeFamily<T> nodeFamily = (NodeFamily<T>) nodeFamilies.get(nodeClass);
         if (nodeFamily == null) {
             nodeFamily = new NodeFamily<>(nodeClass);
-            nodeMappers.put(nodeClass, nodeFamily);
+            nodeFamilies.put(nodeClass, nodeFamily);
         }
         return nodeFamily;
     }
@@ -53,7 +62,7 @@ public class NodeFamily<T extends Node> {
     }
 
     public boolean matches(Entity entity) {
-        return entity.getComponentBits().intersects(nodeBits);
+        return entity.getComponentBits().intersects(bits);
     }
 
     @Override

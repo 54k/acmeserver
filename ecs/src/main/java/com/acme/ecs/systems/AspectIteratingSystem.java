@@ -3,37 +3,37 @@ package com.acme.ecs.systems;
 import com.acme.ecs.core.Engine;
 import com.acme.ecs.core.Entity;
 import com.acme.ecs.core.EntitySystem;
-import com.acme.ecs.core.Family;
+import com.acme.ecs.core.Aspect;
 import com.acme.ecs.utils.ImmutableList;
 
-public abstract class FamilyIteratingSystem extends EntitySystem {
+public abstract class AspectIteratingSystem extends EntitySystem {
 
-    private Family family;
+    private Aspect aspect;
     private ImmutableList<Entity> entities;
 
     /**
      * Instantiates a system that will iterate over the entities described by the Family.
      *
-     * @param family The family of entities iterated over in this System
+     * @param aspect The aspect of entities iterated over in this System
      */
-    public FamilyIteratingSystem(Family family) {
-        this(family, 0);
+    public AspectIteratingSystem(Aspect aspect) {
+        this(aspect, 0);
     }
 
     /**
      * Instantiates a system that will iterate over the entities described by the Family, with a specific priority.
      *
-     * @param family   The family of entities iterated over in this System
+     * @param aspect   The aspect of entities iterated over in this System
      * @param priority The priority to execute this system with (lower means higher priority)
      */
-    public FamilyIteratingSystem(Family family, int priority) {
+    public AspectIteratingSystem(Aspect aspect, int priority) {
         super(priority);
-        this.family = family;
+        this.aspect = aspect;
     }
 
     @Override
     public void addedToEngine(Engine engine) {
-        entities = engine.getEntitiesFor(family);
+        entities = engine.getEntitiesFor(aspect);
     }
 
     @Override

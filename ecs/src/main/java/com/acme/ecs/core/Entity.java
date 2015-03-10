@@ -129,9 +129,7 @@ public class Entity {
     }
 
     /**
-     * Retrieve a component from this {@link Entity} by class. <em>Note:</em> the preferred way of retrieving {@link Component}s is
-     * using {@link ComponentMapper}s. This method is provided for convenience; using a ComponentMapper provides O(1) access to
-     * components while this method provides only O(logn).
+     * Retrieves a component from this {@link Entity} by class.
      *
      * @param componentClass the class of the component to be retrieved.
      * @return the instance of the specified {@link Component} attached to this {@link Entity}, or null if no such
@@ -180,12 +178,15 @@ public class Entity {
     }
 
     /**
-     * @return This Entity's {@link Family} bits, describing all the {@link EntitySystem}s it currently is being processed by.
+     * @return This Entity's {@link Aspect} bits, describing all the {@link EntitySystem}s it currently is being processed by.
      */
     BitSet getFamilyBits() {
         return familyBits;
     }
 
+    /**
+     * @return This Entity's {@link NodeFamily} bits, describing all the {@link EntitySystem}s it currently is being processed by.
+     */
     BitSet getNodeBits() {
         return nodeBits;
     }
@@ -253,11 +254,17 @@ public class Entity {
         }
     }
 
+    /**
+     * Retrieves a node from this {@link Entity} by node class.
+     *
+     * @param nodeClass node class
+     * @return created node
+     */
     public <T extends Node> T getNode(Class<T> nodeClass) {
         return NodeFamily.getFor(nodeClass).get(this);
     }
 
-    public boolean matchesNode(Class<? extends Node> nodeClass) {
+    public boolean hasNode(Class<? extends Node> nodeClass) {
         return NodeFamily.getFor(nodeClass).matches(this);
     }
 

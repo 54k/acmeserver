@@ -2,14 +2,14 @@ package com.acme.commons.network;
 
 import com.acme.ecs.core.ComponentMapper;
 import com.acme.ecs.core.Entity;
-import com.acme.ecs.core.Family;
-import com.acme.ecs.systems.FamilyIteratingSystem;
+import com.acme.ecs.core.Aspect;
+import com.acme.ecs.systems.AspectIteratingSystem;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class NetworkIteratingSystem extends FamilyIteratingSystem implements SessionListener {
+public abstract class NetworkIteratingSystem extends AspectIteratingSystem implements SessionListener {
 
     private ComponentMapper<SessionComponent> scm = ComponentMapper.getFor(SessionComponent.class);
 
@@ -17,7 +17,7 @@ public abstract class NetworkIteratingSystem extends FamilyIteratingSystem imple
 
     public NetworkIteratingSystem() {
         //noinspection unchecked
-        super(Family.all(SessionComponent.class).get(), Integer.MAX_VALUE);
+        super(Aspect.all(SessionComponent.class).get(), Integer.MAX_VALUE);
     }
 
     @Override

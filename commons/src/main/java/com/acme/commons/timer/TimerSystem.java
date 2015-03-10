@@ -2,10 +2,10 @@ package com.acme.commons.timer;
 
 import com.acme.ecs.core.ComponentMapper;
 import com.acme.ecs.core.Entity;
-import com.acme.ecs.core.Family;
-import com.acme.ecs.systems.FamilyIteratingSystem;
+import com.acme.ecs.core.Aspect;
+import com.acme.ecs.systems.AspectIteratingSystem;
 
-public abstract class TimerSystem<T extends Timer> extends FamilyIteratingSystem {
+public abstract class TimerSystem<T extends Timer> extends AspectIteratingSystem {
 
     private ComponentMapper<T> timerCm;
 
@@ -14,7 +14,7 @@ public abstract class TimerSystem<T extends Timer> extends FamilyIteratingSystem
     }
 
     public TimerSystem(Class<T> timerClass, int priority) {
-        super(Family.all(timerClass).get(), priority);
+        super(Aspect.all(timerClass).get(), priority);
         timerCm = ComponentMapper.getFor(timerClass);
     }
 

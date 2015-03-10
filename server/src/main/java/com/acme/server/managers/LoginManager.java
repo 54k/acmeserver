@@ -86,8 +86,8 @@ public class LoginManager extends PassiveSystem {
 
     private void spawnPlayer(Entity entity, String name, Position position, int hitPoints) {
         KnownList knownList = kcm.get(entity);
-        knownList.setDistanceToFindObject(100);
-        knownList.setDistanceToForgetObject(100);
+        knownList.setDistanceToFind(100);
+        knownList.setDistanceToForget(100);
 
         if (worldManager.getPlayerById(entity.getId()) == null) {
             worldManager.bringIntoWorld(entity);

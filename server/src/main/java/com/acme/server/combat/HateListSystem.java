@@ -12,7 +12,7 @@ import java.util.Set;
 @Wire
 public class HateListSystem extends PassiveSystem implements CombatListener {
 
-    private static final Family hateListFamily = Family.all(HateList.class).get();
+    private static final Aspect HATE_LIST_ASPECT = Aspect.all(HateList.class).get();
 
     private ComponentMapper<HateList> hateListCm;
     private ImmutableList<Entity> hateOwners;
@@ -20,12 +20,12 @@ public class HateListSystem extends PassiveSystem implements CombatListener {
     @Override
     public void addedToEngine(Engine engine) {
         super.addedToEngine(engine);
-        hateOwners = engine.getEntitiesFor(hateListFamily);
+        hateOwners = engine.getEntitiesFor(HATE_LIST_ASPECT);
     }
 
     @Override
     public void onEntityDamaged(Entity attacker, Entity victim, int damage) {
-        if (hateListFamily.matches(victim)) {
+        if (HATE_LIST_ASPECT.matches(victim)) {
             increaseHate(victim, attacker, damage);
         }
     }
@@ -33,7 +33,7 @@ public class HateListSystem extends PassiveSystem implements CombatListener {
     @Override
     public void onEntityKilled(Entity killer, Entity victim) {
         removeHater(victim);
-        if (hateListFamily.matches(victim)) {
+        if (HATE_LIST_ASPECT.matches(victim)) {
             clearHaters(victim);
         }
     }
