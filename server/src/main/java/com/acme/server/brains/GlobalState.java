@@ -13,7 +13,7 @@ import com.acme.server.combat.HateListSystem;
 import com.acme.server.combat.StatsSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.MovePacket;
-import com.acme.server.position.PositionSystem;
+import com.acme.server.position.MoveSystem;
 import com.acme.server.position.SpawnPoint;
 import com.acme.server.position.Transform;
 import com.acme.server.position.PositionNode;
@@ -28,7 +28,7 @@ public class GlobalState implements BrainState<Entity>, HateListListener {
     private Engine engine;
 
     private StatsSystem statsSystem;
-    private PositionSystem positionSystem;
+    private MoveSystem moveSystem;
     private CombatSystem combatSystem;
     private HateListSystem hateListSystem;
     private PacketSystem packetSystem;
@@ -100,7 +100,7 @@ public class GlobalState implements BrainState<Entity>, HateListListener {
 
     private void returnToSpawnPoint(Entity entity) {
         Position spawnPosition = spawnCm.get(entity).getLastSpawnPosition();
-        positionSystem.moveTo(entity.getNode(PositionNode.class), spawnPosition);
+        moveSystem.moveTo(entity.getNode(PositionNode.class), spawnPosition);
     }
 
     private BrainStateMachine<Entity> getBrain(Entity entity) {

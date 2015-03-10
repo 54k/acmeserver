@@ -1,4 +1,4 @@
-package com.acme.commons.promises;
+package com.acme.commons.utils.promises;
 
 import java.util.ArrayList;
 import java.util.List;

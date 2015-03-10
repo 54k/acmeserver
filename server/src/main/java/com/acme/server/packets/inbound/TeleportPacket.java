@@ -2,7 +2,7 @@ package com.acme.server.packets.inbound;
 
 import com.acme.ecs.core.Wire;
 import com.acme.commons.network.InboundPacket;
-import com.acme.server.position.PositionSystem;
+import com.acme.server.position.MoveSystem;
 import com.acme.server.position.PositionNode;
 import com.acme.server.world.Position;
 
@@ -12,7 +12,7 @@ public class TeleportPacket extends InboundPacket {
     private int x;
     private int y;
 
-    private PositionSystem positionSystem;
+    private MoveSystem moveSystem;
 
     @Override
     public void read() {
@@ -22,6 +22,6 @@ public class TeleportPacket extends InboundPacket {
 
     @Override
     public void run() {
-        positionSystem.teleportTo(getClient().getNode(PositionNode.class), new Position(x, y));
+        moveSystem.teleportTo(getClient().getNode(PositionNode.class), new Position(x, y));
     }
 }

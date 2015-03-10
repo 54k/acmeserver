@@ -2,14 +2,14 @@ package com.acme.server.packets.inbound;
 
 import com.acme.ecs.core.Wire;
 import com.acme.commons.network.InboundPacket;
-import com.acme.server.position.PositionSystem;
+import com.acme.server.position.MoveSystem;
 import com.acme.server.position.PositionNode;
 import com.acme.server.world.Position;
 
 public class LootMovePacket extends InboundPacket {
 
     @Wire
-    private PositionSystem positionSystem;
+    private MoveSystem moveSystem;
 
     private int x;
     private int y;
@@ -24,6 +24,6 @@ public class LootMovePacket extends InboundPacket {
 
     @Override
     public void run() {
-        positionSystem.moveTo(getClient().getNode(PositionNode.class), new Position(x, y));
+        moveSystem.moveTo(getClient().getNode(PositionNode.class), new Position(x, y));
     }
 }

@@ -6,9 +6,9 @@ import com.acme.ecs.core.Node;
 import com.acme.ecs.core.NodeListener;
 import com.acme.ecs.core.Wire;
 import com.acme.ecs.systems.PassiveSystem;
-import com.acme.commons.promises.Deferred;
-import com.acme.commons.promises.Promise;
-import com.acme.commons.timer.PromiseTask;
+import com.acme.commons.utils.promises.Deferred;
+import com.acme.commons.utils.promises.Promise;
+import com.acme.commons.utils.scheduler.PromiseTask;
 import com.acme.commons.timer.SchedulerSystem;
 import com.acme.server.managers.WorldTransform;
 import com.acme.server.packets.PacketSystem;
@@ -19,7 +19,7 @@ import com.acme.server.world.Region;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PositionSystem extends PassiveSystem implements NodeListener {
+public class MoveSystem extends PassiveSystem implements NodeListener {
 
     @Wire
     private PacketSystem packetSystem;

@@ -11,7 +11,7 @@ import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.AttackPacket;
 import com.acme.server.packets.outbound.DamagePacket;
 import com.acme.server.packets.outbound.KillPacket;
-import com.acme.server.position.PositionSystem;
+import com.acme.server.position.MoveSystem;
 import com.acme.server.position.Transform;
 import com.acme.server.position.PositionNode;
 import com.acme.server.utils.Rnd;
@@ -22,7 +22,7 @@ import com.acme.server.world.Position;
 public class CombatSystem extends PassiveSystem {
 
     private ComponentMapper<Combat> combatCm;
-    private PositionSystem positionSystem;
+    private MoveSystem moveSystem;
     private StatsSystem statsSystem;
     private InventorySystem inventorySystem;
     private EntityFactory entityFactory;
@@ -39,7 +39,7 @@ public class CombatSystem extends PassiveSystem {
 
     public void engage(Entity attacker, Entity target) {
         Position targetPosition = target.getComponent(Transform.class).position;
-        positionSystem.teleportTo(attacker.getNode(PositionNode.class), targetPosition);
+        moveSystem.teleportTo(attacker.getNode(PositionNode.class), targetPosition);
         packetSystem.sendToSelfAndRegion(attacker, new AttackPacket(attacker.getId(), target.getId()));
     }
 

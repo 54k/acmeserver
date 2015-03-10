@@ -1,4 +1,4 @@
-package com.acme.commons.timer;
+package com.acme.commons.utils.scheduler;
 
 import com.acme.ecs.utils.Pool;
 
@@ -7,7 +7,7 @@ import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
-public class Scheduler implements Pool.Disposable {
+public class DeltaTimeScheduler implements Pool.Disposable {
 
     private final Queue<DeferredTask<?>> scheduledTasks = new LinkedList<>();
     private final Queue<DeferredTask<?>> tasksToRun = new LinkedList<>();
@@ -28,7 +28,7 @@ public class Scheduler implements Pool.Disposable {
             if (task.age >= task.atAge) {
                 try {
                     Object result = task.task.call();
-                    if (task.period > 0) {
+                    if (task.period > -1) {
                         task.atAge += task.period;
                         scheduledTasks.add(task);
                     } else {
@@ -56,7 +56,7 @@ public class Scheduler implements Pool.Disposable {
     }
 
     public <T> PromiseTask<T> schedule(Callable<T> task, float delay) {
-        DeferredTask<T> t = new DeferredTask<>(task, delay, 0);
+        DeferredTask<T> t = new DeferredTask<>(task, delay, -1);
         scheduledTasks.add(t);
         return t;
     }

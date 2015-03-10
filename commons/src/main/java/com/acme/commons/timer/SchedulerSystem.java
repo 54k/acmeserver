@@ -1,5 +1,7 @@
 package com.acme.commons.timer;
 
+import com.acme.commons.utils.scheduler.PromiseTask;
+import com.acme.commons.utils.scheduler.DeltaTimeScheduler;
 import com.acme.ecs.core.Engine;
 import com.acme.ecs.core.Entity;
 import com.acme.ecs.core.EntityListener;
@@ -12,8 +14,8 @@ import java.util.concurrent.Callable;
 
 public class SchedulerSystem extends EntitySystem implements EntityListener {
 
-    private Scheduler scheduler;
-    private Map<Entity, Scheduler> entitySchedulers;
+    private DeltaTimeScheduler scheduler;
+    private Map<Entity, DeltaTimeScheduler> entitySchedulers;
     private SchedulerPool schedulerPool;
 
     public SchedulerSystem() {
@@ -22,7 +24,7 @@ public class SchedulerSystem extends EntitySystem implements EntityListener {
 
     public SchedulerSystem(int priority) {
         super(priority);
-        scheduler = new Scheduler();
+        scheduler = new DeltaTimeScheduler();
         entitySchedulers = new HashMap<>();
         schedulerPool = new SchedulerPool();
     }
@@ -41,7 +43,7 @@ public class SchedulerSystem extends EntitySystem implements EntityListener {
 
     @Override
     public void entityRemoved(Entity entity) {
-        Scheduler s = entitySchedulers.remove(entity);
+        DeltaTimeScheduler s = entitySchedulers.remove(entity);
         if (s != null) {
             schedulerPool.free(s);
         }
@@ -50,7 +52,7 @@ public class SchedulerSystem extends EntitySystem implements EntityListener {
     @Override
     public void update(float deltaTime) {
         scheduler.update(deltaTime);
-        for (Scheduler s : entitySchedulers.values()) {
+        for (DeltaTimeScheduler s : entitySchedulers.values()) {
             s.update(deltaTime);
         }
     }
@@ -163,8 +165,8 @@ public class SchedulerSystem extends EntitySystem implements EntityListener {
         return getScheduler(entity).schedule(task, delay, period);
     }
 
-    private Scheduler getScheduler(Entity entity) {
-        Scheduler scheduler = entitySchedulers.get(entity);
+    private DeltaTimeScheduler getScheduler(Entity entity) {
+        DeltaTimeScheduler scheduler = entitySchedulers.get(entity);
         if (scheduler == null) {
             scheduler = schedulerPool.newObject();
             entitySchedulers.put(entity, scheduler);
@@ -172,10 +174,10 @@ public class SchedulerSystem extends EntitySystem implements EntityListener {
         return scheduler;
     }
 
-    private static class SchedulerPool extends Pool<Scheduler> {
+    private static class SchedulerPool extends Pool<DeltaTimeScheduler> {
         @Override
-        protected Scheduler newObject() {
-            return new Scheduler();
+        protected DeltaTimeScheduler newObject() {
+            return new DeltaTimeScheduler();
         }
     }
 }

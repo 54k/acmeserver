@@ -1,7 +1,7 @@
-package com.acme.commons.timer;
+package com.acme.commons.utils.scheduler;
 
-import com.acme.commons.promises.Promise;
-import com.acme.commons.promises.PromiseHandler;
+import com.acme.commons.utils.promises.Promise;
+import com.acme.commons.utils.promises.PromiseHandler;
 
 public interface PromiseTask<T> extends Promise<T, Throwable> {
 

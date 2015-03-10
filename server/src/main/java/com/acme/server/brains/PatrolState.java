@@ -5,7 +5,7 @@ import com.acme.ecs.core.Entity;
 import com.acme.ecs.core.Wire;
 import com.acme.commons.brains.BrainState;
 import com.acme.commons.brains.BrainStateMachine;
-import com.acme.server.position.PositionSystem;
+import com.acme.server.position.MoveSystem;
 import com.acme.server.position.SpawnPoint;
 import com.acme.server.position.PositionNode;
 import com.acme.server.utils.PositionUtils;
@@ -20,7 +20,7 @@ public class PatrolState implements BrainState<Entity> {
     private float accumulator;
 
     private ComponentMapper<SpawnPoint> spawnCm;
-    private PositionSystem positionSystem;
+    private MoveSystem moveSystem;
 
     public PatrolState() {
         resetInterval();
@@ -43,7 +43,7 @@ public class PatrolState implements BrainState<Entity> {
     private void moveEntity(Entity entity) {
         Area spawnArea = spawnCm.get(entity).getSpawnArea();
         Position rndPos = PositionUtils.getRandomPositionInside(spawnArea);
-        positionSystem.moveTo(entity.getNode(PositionNode.class), rndPos);
+        moveSystem.moveTo(entity.getNode(PositionNode.class), rndPos);
     }
 
     private void resetInterval() {

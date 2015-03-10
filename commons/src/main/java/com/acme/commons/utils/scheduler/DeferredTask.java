@@ -1,7 +1,7 @@
-package com.acme.commons.timer;
+package com.acme.commons.utils.scheduler;
 
-import com.acme.commons.promises.Deferred;
-import com.acme.commons.promises.PromiseHandler;
+import com.acme.commons.utils.promises.Deferred;
+import com.acme.commons.utils.promises.PromiseHandler;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
