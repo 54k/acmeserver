@@ -6,7 +6,7 @@ import com.acme.commons.utils.promises.PromiseHandler;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 
-class DeferredTask<T> extends Deferred<T, Throwable> implements PromiseTask<T> {
+final class DeferredTask<T> extends Deferred<T, Throwable> implements PromiseTask<T> {
 
     final Callable<T> task;
     float atAge;

@@ -18,11 +18,11 @@ public class DeltaTimeScheduler implements Pool.Disposable {
         scheduledTasks.clear();
         while (!tasksToRun.isEmpty()) {
             DeferredTask task = tasksToRun.poll();
-            executeTask(deltaTime, task);
+            executeTask(task, deltaTime);
         }
     }
 
-    private void executeTask(float deltaTime, DeferredTask<? super Object> task) {
+    private void executeTask(DeferredTask<? super Object> task, float deltaTime) {
         if (!task.cancelled) {
             task.age += deltaTime;
             if (task.age >= task.atAge) {
