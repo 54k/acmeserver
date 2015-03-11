@@ -17,7 +17,6 @@ public class Aspect {
     private static final Map<String, Aspect> families = new HashMap<>();
     // zero bits should goes first for builder
     private static final BitSet zeroBits = new BitSet();
-    private static final Builder builder = new Builder();
 
     public static final Aspect ALL = Aspect.all().get();
 
@@ -76,7 +75,7 @@ public class Aspect {
      */
     @SafeVarargs
     public static Builder all(Class<? extends Component>... componentTypes) {
-        return builder.all(componentTypes);
+        return new Builder().all(componentTypes);
     }
 
     /**
@@ -85,7 +84,7 @@ public class Aspect {
      */
     @SafeVarargs
     public static Builder allNodes(Class<? extends Node>... nodeClasses) {
-        return builder.allNodes(nodeClasses);
+        return new Builder().allNodes(nodeClasses);
     }
 
     /**
@@ -94,7 +93,7 @@ public class Aspect {
      */
     @SafeVarargs
     public static Builder one(Class<? extends Component>... componentTypes) {
-        return builder.one(componentTypes);
+        return new Builder().one(componentTypes);
     }
 
     /**
@@ -103,7 +102,7 @@ public class Aspect {
      */
     @SafeVarargs
     public static Builder oneNodes(Class<? extends Node>... nodeClasses) {
-        return builder.oneNodes(nodeClasses);
+        return new Builder().oneNodes(nodeClasses);
     }
 
     /**
@@ -112,7 +111,7 @@ public class Aspect {
      */
     @SafeVarargs
     public static Builder exclude(Class<? extends Component>... componentTypes) {
-        return builder.exclude(componentTypes);
+        return new Builder().exclude(componentTypes);
     }
 
     /**
@@ -121,7 +120,7 @@ public class Aspect {
      */
     @SafeVarargs
     public static Builder excludeNodes(Class<? extends Node>... nodeClasses) {
-        return builder.excludeNodes(nodeClasses);
+        return new Builder().excludeNodes(nodeClasses);
     }
 
     public static class Builder {
@@ -223,7 +222,6 @@ public class Aspect {
                 aspect = new Aspect(all, one, exclude);
                 families.put(hash, aspect);
             }
-            reset();
             return aspect;
         }
     }
