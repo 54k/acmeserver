@@ -15,9 +15,7 @@ public class Aspect {
     private static int familyIndex = 0;
 
     private static final Map<String, Aspect> families = new HashMap<>();
-    // zero bits should goes first for builder
     private static final BitSet zeroBits = new BitSet();
-
     public static final Aspect ALL = Aspect.all().get();
 
     private final BitSet all;
