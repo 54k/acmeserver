@@ -62,7 +62,13 @@ public class NodeFamily<T extends Node> {
     }
 
     public boolean matches(Entity entity) {
-        return entity.getComponentBits().intersects(bits);
+        BitSet entityComponentBits = entity.getComponentBits();
+        for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i + 1)) {
+            if (!entityComponentBits.get(i)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

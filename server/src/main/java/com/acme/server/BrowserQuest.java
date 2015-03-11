@@ -2,12 +2,12 @@ package com.acme.server;
 
 import com.acme.commons.application.ApplicationAdapter;
 import com.acme.commons.application.Context;
+import com.acme.commons.network.NetworkServer;
+import com.acme.commons.timer.SchedulerSystem;
 import com.acme.ecs.core.Engine;
 import com.acme.ecs.core.Processor;
 import com.acme.ecs.utils.reflection.ClassReflection;
 import com.acme.ecs.utils.reflection.Field;
-import com.acme.commons.network.NetworkServer;
-import com.acme.commons.timer.SchedulerSystem;
 import com.acme.server.brains.CreatureBrainSystem;
 import com.acme.server.combat.CombatSystem;
 import com.acme.server.combat.HateListSystem;
@@ -24,10 +24,10 @@ import com.acme.server.inventory.PickupSystem;
 import com.acme.server.managers.ChatManager;
 import com.acme.server.managers.LoginManager;
 import com.acme.server.managers.SpawnManager;
-import com.acme.server.managers.WorldManager;
+import com.acme.server.model.system.KnownListSystem;
+import com.acme.server.model.system.PositionSystem;
+import com.acme.server.model.system.WorldSystem;
 import com.acme.server.packets.PacketSystem;
-import com.acme.server.position.KnownListSystem;
-import com.acme.server.position.MoveSystem;
 import com.acme.server.position.SpawnSystem;
 import com.acme.server.templates.CreatureTemplate;
 import com.acme.server.templates.WorldTemplate;
@@ -62,7 +62,7 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addSystem(new CreatureBrainSystem());
         engine.addSystem(new KnownListSystem());
 
-        engine.addSystem(new MoveSystem());
+        engine.addSystem(new PositionSystem());
         engine.addSystem(new PickupSystem());
         engine.addSystem(new InventorySystem());
         engine.addSystem(new StatsSystem());
@@ -75,8 +75,8 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.addSystem(new HealImpactSystem());
         engine.addSystem(new InvulImpactSystem());
 
-        WorldManager worldManager = createWorldManager();
-        engine.addSystem(worldManager);
+        WorldSystem worldSystem = createWorldManager();
+        engine.addSystem(worldSystem);
         engine.addSystem(createEntityManager());
         SpawnManager spawnManager = new SpawnManager();
         engine.addSystem(spawnManager);
@@ -86,14 +86,14 @@ public class BrowserQuest extends ApplicationAdapter {
         engine.initialize();
         LOG.info("[Engine initialized]");
 
-        populateWorld(spawnManager, worldManager);
+        populateWorld(spawnManager, worldSystem);
         LOG.info("[World created]");
         startNetworkServer(packetSystem);
         LOG.info("[Server started]");
     }
 
-    private void populateWorld(SpawnManager spawnManager, WorldManager worldManager) {
-        Instance instance = worldManager.getWorld().createInstance(100);
+    private void populateWorld(SpawnManager spawnManager, WorldSystem worldSystem) {
+        Instance instance = worldSystem.getWorld().createInstance(100);
         spawnManager.spawnInstanceEntities(instance);
     }
 
@@ -103,10 +103,10 @@ public class BrowserQuest extends ApplicationAdapter {
         networkServer.bind(8000);
     }
 
-    private WorldManager createWorldManager() {
+    private WorldSystem createWorldManager() {
         try {
             WorldTemplate template = objectMapper.readValue(getResourceAsStream("world.json"), WorldTemplate.class);
-            return new WorldManager(template);
+            return new WorldSystem(template);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

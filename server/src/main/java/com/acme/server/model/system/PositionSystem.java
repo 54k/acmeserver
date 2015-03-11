@@ -1,16 +1,14 @@
-package com.acme.server.position;
+package com.acme.server.model.system;
 
 import com.acme.commons.timer.SchedulerSystem;
 import com.acme.commons.utils.promises.Deferred;
 import com.acme.commons.utils.promises.Promise;
 import com.acme.commons.utils.scheduler.PromiseTask;
-import com.acme.ecs.core.Engine;
-import com.acme.ecs.core.Entity;
-import com.acme.ecs.core.Node;
-import com.acme.ecs.core.NodeListener;
-import com.acme.ecs.core.Wire;
+import com.acme.ecs.core.*;
 import com.acme.ecs.systems.PassiveSystem;
-import com.acme.server.managers.WorldTransform;
+import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.component.WorldComponent;
+import com.acme.server.model.node.TransformNode;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.MovePacket;
 import com.acme.server.world.Position;
@@ -19,7 +17,7 @@ import com.acme.server.world.Region;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MoveSystem extends PassiveSystem implements NodeListener {
+public class PositionSystem extends PassiveSystem implements NodeListener {
 
     @Wire
     private PacketSystem packetSystem;
@@ -85,22 +83,22 @@ public class MoveSystem extends PassiveSystem implements NodeListener {
     }
 
     private void setPosition(TransformNode node, Position position) {
-        Transform transform = node.getTransform();
-        transform.setPosition(position);
+        TransformComponent transform = node.getTransform();
+        transform.position.setPosition(position);
         updateRegionMembership(node);
     }
 
     private void updateRegionMembership(TransformNode node) {
-        Transform transform = node.getTransform();
-        WorldTransform worldTransform = node.getWorldTransform();
+        TransformComponent transform = node.getTransform();
+        WorldComponent worldTransform = node.getWorld();
 
-        Region oldRegion = transform.getRegion();
-        Region newRegion = worldTransform.getInstance().findRegion(transform.getPosition());
+        Region oldRegion = worldTransform.region;
+        Region newRegion = worldTransform.instance.findRegion(transform.position);
 
         if (oldRegion != newRegion) {
             oldRegion.removeEntity(node.getEntity());
             newRegion.addEntity(node.getEntity());
-            transform.setRegion(newRegion);
+            worldTransform.region = newRegion;
         }
     }
 

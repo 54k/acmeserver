@@ -1,16 +1,16 @@
 package com.acme.server.packets.inbound;
 
-import com.acme.ecs.core.Wire;
 import com.acme.commons.network.InboundPacket;
+import com.acme.ecs.core.Wire;
 import com.acme.server.combat.CombatSystem;
-import com.acme.server.managers.WorldManager;
+import com.acme.server.model.system.WorldSystem;
 
 @Wire
 public class HitPacket extends InboundPacket {
 
     private CombatSystem combatSystem;
 
-    private WorldManager worldManager;
+    private WorldSystem worldSystem;
 
     private long targetId;
 
@@ -21,6 +21,6 @@ public class HitPacket extends InboundPacket {
 
     @Override
     public void run() {
-        combatSystem.attack(getClient(), worldManager.getEntityById(targetId));
+        combatSystem.attack(getClient(), worldSystem.getEntityById(targetId));
     }
 }

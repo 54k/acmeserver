@@ -1,17 +1,19 @@
 package com.acme.server.brains;
 
-import com.acme.ecs.core.*;
 import com.acme.commons.brains.BrainSystem;
+import com.acme.ecs.core.*;
 import com.acme.server.combat.HateListSystem;
 import com.acme.server.entities.EntityBuilders;
-import com.acme.server.position.Transform;
+import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.component.WorldComponent;
+import com.acme.server.model.node.WorldNode;
 
 @Wire
 public class CreatureBrainSystem extends BrainSystem implements EntityListener {
 
     private static final Aspect CREATURES_ASPECT = EntityBuilders.CREATURE_TYPE.getAspect();
 
-    private ComponentMapper<Transform> positionCm;
+    private ComponentMapper<TransformComponent> positionCm;
     private Engine engine;
     private HateListSystem hateListSystem;
 
@@ -36,9 +38,10 @@ public class CreatureBrainSystem extends BrainSystem implements EntityListener {
 
     @Override
     protected boolean shouldUpdateBrain(Entity entity, float deltaTime) {
-        Transform transform = positionCm.get(entity);
-        boolean isSpawned = transform.isSpawned();
-        boolean isRegionActive = transform.getRegion().isActive();
+        TransformComponent transform = positionCm.get(entity);
+        WorldComponent world = entity.getNode(WorldNode.class).getWorld();
+        boolean isSpawned = world.spawned;
+        boolean isRegionActive = world.region.isActive();
         return isSpawned && (hateListSystem.hasHaters(entity) || isRegionActive);
     }
 }

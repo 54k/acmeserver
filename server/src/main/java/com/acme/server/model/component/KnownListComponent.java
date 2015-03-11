@@ -1,38 +1,31 @@
-package com.acme.server.position;
+package com.acme.server.model.component;
 
 import com.acme.commons.utils.collections.NodeList;
 import com.acme.ecs.core.Component;
+import com.acme.server.model.node.TransformNode;
 
-public class KnownList extends Component {
+public class KnownListComponent extends Component {
 
-    public final NodeList<VisibleNode> visibleNodes;
+    public final NodeList<TransformNode> knownNodes;
     public int distanceToFind;
     public int distanceToForget;
 
-    public KnownList() {
+    public KnownListComponent() {
         this(-1, -1);
     }
 
-    public KnownList(int distanceToFind, int distanceToForget) {
-        visibleNodes = new NodeList<>();
+    public KnownListComponent(int distanceToFind, int distanceToForget) {
+        knownNodes = new NodeList<>();
         this.distanceToFind = distanceToFind;
         this.distanceToForget = distanceToForget;
     }
 
-    public NodeList<VisibleNode> getKnownEntities() {
-        return visibleNodes;
-    }
-
-    public int getDistanceToFindEntity() {
-        return distanceToFind;
+    public NodeList<TransformNode> getKnownNodes() {
+        return knownNodes;
     }
 
     public void setDistanceToFind(int distanceToFind) {
         this.distanceToFind = distanceToFind;
-    }
-
-    public int getDistanceToForgetEntity() {
-        return distanceToForget;
     }
 
     public void setDistanceToForget(int distanceToForget) {

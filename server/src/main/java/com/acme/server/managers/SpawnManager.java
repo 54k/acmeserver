@@ -7,8 +7,11 @@ import com.acme.ecs.systems.PassiveSystem;
 import com.acme.server.entities.EntityFactory;
 import com.acme.server.entities.Type;
 import com.acme.server.inventory.LootTable;
+import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.component.WorldComponent;
+import com.acme.server.model.node.WorldNode;
+import com.acme.server.model.system.WorldSystem;
 import com.acme.server.position.SpawnPoint;
-import com.acme.server.position.Transform;
 import com.acme.server.templates.RoamingAreaTemplate;
 import com.acme.server.templates.StaticChestTemplate;
 import com.acme.server.world.Area;
@@ -21,12 +24,12 @@ import java.util.stream.Collectors;
 @Wire
 public class SpawnManager extends PassiveSystem {
 
-    private ComponentMapper<WorldTransform> worldCm;
-    private ComponentMapper<Transform> transformCm;
+    private ComponentMapper<WorldComponent> worldCm;
+    private ComponentMapper<TransformComponent> transformCm;
     private ComponentMapper<LootTable> lootTableCm;
 
     private EntityFactory entityFactory;
-    private WorldManager worldManager;
+    private WorldSystem worldSystem;
 
     public void spawnInstanceEntities(Instance instance) {
         spawnCreatures(instance);
@@ -42,15 +45,13 @@ public class SpawnManager extends PassiveSystem {
     private void spawnCreatures(Instance instance, RoamingAreaTemplate roamingAreaTemplate) {
         for (int i = 0; i < roamingAreaTemplate.getNb(); i++) {
             Entity entity = entityFactory.createEntity(roamingAreaTemplate.getType());
-            WorldTransform worldTransform = worldCm.get(entity);
-            worldTransform.setInstance(instance);
             SpawnPoint spawnPointComponent = new SpawnPoint();
             spawnPointComponent.setSpawnArea(new Area(roamingAreaTemplate.getX(),
                     roamingAreaTemplate.getY(),
                     roamingAreaTemplate.getWidth(),
                     roamingAreaTemplate.getHeight()));
             entity.addComponent(spawnPointComponent);
-            worldManager.bringIntoWorld(entity);
+            worldSystem.addToWorld(entity.getNode(WorldNode.class), instance);
         }
     }
 
@@ -61,12 +62,10 @@ public class SpawnManager extends PassiveSystem {
 
     private void spawnStaticObject(Instance instance, Position position, Type type) {
         Entity entity = entityFactory.createEntity(type);
-        WorldTransform worldTransform = worldCm.get(entity);
-        worldTransform.setInstance(instance);
         SpawnPoint spawnPointComponent = new SpawnPoint();
         spawnPointComponent.setSpawnArea(new Area(position.getX(), position.getY(), 0, 0));
         entity.addComponent(spawnPointComponent);
-        worldManager.bringIntoWorld(entity);
+        worldSystem.addToWorld(entity.getNode(WorldNode.class), instance);
     }
 
     private void spawnStaticChests(Instance instance) {
@@ -75,8 +74,6 @@ public class SpawnManager extends PassiveSystem {
 
     private void spawnStaticChest(StaticChestTemplate ct, Instance instance) {
         Entity entity = entityFactory.createEntity(Type.CHEST);
-        WorldTransform worldTransform = worldCm.get(entity);
-        worldTransform.setInstance(instance);
         SpawnPoint spawnPointComponent = new SpawnPoint();
         spawnPointComponent.setSpawnArea(new Area(ct.getX(), ct.getY(), 0, 0));
         entity.addComponent(spawnPointComponent);
@@ -85,6 +82,6 @@ public class SpawnManager extends PassiveSystem {
                 .map(i -> new LootTable.LootEntry(Type.fromId(i), 100))
                 .collect(Collectors.toList());
         lootTable.getLootEntries().addAll(lootEntries);
-        worldManager.bringIntoWorld(entity);
+        worldSystem.addToWorld(entity.getNode(WorldNode.class), instance);
     }
 }

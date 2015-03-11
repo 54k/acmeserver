@@ -1,15 +1,15 @@
 package com.acme.server.packets.outbound;
 
+import com.acme.commons.network.OutboundPacket;
 import com.acme.ecs.core.ComponentMapper;
 import com.acme.ecs.core.Entity;
 import com.acme.ecs.core.Wire;
-import com.acme.commons.network.OutboundPacket;
 import com.acme.server.entities.EntityType;
 import com.acme.server.entities.Type;
 import com.acme.server.inventory.Inventory;
 import com.acme.server.managers.PlayerComponent;
+import com.acme.server.model.component.TransformComponent;
 import com.acme.server.packets.OpCodes;
-import com.acme.server.position.Transform;
 import com.acme.server.utils.TypeUtils;
 
 public class SpawnPacket extends OutboundPacket {
@@ -17,7 +17,7 @@ public class SpawnPacket extends OutboundPacket {
     @Wire
     private ComponentMapper<PlayerComponent> pcm;
     @Wire
-    private ComponentMapper<Transform> poscm;
+    private ComponentMapper<TransformComponent> poscm;
     @Wire
     private ComponentMapper<EntityType> tcm;
     @Wire
@@ -35,19 +35,19 @@ public class SpawnPacket extends OutboundPacket {
         writeLong(entity.getId());
         Type type = tcm.get(entity).getType();
         writeInt(type.getId());
-        Transform transform = poscm.get(entity);
-        writeInt(transform.getX());
-        writeInt(transform.getY());
+        TransformComponent transform = poscm.get(entity);
+        writeInt(transform.position.getX());
+        writeInt(transform.position.getY());
 
         if (TypeUtils.isPlayer(entity)) {
             PlayerComponent playerComponent = pcm.get(entity);
             writeString(playerComponent.getName());
-            writeInt(transform.getOrientation().getValue());
+            writeInt(transform.orientation.getValue());
             Inventory inventory = icm.get(entity);
             writeInt(inventory.getArmor());
             writeInt(inventory.getWeapon());
         } else {
-            writeInt(transform.getOrientation().getValue());
+            writeInt(transform.orientation.getValue());
         }
     }
 }

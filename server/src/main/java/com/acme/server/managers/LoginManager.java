@@ -7,13 +7,17 @@ import com.acme.ecs.core.Wire;
 import com.acme.ecs.systems.PassiveSystem;
 import com.acme.server.combat.StatsSystem;
 import com.acme.server.inventory.Inventory;
+import com.acme.server.model.component.KnownListComponent;
+import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.component.WorldComponent;
+import com.acme.server.model.node.KnownListNode;
+import com.acme.server.model.node.WorldNode;
+import com.acme.server.model.system.KnownListSystem;
+import com.acme.server.model.system.PositionSystem;
+import com.acme.server.model.system.WorldSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.HitPointsPacket;
 import com.acme.server.packets.outbound.WelcomePacket;
-import com.acme.server.position.KnownList;
-import com.acme.server.position.KnownListSystem;
-import com.acme.server.position.MoveSystem;
-import com.acme.server.position.Transform;
 import com.acme.server.utils.PositionUtils;
 import com.acme.server.utils.Rnd;
 import com.acme.server.world.Area;
@@ -28,15 +32,15 @@ public class LoginManager extends PassiveSystem {
 
     private ComponentMapper<Inventory> icm;
     private ComponentMapper<PlayerComponent> pcm;
-    private ComponentMapper<Transform> poscm;
-    private ComponentMapper<WorldTransform> wcm;
-    private ComponentMapper<KnownList> kcm;
+    private ComponentMapper<TransformComponent> poscm;
+    private ComponentMapper<WorldComponent> wcm;
+    private ComponentMapper<KnownListComponent> kcm;
 
     private Context context;
 
-    private MoveSystem moveSystem;
+    private PositionSystem positionSystem;
     private StatsSystem statsSystem;
-    private WorldManager worldManager;
+    private WorldSystem worldSystem;
     private KnownListSystem knownListSystem;
     private PacketSystem packetSystem;
 
@@ -51,19 +55,16 @@ public class LoginManager extends PassiveSystem {
         playerComponent.setName(name);
         playerComponent.setState(PlayerComponent.State.PLAYING);
 
-        Transform transform = poscm.get(entity);
+        TransformComponent transform = poscm.get(entity);
 
-        Collection<Area> startingAreas = worldManager.getWorld().getPlayerStartingAreas().values();
+        Collection<Area> startingAreas = worldSystem.getWorld().getPlayerStartingAreas().values();
         int i = Rnd.between(0, startingAreas.size() - 1);
         Area area = startingAreas.stream().skip(i).findFirst().get();
         Position position = PositionUtils.getRandomPositionInside(area);
         playerComponent.setSpawnArea(area);
-        transform.setPosition(position);
-        transform.setOrientation(Orientation.BOTTOM);
+        transform.position.setPosition(position);
+        transform.orientation = Orientation.BOTTOM;
 
-        WorldTransform worldTransform = wcm.get(entity);
-        Instance instance = worldManager.getAvailableInstance();
-        worldTransform.setInstance(instance);
 
         Inventory inventory = icm.get(entity);
         inventory.setWeapon(weapon);
@@ -78,21 +79,24 @@ public class LoginManager extends PassiveSystem {
         PlayerComponent playerComponent = pcm.get(entity);
         Area spawnArea = playerComponent.getSpawnArea();
         Position position = PositionUtils.getRandomPositionInside(spawnArea);
-        poscm.get(entity).setPosition(position);
+        poscm.get(entity).position.setPosition(position);
         statsSystem.resetHitPoints(entity);
-        knownListSystem.clearKnownList(entity);
+        knownListSystem.clearKnownList(entity.getNode(KnownListNode.class));
         context.schedule(() -> spawnPlayer(entity, playerComponent.getName(), position, statsSystem.getMaxHitPoints(entity)));
     }
 
     private void spawnPlayer(Entity entity, String name, Position position, int hitPoints) {
-        KnownList knownList = kcm.get(entity);
+        KnownListComponent knownList = kcm.get(entity);
         knownList.setDistanceToFind(100);
         knownList.setDistanceToForget(100);
 
-        if (worldManager.getPlayerById(entity.getId()) == null) {
-            worldManager.bringIntoWorld(entity);
+        WorldComponent worldTransform = wcm.get(entity);
+        Instance instance = worldSystem.getAvailableInstance();
+
+        if (worldSystem.getPlayerById(entity.getId()) == null) {
+            worldSystem.addToWorld(entity.getNode(WorldNode.class), instance);
         }
-        worldManager.spawn(entity);
+        worldSystem.spawn(entity.getNode(WorldNode.class));
         WelcomePacket welcomePacket = new WelcomePacket(entity.getId(), name, position.getX(), position.getY(), 0);
         packetSystem.sendPacket(entity, welcomePacket);
         packetSystem.sendPacket(entity, new HitPointsPacket(hitPoints));

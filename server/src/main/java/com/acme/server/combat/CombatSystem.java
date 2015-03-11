@@ -6,14 +6,15 @@ import com.acme.ecs.core.Wire;
 import com.acme.ecs.systems.PassiveSystem;
 import com.acme.server.entities.EntityFactory;
 import com.acme.server.inventory.InventorySystem;
-import com.acme.server.managers.WorldManager;
+import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.node.TransformNode;
+import com.acme.server.model.node.WorldNode;
+import com.acme.server.model.system.PositionSystem;
+import com.acme.server.model.system.WorldSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.AttackPacket;
 import com.acme.server.packets.outbound.DamagePacket;
 import com.acme.server.packets.outbound.KillPacket;
-import com.acme.server.position.MoveSystem;
-import com.acme.server.position.Transform;
-import com.acme.server.position.TransformNode;
 import com.acme.server.utils.Rnd;
 import com.acme.server.utils.TypeUtils;
 import com.acme.server.world.Position;
@@ -22,11 +23,11 @@ import com.acme.server.world.Position;
 public class CombatSystem extends PassiveSystem {
 
     private ComponentMapper<Combat> combatCm;
-    private MoveSystem moveSystem;
+    private PositionSystem positionSystem;
     private StatsSystem statsSystem;
     private InventorySystem inventorySystem;
     private EntityFactory entityFactory;
-    private WorldManager worldManager;
+    private WorldSystem worldSystem;
     private PacketSystem packetSystem;
 
     public void setTarget(Entity entity, Entity target) {
@@ -38,8 +39,8 @@ public class CombatSystem extends PassiveSystem {
     }
 
     public void engage(Entity attacker, Entity target) {
-        Position targetPosition = target.getComponent(Transform.class).position;
-        moveSystem.teleportTo(attacker.getNode(TransformNode.class), targetPosition);
+        Position targetPosition = target.getComponent(TransformComponent.class).position;
+        positionSystem.teleportTo(attacker.getNode(TransformNode.class), targetPosition);
         packetSystem.sendToSelfAndRegion(attacker, new AttackPacket(attacker.getId(), target.getId()));
     }
 
@@ -50,7 +51,7 @@ public class CombatSystem extends PassiveSystem {
         if (statsSystem.isDead(target)) {
             event(CombatListener.class).dispatch().onEntityKilled(attacker, target);
             setTarget(target, null);
-            worldManager.decay(target);
+            worldSystem.decay(target.getNode(WorldNode.class));
             packetSystem.sendPacket(attacker, new KillPacket(entityFactory.getType(target)));
         }
     }

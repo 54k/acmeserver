@@ -6,10 +6,10 @@ import com.acme.ecs.core.Entity;
 import com.acme.ecs.core.Wire;
 import com.acme.server.combat.CombatSystem;
 import com.acme.server.combat.HateListSystem;
+import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.node.TransformNode;
+import com.acme.server.model.system.PositionSystem;
 import com.acme.server.packets.PacketSystem;
-import com.acme.server.position.MoveSystem;
-import com.acme.server.position.Transform;
-import com.acme.server.position.TransformNode;
 import com.acme.server.world.Position;
 
 @Wire
@@ -17,7 +17,7 @@ public class CombatState implements BrainState<Entity> {
 
     private CombatSystem combatSystem;
     private HateListSystem hateListSystem;
-    private MoveSystem moveSystem;
+    private PositionSystem positionSystem;
     private PacketSystem packetSystem;
 
     @Override
@@ -38,8 +38,8 @@ public class CombatState implements BrainState<Entity> {
             combatSystem.setTarget(owner, mostHated);
             combatSystem.engage(owner, mostHated);
         } else {
-            Position targetPosition = target.getComponent(Transform.class).position;
-            moveSystem.teleportTo(owner.getNode(TransformNode.class), targetPosition);
+            Position targetPosition = target.getComponent(TransformComponent.class).position;
+            positionSystem.teleportTo(owner.getNode(TransformNode.class), targetPosition);
         }
     }
 

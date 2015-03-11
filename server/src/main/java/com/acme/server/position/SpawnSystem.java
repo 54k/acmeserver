@@ -1,11 +1,12 @@
 package com.acme.server.position;
 
+import com.acme.commons.timer.TimerSystem;
 import com.acme.ecs.core.Entity;
 import com.acme.ecs.core.NodeFamily;
 import com.acme.ecs.core.Wire;
-import com.acme.commons.timer.TimerSystem;
 import com.acme.server.combat.StatsSystem;
-import com.acme.server.managers.WorldManager;
+import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.system.WorldSystem;
 import com.acme.server.utils.PositionUtils;
 import com.acme.server.utils.Rnd;
 import com.acme.server.world.Area;
@@ -23,7 +24,7 @@ public class SpawnSystem extends TimerSystem<SpawnPoint> {
     @Wire
     private StatsSystem statsSystem;
     @Wire
-    private WorldManager worldManager;
+    private WorldSystem worldSystem;
 
     public SpawnSystem() {
         super(SpawnPoint.class);
@@ -40,16 +41,16 @@ public class SpawnSystem extends TimerSystem<SpawnPoint> {
             statsSystem.resetHitPoints(entity);
         }
         SpawnPointNode positionNode = worldMapper.get(entity);
-        Transform transform = positionNode.getTransform();
+        TransformComponent transform = positionNode.getTransform();
         int randomOrientation = Rnd.between(0, Orientation.values().length - 1);
         transform.setOrientation(Orientation.values()[randomOrientation]);
         SpawnPoint spawnPointComponent = positionNode.getSpawn();
-        Instance instance = positionNode.getWorldTransform().getInstance();
+        Instance instance = positionNode.getWorld().getInstance();
         Position spawnPosition = getRandomSpawnPosition(spawnPointComponent.getSpawnArea(), instance);
         spawnPointComponent.setLastSpawnPosition(spawnPosition);
         transform.setPosition(spawnPosition);
         spawnPointComponent.refreshTimer();
-        worldManager.spawn(entity);
+        worldSystem.spawn(entity);
     }
 
     private Position getRandomSpawnPosition(Area area, Instance instance) {

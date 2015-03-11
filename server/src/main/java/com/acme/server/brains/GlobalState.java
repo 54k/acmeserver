@@ -1,22 +1,22 @@
 package com.acme.server.brains;
 
+import com.acme.commons.brains.Brain;
+import com.acme.commons.brains.BrainState;
+import com.acme.commons.brains.BrainStateMachine;
 import com.acme.ecs.core.ComponentMapper;
 import com.acme.ecs.core.Engine;
 import com.acme.ecs.core.Entity;
 import com.acme.ecs.core.Wire;
-import com.acme.commons.brains.Brain;
-import com.acme.commons.brains.BrainState;
-import com.acme.commons.brains.BrainStateMachine;
 import com.acme.server.combat.CombatSystem;
 import com.acme.server.combat.HateListListener;
 import com.acme.server.combat.HateListSystem;
 import com.acme.server.combat.StatsSystem;
+import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.node.TransformNode;
+import com.acme.server.model.system.PositionSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.MovePacket;
-import com.acme.server.position.MoveSystem;
 import com.acme.server.position.SpawnPoint;
-import com.acme.server.position.Transform;
-import com.acme.server.position.TransformNode;
 import com.acme.server.world.Position;
 
 @Wire
@@ -28,7 +28,7 @@ public class GlobalState implements BrainState<Entity>, HateListListener {
     private Engine engine;
 
     private StatsSystem statsSystem;
-    private MoveSystem moveSystem;
+    private PositionSystem positionSystem;
     private CombatSystem combatSystem;
     private HateListSystem hateListSystem;
     private PacketSystem packetSystem;
@@ -59,7 +59,7 @@ public class GlobalState implements BrainState<Entity>, HateListListener {
     }
 
     private boolean isToFarAwayFromSpawn(Entity entity) {
-        Position position = entity.getComponent(Transform.class).position;
+        Position position = entity.getComponent(TransformComponent.class).position;
         // TODO this should go into spawn manager
         Position spawnPosition = spawnCm.get(entity).getLastSpawnPosition();
 
@@ -100,7 +100,7 @@ public class GlobalState implements BrainState<Entity>, HateListListener {
 
     private void returnToSpawnPoint(Entity entity) {
         Position spawnPosition = spawnCm.get(entity).getLastSpawnPosition();
-        moveSystem.moveTo(entity.getNode(TransformNode.class), spawnPosition);
+        positionSystem.moveTo(entity.getNode(TransformNode.class), spawnPosition);
     }
 
     private BrainStateMachine<Entity> getBrain(Entity entity) {

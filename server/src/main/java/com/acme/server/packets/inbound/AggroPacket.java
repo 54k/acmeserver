@@ -1,9 +1,9 @@
 package com.acme.server.packets.inbound;
 
-import com.acme.ecs.core.Wire;
 import com.acme.commons.network.InboundPacket;
+import com.acme.ecs.core.Wire;
 import com.acme.server.combat.HateListSystem;
-import com.acme.server.managers.WorldManager;
+import com.acme.server.model.system.WorldSystem;
 
 @Wire
 public class AggroPacket extends InboundPacket {
@@ -12,7 +12,7 @@ public class AggroPacket extends InboundPacket {
 
     private HateListSystem hateListSystem;
 
-    private WorldManager worldManager;
+    private WorldSystem worldSystem;
 
     @Override
     public void read() {
@@ -21,6 +21,6 @@ public class AggroPacket extends InboundPacket {
 
     @Override
     public void run() {
-        hateListSystem.increaseHate(worldManager.getEntityById(creatureId), getClient(), 5);
+        hateListSystem.increaseHate(worldSystem.getEntityById(creatureId), getClient(), 5);
     }
 }

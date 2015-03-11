@@ -9,7 +9,8 @@ import com.acme.server.entities.EntityFactory;
 import com.acme.server.entities.Type;
 import com.acme.server.impacts.HealImpact;
 import com.acme.server.impacts.InvulImpact;
-import com.acme.server.managers.WorldManager;
+import com.acme.server.model.node.WorldNode;
+import com.acme.server.model.system.WorldSystem;
 
 @Wire
 public class PickupSystem extends PassiveSystem {
@@ -21,7 +22,7 @@ public class PickupSystem extends PassiveSystem {
     private LootTableSystem drop;
 
     private EntityFactory entityFactory;
-    private WorldManager worldManager;
+    private WorldSystem worldSystem;
 
     public void gatherPickup(Entity entity, Entity item) {
         Pickup pickup = pickupCm.get(item);
@@ -45,12 +46,12 @@ public class PickupSystem extends PassiveSystem {
                 break;
         }
         if (shouldDecayPickup) {
-            worldManager.decay(item);
+            worldSystem.decay(item.getNode(WorldNode.class));
         }
     }
 
     public void openChest(Entity chest) {
         drop.dropItemsFrom(chest);
-        worldManager.decay(chest);
+        worldSystem.decay(chest.getNode(WorldNode.class));
     }
 }

@@ -3,12 +3,13 @@ package com.acme.server.items;
 import com.acme.ecs.core.Entity;
 import com.acme.ecs.core.Wire;
 import com.acme.server.impacts.HealImpact;
-import com.acme.server.managers.WorldManager;
+import com.acme.server.model.node.WorldNode;
+import com.acme.server.model.system.WorldSystem;
 
-@Wire
 public class HealthPotionHandler implements ConsumableHandler {
 
-    private WorldManager worldManager;
+    @Wire
+    private WorldSystem worldSystem;
 
     private int healthAmount;
 
@@ -19,6 +20,6 @@ public class HealthPotionHandler implements ConsumableHandler {
     @Override
     public void consume(Entity consumer, Entity consumable) {
         consumer.addComponent(new HealImpact(healthAmount / 5, 5, 500));
-        worldManager.decay(consumable);
+        worldSystem.decay(consumable.getNode(WorldNode.class));
     }
 }
