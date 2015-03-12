@@ -3,7 +3,7 @@ package com.acme.server.packets.inbound;
 import com.acme.commons.network.InboundPacket;
 import com.acme.ecs.core.Wire;
 import com.acme.server.combat.HateListSystem;
-import com.acme.server.model.system.WorldSystem;
+import com.acme.server.model.system.passive.WorldSystem;
 
 @Wire
 public class AggroPacket extends InboundPacket {

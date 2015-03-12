@@ -5,11 +5,7 @@ import com.acme.server.model.node.WorldNode;
 
 public interface WorldListener extends EventListener {
 
-    void onWorldNodeAdded(WorldNode worldNode);
+	void onWorldNodeAdded(WorldNode node);
 
-    void onWorldNodeRemoved(WorldNode worldNode);
-
-    void onWorldNodeSpawned(WorldNode worldNode);
-
-    void onWorldNodeDecayed(WorldNode worldNode);
+	void onWorldNodeRemoved(WorldNode node);
 }

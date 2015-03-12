@@ -3,7 +3,7 @@ package com.acme.server.packets.inbound;
 import com.acme.commons.network.InboundPacket;
 import com.acme.ecs.core.Wire;
 import com.acme.server.inventory.PickupSystem;
-import com.acme.server.model.system.WorldSystem;
+import com.acme.server.model.system.passive.WorldSystem;
 
 @Wire
 public class LootPacket extends InboundPacket {

@@ -7,10 +7,12 @@ import com.acme.server.combat.CombatListener;
 import com.acme.server.entities.EntityFactory;
 import com.acme.server.impacts.BlinkImpact;
 import com.acme.server.inventory.LootTable.LootEntry;
-import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.component.PositionComponent;
 import com.acme.server.model.component.WorldComponent;
+import com.acme.server.model.node.PositionNode;
 import com.acme.server.model.node.WorldNode;
-import com.acme.server.model.system.WorldSystem;
+import com.acme.server.model.system.passive.PositionSystem;
+import com.acme.server.model.system.passive.WorldSystem;
 import com.acme.server.utils.PositionUtils;
 import com.acme.server.utils.Rnd;
 import com.acme.server.world.Area;
@@ -27,12 +29,13 @@ public class LootTableSystem extends PassiveSystem implements CombatListener {
 
     private ComponentMapper<WorldComponent> worldCm;
     private ComponentMapper<LootTable> lootTableCm;
-    private ComponentMapper<TransformComponent> transformCm;
+    private ComponentMapper<PositionComponent> transformCm;
 
     private Engine engine;
     private SchedulerSystem schedulerSystem;
     private EntityFactory entityFactory;
     private WorldSystem worldSystem;
+	private PositionSystem positionSystem;
 
     @Override
     public void onEntityDamaged(Entity attacker, Entity victim, int damage) {
@@ -49,7 +52,7 @@ public class LootTableSystem extends PassiveSystem implements CombatListener {
         List<LootEntry> lootEntries = getSucceedDrops(entity);
 
         WorldComponent worldTransform = worldCm.get(entity);
-        TransformComponent transform = transformCm.get(entity);
+        PositionComponent transform = transformCm.get(entity);
         Area dropArea = new Area(transform.position.getX() - 1, transform.position.getY() - 1, 2, 2);
 
         for (LootEntry lootEntry : lootEntries) {
@@ -78,7 +81,7 @@ public class LootTableSystem extends PassiveSystem implements CombatListener {
 
     private void scheduleDecay0(Entity entity) {
         schedulerSystem.scheduleForEntity(entity, () -> {
-            worldSystem.decay(entity.getNode(WorldNode.class));
+            positionSystem.decay(entity.getNode(PositionNode.class));
             worldSystem.removeFromWorld(entity.getNode(WorldNode.class));
             engine.removeEntity(entity);
         }, 3000);
@@ -87,7 +90,7 @@ public class LootTableSystem extends PassiveSystem implements CombatListener {
     private void spawnDrop(Entity entity, Instance instance) {
         schedulerSystem.scheduleForEntity(entity, () -> {
             worldSystem.addToWorld(entity.getNode(WorldNode.class), instance);
-            worldSystem.spawn(entity.getNode(WorldNode.class));
+            positionSystem.spawn(entity.getNode(PositionNode.class));
             return entity;
         }).done(this::scheduleDecay);
     }

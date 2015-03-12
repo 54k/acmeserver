@@ -4,7 +4,7 @@ import com.acme.commons.network.InboundPacket;
 import com.acme.ecs.core.ComponentMapper;
 import com.acme.ecs.core.Wire;
 import com.acme.server.managers.PlayerComponent;
-import com.acme.server.model.system.WorldSystem;
+import com.acme.server.model.system.passive.WorldSystem;
 import com.acme.server.world.Area;
 
 @Wire

@@ -13,7 +13,7 @@ import com.acme.server.items.Consumable;
 import com.acme.server.items.Weapon;
 import com.acme.server.managers.PlayerComponent;
 import com.acme.server.model.component.KnownListComponent;
-import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.component.PositionComponent;
 import com.acme.server.model.component.WorldComponent;
 
 public final class EntityBuilders {
@@ -23,7 +23,7 @@ public final class EntityBuilders {
     public static final EntityBuilder BASE_TYPE = new EntityBuilder();
 
     static {
-        BASE_TYPE.add(TransformComponent.class);
+        BASE_TYPE.add(PositionComponent.class);
         BASE_TYPE.add(WorldComponent.class);
         BASE_TYPE.add(EntityType.class);
     }

@@ -2,7 +2,7 @@ package com.acme.server.utils;
 
 import com.acme.ecs.core.ComponentMapper;
 import com.acme.ecs.core.Entity;
-import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.component.PositionComponent;
 import com.acme.server.world.Area;
 import com.acme.server.world.Position;
 
@@ -10,7 +10,7 @@ import java.util.Random;
 
 public final class PositionUtils {
 
-    private static ComponentMapper<TransformComponent> pcm = ComponentMapper.getFor(TransformComponent.class);
+    private static ComponentMapper<PositionComponent> pcm = ComponentMapper.getFor(PositionComponent.class);
 
     private PositionUtils() {
     }

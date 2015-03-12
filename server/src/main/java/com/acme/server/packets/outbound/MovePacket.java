@@ -4,26 +4,26 @@ import com.acme.commons.network.OutboundPacket;
 import com.acme.ecs.core.ComponentMapper;
 import com.acme.ecs.core.Entity;
 import com.acme.ecs.core.Wire;
-import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.component.PositionComponent;
 import com.acme.server.packets.OpCodes;
 
 @Wire
 public class MovePacket extends OutboundPacket {
 
-    private ComponentMapper<TransformComponent> pcm;
+	private ComponentMapper<PositionComponent> pcm;
 
-    private Entity entity;
+	private Entity entity;
 
-    public MovePacket(Entity entity) {
-        this.entity = entity;
-    }
+	public MovePacket(Entity entity) {
+		this.entity = entity;
+	}
 
-    @Override
-    public void write() {
-        writeInt(OpCodes.MOVE);
-        writeLong(entity.getId());
-        TransformComponent transform = pcm.get(entity);
-        writeInt(transform.getX());
-        writeInt(transform.getY());
-    }
+	@Override
+	public void write() {
+		writeInt(OpCodes.MOVE);
+		writeLong(entity.getId());
+		PositionComponent transform = pcm.get(entity);
+		writeInt(transform.position.getX());
+		writeInt(transform.position.getY());
+	}
 }

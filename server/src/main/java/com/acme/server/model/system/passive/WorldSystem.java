@@ -1,4 +1,4 @@
-package com.acme.server.model.system;
+package com.acme.server.model.system.passive;
 
 import com.acme.commons.network.SessionComponent;
 import com.acme.commons.timer.SchedulerSystem;
@@ -107,28 +107,6 @@ public class WorldSystem extends PassiveSystem implements NodeListener {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Spawns the given node
-     *
-     * @param worldNode node
-     */
-    public void spawn(WorldNode worldNode) {
-        WorldComponent world = worldNode.getWorld();
-        world.spawned = true;
-        event(WorldListener.class).dispatch().onWorldNodeSpawned(worldNode);
-    }
-
-    /**
-     * Decays the given node
-     *
-     * @param worldNode node
-     */
-    public void decay(WorldNode worldNode) {
-        WorldComponent world = worldNode.getWorld();
-        world.spawned = false;
-        event(WorldListener.class).dispatch().onWorldNodeDecayed(worldNode);
     }
 
     private void broadcastPopulation() {

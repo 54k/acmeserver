@@ -2,11 +2,11 @@ package com.acme.server.model.component;
 
 import com.acme.commons.utils.collections.NodeList;
 import com.acme.ecs.core.Component;
-import com.acme.server.model.node.TransformNode;
+import com.acme.server.model.node.PositionNode;
 
 public class KnownListComponent extends Component {
 
-    public final NodeList<TransformNode> knownNodes;
+    public final NodeList<PositionNode> knownNodes;
     public int distanceToFind;
     public int distanceToForget;
 
@@ -20,7 +20,7 @@ public class KnownListComponent extends Component {
         this.distanceToForget = distanceToForget;
     }
 
-    public NodeList<TransformNode> getKnownNodes() {
+    public NodeList<PositionNode> getKnownNodes() {
         return knownNodes;
     }
 

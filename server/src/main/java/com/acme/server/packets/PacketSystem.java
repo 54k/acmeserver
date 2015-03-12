@@ -6,7 +6,8 @@ import com.acme.ecs.core.*;
 import com.acme.server.entities.EntityBuilders;
 import com.acme.server.entities.EntityFactory;
 import com.acme.server.model.component.KnownListComponent;
-import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.component.PositionComponent;
+import com.acme.server.model.node.PositionNode;
 import com.acme.server.model.node.WorldNode;
 import com.acme.server.packets.inbound.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,7 +20,7 @@ public class PacketSystem extends NetworkIteratingSystem {
 
     private ComponentMapper<SessionComponent> scm;
     private ComponentMapper<KnownListComponent> kcm;
-    private ComponentMapper<TransformComponent> pcm;
+    private ComponentMapper<PositionComponent> pcm;
 
     private Engine engine;
     private EntityFactory entityFactory;
@@ -107,7 +108,7 @@ public class PacketSystem extends NetworkIteratingSystem {
 
     public void sendToSelfAndRegion(Entity sender, OutboundPacket packet) {
         sendPacket(sender, packet);
-        sender.getNode(WorldNode.class).getWorld()
+        sender.getNode(PositionNode.class).getPosition()
                 .region
                         //                .getSurroundingRegions()
                 .getEntities().query(Predicates.aspect(playerAspect))

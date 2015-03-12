@@ -7,6 +7,4 @@ import com.acme.server.world.Region;
 public class WorldComponent extends Component {
 
     public Instance instance;
-    public Region region;
-    public boolean spawned;
 }

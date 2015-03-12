@@ -2,8 +2,8 @@ package com.acme.server.packets.inbound;
 
 import com.acme.commons.network.InboundPacket;
 import com.acme.ecs.core.Wire;
-import com.acme.server.model.node.TransformNode;
-import com.acme.server.model.system.PositionSystem;
+import com.acme.server.model.node.PositionNode;
+import com.acme.server.model.system.passive.PositionSystem;
 import com.acme.server.world.Position;
 
 @Wire
@@ -22,6 +22,6 @@ public class TeleportPacket extends InboundPacket {
 
     @Override
     public void run() {
-        positionSystem.teleportTo(getClient().getNode(TransformNode.class), new Position(x, y));
+        positionSystem.teleportTo(getClient().getNode(PositionNode.class), new Position(x, y));
     }
 }

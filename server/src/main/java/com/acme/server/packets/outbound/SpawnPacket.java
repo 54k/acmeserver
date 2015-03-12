@@ -8,7 +8,7 @@ import com.acme.server.entities.EntityType;
 import com.acme.server.entities.Type;
 import com.acme.server.inventory.Inventory;
 import com.acme.server.managers.PlayerComponent;
-import com.acme.server.model.component.TransformComponent;
+import com.acme.server.model.component.PositionComponent;
 import com.acme.server.packets.OpCodes;
 import com.acme.server.utils.TypeUtils;
 
@@ -17,7 +17,7 @@ public class SpawnPacket extends OutboundPacket {
     @Wire
     private ComponentMapper<PlayerComponent> pcm;
     @Wire
-    private ComponentMapper<TransformComponent> poscm;
+    private ComponentMapper<PositionComponent> poscm;
     @Wire
     private ComponentMapper<EntityType> tcm;
     @Wire
@@ -35,7 +35,7 @@ public class SpawnPacket extends OutboundPacket {
         writeLong(entity.getId());
         Type type = tcm.get(entity).getType();
         writeInt(type.getId());
-        TransformComponent transform = poscm.get(entity);
+        PositionComponent transform = poscm.get(entity);
         writeInt(transform.position.getX());
         writeInt(transform.position.getY());
 
