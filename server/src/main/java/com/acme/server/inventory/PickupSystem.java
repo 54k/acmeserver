@@ -10,8 +10,7 @@ import com.acme.server.entities.Type;
 import com.acme.server.impacts.HealImpact;
 import com.acme.server.impacts.InvulImpact;
 import com.acme.server.model.node.PositionNode;
-import com.acme.server.model.node.WorldNode;
-import com.acme.server.model.system.passive.PositionSystem;
+import com.acme.server.model.system.active.PositionSystem;
 import com.acme.server.model.system.passive.WorldSystem;
 
 @Wire

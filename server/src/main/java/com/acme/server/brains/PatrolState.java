@@ -6,7 +6,7 @@ import com.acme.ecs.core.ComponentMapper;
 import com.acme.ecs.core.Entity;
 import com.acme.ecs.core.Wire;
 import com.acme.server.model.node.PositionNode;
-import com.acme.server.model.system.passive.PositionSystem;
+import com.acme.server.model.system.active.PositionSystem;
 import com.acme.server.model.component.SpawnComponent;
 import com.acme.server.utils.PositionUtils;
 import com.acme.server.utils.Rnd;

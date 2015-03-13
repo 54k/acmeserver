@@ -14,7 +14,7 @@ import com.acme.server.model.node.KnownListNode;
 import com.acme.server.model.node.PositionNode;
 import com.acme.server.model.node.WorldNode;
 import com.acme.server.model.system.active.KnownListSystem;
-import com.acme.server.model.system.passive.PositionSystem;
+import com.acme.server.model.system.active.PositionSystem;
 import com.acme.server.model.system.passive.WorldSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.packets.outbound.HitPointsPacket;

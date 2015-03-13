@@ -25,7 +25,7 @@ import com.acme.server.managers.ChatManager;
 import com.acme.server.managers.LoginManager;
 import com.acme.server.model.system.passive.WorldSpawnerSystem;
 import com.acme.server.model.system.active.KnownListSystem;
-import com.acme.server.model.system.passive.PositionSystem;
+import com.acme.server.model.system.active.PositionSystem;
 import com.acme.server.model.system.passive.WorldSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.model.system.active.SpawnSystem;

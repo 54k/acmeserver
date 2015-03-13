@@ -1,4 +1,4 @@
-package com.acme.server.model.system.passive;
+package com.acme.server.model.system.active;
 
 import com.acme.commons.timer.SchedulerSystem;
 import com.acme.commons.utils.promises.Deferred;
@@ -9,7 +9,7 @@ import com.acme.ecs.core.Entity;
 import com.acme.ecs.core.Node;
 import com.acme.ecs.core.NodeListener;
 import com.acme.ecs.core.Wire;
-import com.acme.ecs.systems.PassiveSystem;
+import com.acme.ecs.systems.NodeIteratingSystem;
 import com.acme.server.model.component.PositionComponent;
 import com.acme.server.model.component.WorldComponent;
 import com.acme.server.model.event.PositionListener;
@@ -22,7 +22,7 @@ import com.acme.server.world.Region;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PositionSystem extends PassiveSystem implements NodeListener {
+public class PositionSystem extends NodeIteratingSystem<PositionNode> implements NodeListener {
 
 	@Wire
 	private SchedulerSystem schedulerSystem;
@@ -31,8 +31,13 @@ public class PositionSystem extends PassiveSystem implements NodeListener {
 
 	private final Map<PositionNode, MoveTask> scheduledMoves = new HashMap<>();
 
+	public PositionSystem() {
+		super(PositionNode.class);
+	}
+
 	@Override
 	public void addedToEngine(Engine engine) {
+		super.addedToEngine(engine);
 		engine.addNodeListener(PositionNode.class, this);
 	}
 
@@ -43,6 +48,11 @@ public class PositionSystem extends PassiveSystem implements NodeListener {
 	@Override
 	public void nodeRemoved(Node node) {
 		stopMove((PositionNode) node);
+	}
+
+	@Override
+	protected void processNode(PositionNode node, float deltaTime) {
+		updateRegionMembership(node);
 	}
 
 	/**

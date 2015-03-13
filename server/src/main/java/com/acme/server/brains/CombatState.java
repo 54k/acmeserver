@@ -8,7 +8,7 @@ import com.acme.server.combat.CombatSystem;
 import com.acme.server.combat.HateListSystem;
 import com.acme.server.model.component.PositionComponent;
 import com.acme.server.model.node.PositionNode;
-import com.acme.server.model.system.passive.PositionSystem;
+import com.acme.server.model.system.active.PositionSystem;
 import com.acme.server.packets.PacketSystem;
 import com.acme.server.world.Position;
 

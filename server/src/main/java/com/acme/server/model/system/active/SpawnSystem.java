@@ -9,8 +9,6 @@ import com.acme.server.model.component.PositionComponent;
 import com.acme.server.model.component.WorldComponent;
 import com.acme.server.model.node.PositionNode;
 import com.acme.server.model.node.SpawnNode;
-import com.acme.server.model.node.WorldNode;
-import com.acme.server.model.system.passive.PositionSystem;
 import com.acme.server.model.system.passive.WorldSystem;
 import com.acme.server.utils.PositionUtils;
 import com.acme.server.utils.Rnd;

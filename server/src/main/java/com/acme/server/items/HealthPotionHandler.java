@@ -5,7 +5,7 @@ import com.acme.ecs.core.Wire;
 import com.acme.server.impacts.HealImpact;
 import com.acme.server.model.node.PositionNode;
 import com.acme.server.model.node.WorldNode;
-import com.acme.server.model.system.passive.PositionSystem;
+import com.acme.server.model.system.active.PositionSystem;
 import com.acme.server.model.system.passive.WorldSystem;
 
 public class HealthPotionHandler implements ConsumableHandler {
