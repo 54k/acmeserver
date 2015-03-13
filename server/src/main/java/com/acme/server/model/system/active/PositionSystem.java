@@ -34,7 +34,6 @@ public class PositionSystem extends PassiveSystem implements NodeListener {
 
 	@Override
 	public void addedToEngine(Engine engine) {
-		super.addedToEngine(engine);
 		engine.addNodeListener(PositionNode.class, this);
 	}
 
