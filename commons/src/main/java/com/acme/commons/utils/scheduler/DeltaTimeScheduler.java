@@ -9,68 +9,107 @@ import java.util.concurrent.Executors;
 
 public class DeltaTimeScheduler implements Pool.Disposable {
 
-    private final Queue<DeferredTask<?>> scheduledTasks = new LinkedList<>();
-    private final Queue<DeferredTask<?>> tasksToRun = new LinkedList<>();
+	private final Queue<DeferredTask<?>> scheduledTasks = new LinkedList<>();
+	private final Queue<DeferredTask<?>> tasksToRun = new LinkedList<>();
 
-    @SuppressWarnings("unchecked")
-    public void update(float deltaTime) {
-        tasksToRun.addAll(scheduledTasks);
-        scheduledTasks.clear();
-        while (!tasksToRun.isEmpty()) {
-            DeferredTask task = tasksToRun.poll();
-            executeTask(task, deltaTime);
-        }
-    }
+	@SuppressWarnings("unchecked")
+	public void update(float deltaTime) {
+		tasksToRun.addAll(scheduledTasks);
+		scheduledTasks.clear();
+		while (!tasksToRun.isEmpty()) {
+			DeferredTask task = tasksToRun.poll();
+			execute(task, deltaTime);
+		}
+	}
 
-    private void executeTask(DeferredTask<? super Object> task, float deltaTime) {
-        if (!task.cancelled) {
-            task.age += deltaTime;
-            if (task.age >= task.atAge) {
-                try {
-                    Object result = task.task.call();
-                    if (task.period > -1) {
-                        task.atAge += task.period;
-                        scheduledTasks.add(task);
-                    } else {
-                        task.resolve(result);
-                    }
-                } catch (Throwable t) {
-                    task.reject(t);
-                }
-            } else {
-                scheduledTasks.add(task);
-            }
-        }
-    }
+	private void execute(DeferredTask<? super Object> task, float deltaTime) {
+		if (task.cancelled) {
+			return;
+		}
 
-    public PromiseTask<Void> schedule(Runnable task) {
-        return schedule(task, 0);
-    }
+		task.age += deltaTime;
+		if (task.age < task.atAge) {
+			scheduledTasks.add(task);
+			return;
+		}
 
-    public <T> PromiseTask<T> schedule(Callable<T> task) {
-        return schedule(task, 0);
-    }
+		try {
+			Object result = task.task.call();
+			if (task.period > -1) {
+				task.atAge += task.period;
+				scheduledTasks.add(task);
+			} else {
+				task.resolve(result);
+			}
+		} catch (Throwable t) {
+			task.reject(t);
+		}
+	}
 
-    public PromiseTask<Void> schedule(Runnable task, float delay) {
-        return schedule(Executors.callable(task, null), delay);
-    }
+	/**
+	 * Submits the given task with no delay.
+	 *
+	 * @param task task
+	 */
+	public PromiseTask<Void> schedule(Runnable task) {
+		return schedule(task, 0);
+	}
 
-    public <T> PromiseTask<T> schedule(Callable<T> task, float delay) {
-        DeferredTask<T> t = new DeferredTask<>(task, delay, -1);
-        scheduledTasks.add(t);
-        return t;
-    }
+	/**
+	 * Submits the given task with no delay.
+	 *
+	 * @param task task
+	 */
+	public <T> PromiseTask<T> schedule(Callable<T> task) {
+		return schedule(task, 0);
+	}
 
-    public PromiseTask<Void> schedule(Runnable task, float delay, float period) {
-        DeferredTask<Void> t = new DeferredTask<>(Executors.callable(task, null), delay, period);
-        scheduledTasks.add(t);
-        return t;
-    }
+	/**
+	 * Submits the given task with the given delay.
+	 *
+	 * @param task  task
+	 * @param delay delay
+	 */
+	public PromiseTask<Void> schedule(Runnable task, float delay) {
+		return schedule(Executors.callable(task, null), delay);
+	}
 
-    @Override
-    public void dispose() {
-        while (!scheduledTasks.isEmpty()) {
-            scheduledTasks.poll().cancel();
-        }
-    }
+	/**
+	 * Submits the given task with the given delay.
+	 *
+	 * @param task  task
+	 * @param delay delay
+	 */
+	public <T> PromiseTask<T> schedule(Callable<T> task, float delay) {
+		DeferredTask<T> t = new DeferredTask<>(task, delay, -1);
+		scheduledTasks.add(t);
+		return t;
+	}
+
+	/**
+	 * Submits the given task with the given delay and period.
+	 *
+	 * @param task   task
+	 * @param delay  delay
+	 * @param period period
+	 */
+	public PromiseTask<Void> schedule(Runnable task, float delay, float period) {
+		DeferredTask<Void> t = new DeferredTask<>(Executors.callable(task, null), delay, period);
+		scheduledTasks.add(t);
+		return t;
+	}
+
+	/**
+	 * Clears task queue, all remaining tasks will be cancelled
+	 */
+	public void clear() {
+		while (!scheduledTasks.isEmpty()) {
+			scheduledTasks.poll().cancel();
+		}
+	}
+
+	@Override
+	public void dispose() {
+		clear();
+	}
 }
