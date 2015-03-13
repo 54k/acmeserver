@@ -1,4 +1,4 @@
-package com.acme.commons.utils.promises;
+package com.acme.commons.utils.promise;
 
 enum PromiseStatus {
     PENDING,

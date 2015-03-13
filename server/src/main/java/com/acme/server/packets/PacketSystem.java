@@ -1,14 +1,13 @@
 package com.acme.server.packets;
 
 import com.acme.commons.network.*;
-import com.acme.commons.utils.collections.Predicates;
+import com.acme.commons.collections.Predicates;
 import com.acme.ecs.core.*;
 import com.acme.server.entities.EntityBuilders;
 import com.acme.server.entities.EntityFactory;
 import com.acme.server.model.component.KnownListComponent;
 import com.acme.server.model.component.PositionComponent;
 import com.acme.server.model.node.PositionNode;
-import com.acme.server.model.node.WorldNode;
 import com.acme.server.packets.inbound.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

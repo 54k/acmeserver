@@ -1,6 +1,6 @@
 package com.acme.server.model.component;
 
-import com.acme.commons.utils.collections.NodeList;
+import com.acme.commons.collections.NodeList;
 import com.acme.ecs.core.Component;
 import com.acme.server.model.node.PositionNode;
 

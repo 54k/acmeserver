@@ -1,13 +1,11 @@
 package com.acme.commons.utils.scheduler;
 
-import com.acme.ecs.utils.Pool;
-
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
-public class DeltaTimeScheduler implements Pool.Disposable {
+public class DeltaTimeScheduler {
 
 	private final Queue<DeferredTask<?>> scheduledTasks = new LinkedList<>();
 	private final Queue<DeferredTask<?>> tasksToRun = new LinkedList<>();
@@ -106,10 +104,5 @@ public class DeltaTimeScheduler implements Pool.Disposable {
 		while (!scheduledTasks.isEmpty()) {
 			scheduledTasks.poll().cancel();
 		}
-	}
-
-	@Override
-	public void dispose() {
-		clear();
 	}
 }

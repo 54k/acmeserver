@@ -1,6 +1,6 @@
 package com.acme.server.world;
 
-import com.acme.commons.utils.collections.EntityList;
+import com.acme.commons.collections.EntityList;
 import com.acme.commons.utils.quadtree.QuadTree;
 import com.acme.ecs.core.Entity;
 import com.acme.server.utils.EntityContainer;

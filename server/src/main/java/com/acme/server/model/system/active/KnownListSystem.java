@@ -1,7 +1,7 @@
 package com.acme.server.model.system.active;
 
 import com.acme.commons.network.SessionComponent;
-import com.acme.commons.utils.collections.NodeList;
+import com.acme.commons.collections.NodeList;
 import com.acme.ecs.core.Wire;
 import com.acme.ecs.systems.NodeIteratingSystem;
 import com.acme.server.model.event.KnownListListener;

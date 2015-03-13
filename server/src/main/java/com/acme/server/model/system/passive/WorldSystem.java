@@ -2,8 +2,8 @@ package com.acme.server.model.system.passive;
 
 import com.acme.commons.network.SessionComponent;
 import com.acme.commons.timer.SchedulerSystem;
-import com.acme.commons.utils.collections.NodeList;
-import com.acme.commons.utils.collections.Predicates;
+import com.acme.commons.collections.NodeList;
+import com.acme.commons.collections.Predicates;
 import com.acme.ecs.core.*;
 import com.acme.ecs.systems.PassiveSystem;
 import com.acme.server.model.component.WorldComponent;

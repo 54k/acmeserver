@@ -1,7 +1,7 @@
 package com.acme.commons.utils.scheduler;
 
-import com.acme.commons.utils.promises.Deferred;
-import com.acme.commons.utils.promises.PromiseHandler;
+import com.acme.commons.utils.promise.Deferred;
+import com.acme.commons.utils.promise.PromiseHandler;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;

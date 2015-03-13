@@ -1,7 +1,7 @@
 package com.acme.server.utils;
 
-import com.acme.commons.utils.collections.EntityList;
-import com.acme.commons.utils.collections.Predicates;
+import com.acme.commons.collections.EntityList;
+import com.acme.commons.collections.Predicates;
 import com.acme.ecs.core.Aspect;
 import com.acme.ecs.core.Entity;
 import com.acme.server.entities.EntityBuilders;

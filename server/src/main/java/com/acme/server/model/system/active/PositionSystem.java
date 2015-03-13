@@ -1,8 +1,8 @@
 package com.acme.server.model.system.active;
 
 import com.acme.commons.timer.SchedulerSystem;
-import com.acme.commons.utils.promises.Deferred;
-import com.acme.commons.utils.promises.Promise;
+import com.acme.commons.utils.promise.Deferred;
+import com.acme.commons.utils.promise.Promise;
 import com.acme.commons.utils.scheduler.PromiseTask;
 import com.acme.ecs.core.Engine;
 import com.acme.ecs.core.Entity;

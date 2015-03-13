@@ -1,4 +1,4 @@
-package com.acme.commons.utils.collections;
+package com.acme.commons.collections;
 
 import com.acme.ecs.core.Aspect;
 import com.acme.ecs.core.Entity;
