@@ -7,40 +7,20 @@ import java.util.concurrent.Executors;
 
 public class DeltaTimeScheduler {
 
-	private final Queue<DeferredTask<?>> scheduledTasks = new LinkedList<>();
+	private final Queue<DeferredTask<?>> taskQueue = new LinkedList<>();
 	private final Queue<DeferredTask<?>> tasksToRun = new LinkedList<>();
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Updates this scheduler
+	 *
+	 * @param deltaTime time delta since last update
+	 */
 	public void update(float deltaTime) {
-		tasksToRun.addAll(scheduledTasks);
-		scheduledTasks.clear();
+		tasksToRun.addAll(taskQueue);
+		taskQueue.clear();
+
 		while (!tasksToRun.isEmpty()) {
-			DeferredTask task = tasksToRun.poll();
-			execute(task, deltaTime);
-		}
-	}
-
-	private void execute(DeferredTask<? super Object> task, float deltaTime) {
-		if (task.cancelled) {
-			return;
-		}
-
-		task.age += deltaTime;
-		if (task.age < task.atAge) {
-			scheduledTasks.add(task);
-			return;
-		}
-
-		try {
-			Object result = task.task.call();
-			if (task.period > -1) {
-				task.atAge += task.period;
-				scheduledTasks.add(task);
-			} else {
-				task.resolve(result);
-			}
-		} catch (Throwable t) {
-			task.reject(t);
+			tasksToRun.poll().run(deltaTime);
 		}
 	}
 
@@ -79,9 +59,7 @@ public class DeltaTimeScheduler {
 	 * @param delay delay
 	 */
 	public <T> PromiseTask<T> schedule(Callable<T> task, float delay) {
-		DeferredTask<T> t = new DeferredTask<>(task, delay, -1);
-		scheduledTasks.add(t);
-		return t;
+		return submitTask(task, delay, -1);
 	}
 
 	/**
@@ -92,8 +70,12 @@ public class DeltaTimeScheduler {
 	 * @param period period
 	 */
 	public PromiseTask<Void> schedule(Runnable task, float delay, float period) {
-		DeferredTask<Void> t = new DeferredTask<>(Executors.callable(task, null), delay, period);
-		scheduledTasks.add(t);
+		return submitTask(Executors.callable(task, null), delay, period);
+	}
+
+	private <T> PromiseTask<T> submitTask(Callable<T> task, float delay, float period) {
+		DeferredTask<T> t = new DeferredTask<>(task, delay, period, taskQueue);
+		taskQueue.add(t);
 		return t;
 	}
 
@@ -101,8 +83,8 @@ public class DeltaTimeScheduler {
 	 * Clears task queue, all remaining tasks will be cancelled
 	 */
 	public void clear() {
-		while (!scheduledTasks.isEmpty()) {
-			scheduledTasks.poll().cancel();
+		while (!taskQueue.isEmpty()) {
+			taskQueue.poll().cancel();
 		}
 	}
 }
