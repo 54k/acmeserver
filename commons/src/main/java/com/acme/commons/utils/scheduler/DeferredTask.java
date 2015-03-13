@@ -49,14 +49,14 @@ final class DeferredTask<T> extends Deferred<T, Throwable> implements PromiseTas
 	}
 
 	@Override
-	public PromiseTask<T> done(PromiseHandler<T> resolve) {
-		super.done(resolve);
+	public PromiseTask<T> done(PromiseHandler<T> resolveHandler) {
+		super.done(resolveHandler);
 		return this;
 	}
 
 	@Override
-	public PromiseTask<T> fail(PromiseHandler<Throwable> reject) {
-		super.fail(reject);
+	public PromiseTask<T> fail(PromiseHandler<Throwable> rejectHandler) {
+		super.fail(rejectHandler);
 		return this;
 	}
 

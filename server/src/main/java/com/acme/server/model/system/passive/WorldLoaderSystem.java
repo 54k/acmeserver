@@ -21,7 +21,7 @@ import com.acme.server.world.World;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WorldSpawnerSystem extends PassiveSystem {
+public class WorldLoaderSystem extends PassiveSystem {
 
 	@Wire
 	private ComponentMapper<WorldComponent> worldCm;
@@ -35,11 +35,11 @@ public class WorldSpawnerSystem extends PassiveSystem {
 	@Wire
 	private WorldSystem worldSystem;
 
-	public void spawnWorldEntities(World world) {
-		world.getInstances().values().forEach(this::spawnInstanceEntities);
+	public void loadWorldEntities(World world) {
+		world.getInstances().values().forEach(this::loadInstanceEntities);
 	}
 
-	public void spawnInstanceEntities(Instance instance) {
+	public void loadInstanceEntities(Instance instance) {
 		spawnCreatures(instance);
 		spawnStaticObjects(instance);
 		spawnStaticChests(instance);

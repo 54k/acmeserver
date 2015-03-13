@@ -23,7 +23,7 @@ import com.acme.server.inventory.LootTableSystem;
 import com.acme.server.inventory.PickupSystem;
 import com.acme.server.managers.ChatManager;
 import com.acme.server.managers.LoginManager;
-import com.acme.server.model.system.passive.WorldSpawnerSystem;
+import com.acme.server.model.system.passive.WorldLoaderSystem;
 import com.acme.server.model.system.active.KnownListSystem;
 import com.acme.server.model.system.active.PositionSystem;
 import com.acme.server.model.system.passive.WorldSystem;
@@ -78,24 +78,24 @@ public class BrowserQuest extends ApplicationAdapter {
 		WorldSystem worldSystem = createWorldManager();
 		engine.addSystem(worldSystem);
 		engine.addSystem(createEntityManager());
-		WorldSpawnerSystem worldSpawnerSystem = new WorldSpawnerSystem();
-		engine.addSystem(worldSpawnerSystem);
+		WorldLoaderSystem worldLoaderSystem = new WorldLoaderSystem();
+		engine.addSystem(worldLoaderSystem);
 		engine.addSystem(new LoginManager());
 		engine.addSystem(new ChatManager());
 
 		engine.initialize();
 		LOG.info("[Engine initialized]");
 
-		populateWorld(worldSpawnerSystem, worldSystem);
+		populateWorld(worldLoaderSystem, worldSystem);
 		LOG.info("[World created]");
 		startNetworkServer(packetSystem);
 		LOG.info("[Server started]");
 	}
 
-	private void populateWorld(WorldSpawnerSystem worldSpawnerSystem, WorldSystem worldSystem) {
+	private void populateWorld(WorldLoaderSystem worldLoaderSystem, WorldSystem worldSystem) {
 		World world = worldSystem.getWorld();
 		world.createInstance(100);
-		worldSpawnerSystem.spawnWorldEntities(world);
+		worldLoaderSystem.loadWorldEntities(world);
 	}
 
 	private void startNetworkServer(PacketSystem packetSystem) {

@@ -102,7 +102,7 @@ public class PacketSystem extends NetworkIteratingSystem {
     private static Aspect playerAspect = EntityBuilders.PLAYER_TYPE.getAspect();
 
     public void sendToKnownList(Entity sender, OutboundPacket packet) {
-        kcm.get(sender).getKnownNodes().query(Predicates.aspect(playerAspect)).transform().forEach(e -> sendPacket(e, packet));
+        kcm.get(sender).knownNodes.query(Predicates.aspect(playerAspect)).transform().forEach(e -> sendPacket(e, packet));
     }
 
     public void sendToSelfAndRegion(Entity sender, OutboundPacket packet) {

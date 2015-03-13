@@ -14,11 +14,11 @@ abstract class AbstractPromise<D, F> implements Promise<D, F> {
     protected F rejectReason;
 
     @Override
-    public Promise<D, F> done(PromiseHandler<D> resolve) {
+    public Promise<D, F> done(PromiseHandler<D> resolveHandler) {
         if (isResolved()) {
-            notifyResolved(resolve);
+            notifyResolved(resolveHandler);
         } else if (isPending()) {
-            resolveListeners.add(resolve);
+            resolveListeners.add(resolveHandler);
         }
         return this;
     }
@@ -35,11 +35,11 @@ abstract class AbstractPromise<D, F> implements Promise<D, F> {
     }
 
     @Override
-    public Promise<D, F> fail(PromiseHandler<F> reject) {
+    public Promise<D, F> fail(PromiseHandler<F> rejectHandler) {
         if (isRejected()) {
-            notifyRejected(reject);
+            notifyRejected(rejectHandler);
         } else if (isPending()) {
-            rejectListeners.add(reject);
+            rejectListeners.add(rejectHandler);
         }
         return this;
     }
@@ -56,8 +56,8 @@ abstract class AbstractPromise<D, F> implements Promise<D, F> {
     }
 
     @Override
-    public Promise<D, F> then(PromiseHandler<D> resolve, PromiseHandler<F> reject) {
-        return done(resolve).fail(reject);
+    public Promise<D, F> then(PromiseHandler<D> resolveHandler, PromiseHandler<F> rejectHandler) {
+        return done(resolveHandler).fail(rejectHandler);
     }
 
     @Override
