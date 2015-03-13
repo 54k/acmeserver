@@ -7,23 +7,23 @@ import java.util.Map;
 
 public final class StateMachine<T> {
 
-	private final T owner;
+	private final T context;
 	private final Map<Class<? extends State>, State<T>> statesByClass;
 	private final Deque<State<T>> statesStack;
 
 	private State<T> globalState;
 	private State<T> currentState;
 
-	public StateMachine(T owner) {
-		this(owner, null);
+	public StateMachine(T context) {
+		this(context, null);
 	}
 
-	public StateMachine(T owner, State<T> initialState) {
-		this(owner, initialState, null);
+	public StateMachine(T context, State<T> initialState) {
+		this(context, initialState, null);
 	}
 
-	public StateMachine(T owner, State<T> initialState, State<T> globalState) {
-		this.owner = owner;
+	public StateMachine(T context, State<T> initialState, State<T> globalState) {
+		this.context = context;
 		setGlobalState(globalState);
 		changeState(initialState);
 
@@ -31,25 +31,40 @@ public final class StateMachine<T> {
 		statesStack = new LinkedList<>();
 	}
 
-	public T getOwner() {
-		return owner;
+	/**
+	 * @return this state machine's context
+	 */
+	public T getContext() {
+		return context;
 	}
 
+	/**
+	 * Adds the given state to this state machine
+	 *
+	 * @param state state
+	 * @return this state machine for chaining
+	 */
 	public StateMachine<T> addState(State<T> state) {
 		statesByClass.put(state.getClass(), state);
 		return this;
 	}
 
+	/**
+	 * Pushes the given state to this states stack
+	 *
+	 * @param stateClass state type stored in this state machine
+	 * @return this state machine for chaining
+	 */
 	public StateMachine<T> pushState(Class<? extends State<T>> stateClass) {
 		State<T> state = getState(stateClass);
 		return pushState(state);
 	}
 
 	/**
-	 * Pushes state
+	 * Pushes the given state to this states stack
 	 *
-	 * @param state
-	 * @return
+	 * @param state state
+	 * @return this state machine for chaining
 	 */
 	public StateMachine<T> pushState(State<T> state) {
 		if (state == currentState) {
@@ -147,5 +162,12 @@ public final class StateMachine<T> {
 		currentState = null;
 		statesStack.clear();
 		statesByClass.clear();
+	}
+
+	// TODO null checks
+	public void pushMessage(Object message) {
+		if (!currentState.handleMessage(message)) {
+			globalState.handleMessage(message);
+		}
 	}
 }
