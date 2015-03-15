@@ -24,7 +24,7 @@ public final class StateMachine<T> {
 
     public StateMachine(T context, State<T> initialState, State<T> globalState) {
         this.context = context;
-        setGlobalState(globalState);
+        changeGlobalState(globalState);
         changeState(initialState);
 
         statesByClass = new HashMap<>();
@@ -50,6 +50,24 @@ public final class StateMachine<T> {
     }
 
     /**
+     * Removes state from this state machine
+     *
+     * @param stateClass state class
+     * @return this state machine for chaining
+     */
+    public StateMachine<T> removeState(Class<? extends State<T>> stateClass) {
+        statesByClass.remove(stateClass);
+        return this;
+    }
+
+    /**
+     * @param stateClass state class
+     */
+    public boolean hasState(Class<? extends State<T>> stateClass) {
+        return statesByClass.containsKey(stateClass);
+    }
+
+    /**
      * Pushes the given state to this states stack
      *
      * @param stateClass state type stored in this state machine
@@ -66,7 +84,7 @@ public final class StateMachine<T> {
      * @param state state
      * @return this state machine for chaining
      */
-    public StateMachine<T> pushState(State<T> state) {
+    private StateMachine<T> pushState(State<T> state) {
         if (state == currentState) {
             return this;
         }
@@ -95,7 +113,7 @@ public final class StateMachine<T> {
         return isInState(getState(stateClass));
     }
 
-    public boolean isInState(State<T> state) {
+    private boolean isInState(State<T> state) {
         return currentState == state;
     }
 
@@ -109,16 +127,6 @@ public final class StateMachine<T> {
             throw new NullPointerException("State for class " + stateClass.getSimpleName() + " does not exists");
         }
         return state;
-    }
-
-    public void setGlobalState(State<T> globalState) {
-        if (this.globalState != null) {
-            this.globalState.exit(this);
-        }
-        this.globalState = globalState;
-        if (this.globalState != null) {
-            this.globalState.enter(this);
-        }
     }
 
     /**
@@ -135,12 +143,38 @@ public final class StateMachine<T> {
         }
     }
 
+    /**
+     * Changes this state machine's global state to the given one
+     *
+     * @param stateClass state class
+     */
+    public StateMachine<T> changeGlobalState(Class<? extends State<T>> stateClass) {
+        State<T> state = getState(stateClass);
+        return changeGlobalState(state);
+    }
+
+    private StateMachine<T> changeGlobalState(State<T> globalState) {
+        if (this.globalState != null) {
+            this.globalState.exit(this);
+        }
+        this.globalState = globalState;
+        if (this.globalState != null) {
+            this.globalState.enter(this);
+        }
+        return this;
+    }
+
+    /**
+     * Changes this state machine's current state to the given one
+     *
+     * @param stateClass state class
+     */
     public void changeState(Class<? extends State<T>> stateClass) {
         State<T> state = getState(stateClass);
         changeState(state);
     }
 
-    public void changeState(State<T> state) {
+    private void changeState(State<T> state) {
         State<T> prevState = currentState;
         currentState = state;
         if (prevState != null) {
@@ -165,12 +199,14 @@ public final class StateMachine<T> {
     }
 
     /**
-     * @param message
+     * @param message an object which represents a message
+     * @return true if message was handled by state machine, false otherwise
      */
-    public void pushMessage(Object message) {
+    public boolean pushMessage(Object message) {
         boolean handled = currentState == null || currentState.handleMessage(message);
         if (!handled && globalState != null) {
-            globalState.handleMessage(message);
+            handled = globalState.handleMessage(message);
         }
+        return handled;
     }
 }
