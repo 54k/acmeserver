@@ -74,4 +74,14 @@ abstract class AbstractPromise<D, F> implements Promise<D, F> {
     public boolean isRejected() {
         return status == PromiseStatus.REJECTED;
     }
+
+    @Override
+    public D getResolveResult() {
+        return resolveResult;
+    }
+
+    @Override
+    public F getRejectionReason() {
+        return rejectReason;
+    }
 }
