@@ -4,38 +4,33 @@ import java.util.Collection;
 
 final class DeferredGroup extends Deferred<Void, Void> {
 
-	private final int size;
-	private int resolved;
-	private int rejected;
+    private final int total;
+    private int resolved;
+    private int rejected;
 
-	@SuppressWarnings("unchecked")
-	DeferredGroup(Collection<Promise<?, ?>> promises) {
-		size = promises.size();
-		for (Promise<?, ?> promise : promises) {
-			promise.done(new PromiseHandler() {
-				@Override
-				public void handle(Object result) {
-					resolved++;
-					tryFulfill();
-				}
-			}).fail(new PromiseHandler() {
-				@Override
-				public void handle(Object result) {
-					rejected++;
-					tryFulfill();
-				}
-			});
-		}
-	}
+    @SuppressWarnings("unchecked")
+    DeferredGroup(Collection<Promise<?, ?>> promises, GroupHandler groupHandler) {
+        total = promises.size();
+        PromiseHandler resolveHandler = new PromiseHandler() {
+            @Override
+            public void handle(Object result) {
+                groupHandler.handle(DeferredGroup.this, ++resolved, rejected, total);
+            }
+        };
 
-	private void tryFulfill() {
-		if (resolved + rejected < size) {
-			return;
-		}
-		if (resolved == size) {
-			resolve(null);
-		} else {
-			reject(null);
-		}
-	}
+        PromiseHandler rejectHandler = new PromiseHandler() {
+            @Override
+            public void handle(Object result) {
+                groupHandler.handle(DeferredGroup.this, resolved, ++rejected, total);
+            }
+        };
+
+        for (Promise<?, ?> promise : promises) {
+            promise.then(resolveHandler, rejectHandler);
+        }
+    }
+
+    interface GroupHandler {
+        void handle(DeferredGroup group, int resolved, int rejected, int total);
+    }
 }
