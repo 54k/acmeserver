@@ -6,11 +6,11 @@ import java.util.List;
 public final class QuadTreeNode<T> {
 
 	private final List<QuadTreeNode> surroundingNodes;
-	private final T object;
+    private final T context;
 
-	QuadTreeNode(T object) {
-		this.object = object;
-		surroundingNodes = new ArrayList<>(9);
+    QuadTreeNode(T context) {
+        this.context = context;
+        surroundingNodes = new ArrayList<>(9);
 	}
 
 	void addSurroundingNode(QuadTreeNode node) {
@@ -27,11 +27,11 @@ public final class QuadTreeNode<T> {
 	}
 
 	/**
-	 * Returns an object, associated with this node
-	 *
-	 * @return associated object
-	 */
-	public T getObject() {
-		return object;
-	}
+     * Returns context, associated with this node.
+     *
+     * @return associated context
+     */
+    public T getContext() {
+        return context;
+    }
 }
