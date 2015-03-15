@@ -6,16 +6,17 @@ import java.util.Map;
 
 /**
  * Represents a group of {@link Component}s. It is used to describe what {@link Entity} objects an {@link EntitySystem} should
- * process. Example: {@code Family.all(PositionComponent.class, VelocityComponent.class).get()} Families can't be instantiated
- * directly but must be accessed via a builder ( start with {@code Family.all()}, {@code Family.one()} or {@code Family.exclude()}
- * ), this is to avoid duplicate families that describe the same components.
+ * process. Example: {@code aspect.all(PositionComponent.class, VelocityComponent.class).get()} Families can't be instantiated
+ * directly but must be accessed via a builder ( start with {@code aspect.all()}, {@code aspect.one()} or {@code aspect.exclude()}
+ * ), this is to avoid duplicate aspects that describe the same components.
  */
 public class Aspect {
 
-    private static int familyIndex = 0;
+    private static int aspectIndex = 0;
 
-    private static final Map<String, Aspect> families = new HashMap<>();
+    private static final Map<String, Aspect> aspects = new HashMap<>();
     private static final BitSet zeroBits = new BitSet();
+
     public static final Aspect ALL = Aspect.all().get();
 
     private final BitSet all;
@@ -24,24 +25,24 @@ public class Aspect {
     private final int index;
 
     /**
-     * Private constructor, use static method Family.getFamilyFor()
+     * Private constructor
      */
     private Aspect(BitSet all, BitSet any, BitSet exclude) {
         this.all = all;
         this.one = any;
         this.exclude = exclude;
-        this.index = familyIndex++;
+        this.index = aspectIndex++;
     }
 
     /**
-     * @return This family's unique index
+     * @return This aspect's unique index
      */
     public int getIndex() {
         return this.index;
     }
 
     /**
-     * @return Whether the entities matches the family requirements or not
+     * @return Whether the entities matches the aspect requirements or not
      */
     public boolean matches(Entity entity) {
         BitSet entityComponentBits = entity.getComponentBits();
@@ -69,7 +70,7 @@ public class Aspect {
 
     /**
      * @param componentTypes entities will have to contain all of the specified components.
-     * @return A Builder singleton instance to get a family
+     * @return A Builder singleton instance to get a aspect
      */
     @SafeVarargs
     public static Builder all(Class<? extends Component>... componentTypes) {
@@ -78,7 +79,7 @@ public class Aspect {
 
     /**
      * @param nodeClasses entities will have to contain all of the specified components.
-     * @return A Builder singleton instance to get a family
+     * @return A Builder singleton instance to get a aspect
      */
     @SafeVarargs
     public static Builder allNodes(Class<? extends Node>... nodeClasses) {
@@ -87,7 +88,7 @@ public class Aspect {
 
     /**
      * @param componentTypes entities will have to contain at least one of the specified components.
-     * @return A Builder singleton instance to get a family
+     * @return A Builder singleton instance to get a aspect
      */
     @SafeVarargs
     public static Builder one(Class<? extends Component>... componentTypes) {
@@ -96,7 +97,7 @@ public class Aspect {
 
     /**
      * @param nodeClasses entities will have to contain at least one of the specified nodes.
-     * @return A Builder singleton instance to get a family
+     * @return A Builder singleton instance to get a aspect
      */
     @SafeVarargs
     public static Builder oneNodes(Class<? extends Node>... nodeClasses) {
@@ -105,7 +106,7 @@ public class Aspect {
 
     /**
      * @param componentTypes entities cannot contain any of the specified components.
-     * @return A Builder singleton instance to get a family
+     * @return A Builder singleton instance to get a aspect
      */
     @SafeVarargs
     public static Builder exclude(Class<? extends Component>... componentTypes) {
@@ -114,7 +115,7 @@ public class Aspect {
 
     /**
      * @param nodeClasses entities cannot contain any of the specified nodes.
-     * @return A Builder singleton instance to get a family
+     * @return A Builder singleton instance to get a aspect
      */
     @SafeVarargs
     public static Builder excludeNodes(Class<? extends Node>... nodeClasses) {
@@ -129,7 +130,7 @@ public class Aspect {
         /**
          * Resets the builder instance
          *
-         * @return A Builder singleton instance to get a family
+         * @return A Builder singleton instance to get a aspect
          */
         public Builder reset() {
             all = zeroBits;
@@ -211,14 +212,14 @@ public class Aspect {
         }
 
         /**
-         * @return A family for the configured component types
+         * @return A aspect for the configured component types
          */
         public Aspect get() {
             String hash = getHash(all, one, exclude);
-            Aspect aspect = families.get(hash);
+            Aspect aspect = aspects.get(hash);
             if (aspect == null) {
                 aspect = new Aspect(all, one, exclude);
-                families.put(hash, aspect);
+                aspects.put(hash, aspect);
             }
             return aspect;
         }
