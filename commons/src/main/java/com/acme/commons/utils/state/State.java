@@ -1,4 +1,4 @@
-package com.acme.commons.utils.fsm;
+package com.acme.commons.utils.state;
 
 public interface State<T> {
 

@@ -1,4 +1,4 @@
-package com.acme.commons.utils.fsm;
+package com.acme.commons.utils.state;
 
 import java.util.Deque;
 import java.util.HashMap;
