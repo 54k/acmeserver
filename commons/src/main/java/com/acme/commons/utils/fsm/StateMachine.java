@@ -89,7 +89,7 @@ public final class StateMachine<T> {
 			return this;
 		}
 
-		statesStack.addFirst(currentState);
+		statesStack.push(currentState);
 		changeState(state);
 		return this;
 	}
@@ -104,7 +104,7 @@ public final class StateMachine<T> {
 		if (statesStack.isEmpty()) {
 			throw new IllegalStateException("States stack is empty");
 		}
-		State<T> previousState = statesStack.pollFirst();
+		State<T> previousState = statesStack.pop();
 		changeState(previousState);
 		return this;
 	}
