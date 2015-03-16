@@ -14,9 +14,9 @@ import java.util.concurrent.Callable;
 
 public class SchedulerSystem extends EntitySystem implements EntityListener {
 
-	private DeltaTimeScheduler scheduler;
-	private Map<Entity, DeltaTimeScheduler> entitySchedulers;
-	private SchedulerPool schedulerPool;
+	private final DeltaTimeScheduler scheduler;
+	private final Map<Entity, DeltaTimeScheduler> entitySchedulers;
+	private final SchedulerPool schedulerPool;
 
 	public SchedulerSystem() {
 		this(0);
