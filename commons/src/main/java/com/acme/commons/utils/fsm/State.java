@@ -27,8 +27,9 @@ public interface State<T> {
 	 * Handles received message. The message is first routed to the current state. If the current state does not deal with the
 	 * message, it's routed to the global state's message handler.
 	 *
+	 * @param fsm     the calling state machine
 	 * @param message message
 	 * @return true if message has been successfully handled; false otherwise.
 	 */
-	boolean handleMessage(Object message);
+	boolean handleMessage(StateMachine<T> fsm, Object message);
 }
