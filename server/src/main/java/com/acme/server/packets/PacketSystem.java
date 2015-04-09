@@ -1,14 +1,14 @@
 package com.acme.server.packets;
 
-import com.acme.engine.ecs.core.ComponentMapper;
-import com.acme.engine.ecs.core.Engine;
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.mechanics.network.*;
+import com.acme.commons.network.*;
+import com.acme.commons.collections.Predicates;
+import com.acme.ecs.core.*;
+import com.acme.server.entities.EntityBuilders;
 import com.acme.server.entities.EntityFactory;
+import com.acme.server.model.component.KnownListComponent;
+import com.acme.server.model.component.PositionComponent;
+import com.acme.server.model.node.PositionNode;
 import com.acme.server.packets.inbound.*;
-import com.acme.server.position.KnownList;
-import com.acme.server.position.Transform;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,8 +18,8 @@ import java.io.IOException;
 public class PacketSystem extends NetworkIteratingSystem {
 
     private ComponentMapper<SessionComponent> scm;
-    private ComponentMapper<KnownList> kcm;
-    private ComponentMapper<Transform> pcm;
+    private ComponentMapper<KnownListComponent> kcm;
+    private ComponentMapper<PositionComponent> pcm;
 
     private Engine engine;
     private EntityFactory entityFactory;
@@ -78,7 +78,7 @@ public class PacketSystem extends NetworkIteratingSystem {
     }
 
     @Override
-    protected com.acme.engine.mechanics.network.PacketReader getPacketReader() {
+    protected com.acme.commons.network.PacketReader getPacketReader() {
         return packetReader;
     }
 
@@ -99,15 +99,18 @@ public class PacketSystem extends NetworkIteratingSystem {
         sendToKnownList(sender, packet);
     }
 
+    private static Aspect playerAspect = EntityBuilders.PLAYER_TYPE.getAspect();
+
     public void sendToKnownList(Entity sender, OutboundPacket packet) {
-        kcm.get(sender).getKnownEntities().getPlayers().forEach(e -> sendPacket(e, packet));
+        kcm.get(sender).knownNodes.query(Predicates.aspect(playerAspect)).transform().forEach(e -> sendPacket(e, packet));
     }
 
     public void sendToSelfAndRegion(Entity sender, OutboundPacket packet) {
         sendPacket(sender, packet);
-        pcm.get(sender).getRegion()
-                //                .getSurroundingRegions()
-                .getEntities().getPlayers()
+        sender.getNode(PositionNode.class).getPosition()
+                .region
+                        //                .getSurroundingRegions()
+                .getEntities().query(Predicates.aspect(playerAspect))
                 //                .stream().flatMap(r -> r.getPlayers().stream())
                 .forEach(e -> sendPacket(e, packet));
     }

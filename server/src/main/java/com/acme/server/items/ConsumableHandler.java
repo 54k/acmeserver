@@ -1,6 +1,6 @@
 package com.acme.server.items;
 
-import com.acme.engine.ecs.core.Entity;
+import com.acme.ecs.core.Entity;
 
 public interface ConsumableHandler {
 

@@ -1,7 +1,7 @@
 package com.acme.server.entities;
 
-import com.acme.engine.ecs.entities.EntityBuilder;
-import com.acme.engine.mechanics.brains.Brain;
+import com.acme.commons.brains.Brain;
+import com.acme.ecs.entities.EntityBuilder;
 import com.acme.server.combat.Combat;
 import com.acme.server.combat.HateList;
 import com.acme.server.combat.Stats;
@@ -12,9 +12,9 @@ import com.acme.server.items.Armor;
 import com.acme.server.items.Consumable;
 import com.acme.server.items.Weapon;
 import com.acme.server.managers.PlayerComponent;
-import com.acme.server.managers.WorldComponent;
-import com.acme.server.position.KnownList;
-import com.acme.server.position.Transform;
+import com.acme.server.model.component.KnownListComponent;
+import com.acme.server.model.component.PositionComponent;
+import com.acme.server.model.component.WorldComponent;
 
 public final class EntityBuilders {
     private EntityBuilders() {
@@ -23,7 +23,7 @@ public final class EntityBuilders {
     public static final EntityBuilder BASE_TYPE = new EntityBuilder();
 
     static {
-        BASE_TYPE.add(Transform.class);
+        BASE_TYPE.add(PositionComponent.class);
         BASE_TYPE.add(WorldComponent.class);
         BASE_TYPE.add(EntityType.class);
     }
@@ -32,7 +32,7 @@ public final class EntityBuilders {
 
     static {
         PLAYER_TYPE.add(PlayerComponent.class);
-        PLAYER_TYPE.add(KnownList.class);
+        PLAYER_TYPE.add(KnownListComponent.class);
         PLAYER_TYPE.add(Inventory.class);
         PLAYER_TYPE.add(Stats.class);
         PLAYER_TYPE.add(Combat.class);
@@ -41,7 +41,7 @@ public final class EntityBuilders {
     public static final EntityBuilder CREATURE_TYPE = new EntityBuilder(BASE_TYPE);
 
     static {
-        CREATURE_TYPE.add(KnownList.class);
+        CREATURE_TYPE.add(KnownListComponent.class);
         CREATURE_TYPE.add(Inventory.class);
         CREATURE_TYPE.add(Stats.class);
         CREATURE_TYPE.add(LootTable.class);

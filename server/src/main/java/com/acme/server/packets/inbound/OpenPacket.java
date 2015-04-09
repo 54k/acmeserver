@@ -1,9 +1,9 @@
 package com.acme.server.packets.inbound;
 
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.mechanics.network.InboundPacket;
+import com.acme.commons.network.InboundPacket;
+import com.acme.ecs.core.Wire;
 import com.acme.server.inventory.PickupSystem;
-import com.acme.server.managers.WorldManager;
+import com.acme.server.model.system.passive.WorldSystem;
 
 @Wire
 public class OpenPacket extends InboundPacket {
@@ -12,7 +12,7 @@ public class OpenPacket extends InboundPacket {
 
     private PickupSystem chestManager;
 
-    private WorldManager worldManager;
+    private WorldSystem worldSystem;
 
     @Override
     public void read() {
@@ -21,6 +21,6 @@ public class OpenPacket extends InboundPacket {
 
     @Override
     public void run() {
-        chestManager.openChest(worldManager.getEntityById(chestId));
+        chestManager.openChest(worldSystem.getEntityById(chestId));
     }
 }

@@ -1,18 +1,22 @@
 package com.acme.server.inventory;
 
-import com.acme.engine.ecs.core.*;
-import com.acme.engine.ecs.systems.PassiveSystem;
-import com.acme.engine.mechanics.timer.SchedulerSystem;
+import com.acme.commons.timer.SchedulerSystem;
+import com.acme.ecs.core.*;
+import com.acme.ecs.systems.PassiveSystem;
 import com.acme.server.combat.CombatListener;
 import com.acme.server.entities.EntityFactory;
 import com.acme.server.impacts.BlinkImpact;
 import com.acme.server.inventory.LootTable.LootEntry;
-import com.acme.server.managers.WorldComponent;
-import com.acme.server.managers.WorldManager;
-import com.acme.server.position.Transform;
+import com.acme.server.model.component.PositionComponent;
+import com.acme.server.model.component.WorldComponent;
+import com.acme.server.model.node.PositionNode;
+import com.acme.server.model.node.WorldNode;
+import com.acme.server.model.system.active.PositionSystem;
+import com.acme.server.model.system.passive.WorldSystem;
 import com.acme.server.utils.PositionUtils;
 import com.acme.server.utils.Rnd;
 import com.acme.server.world.Area;
+import com.acme.server.world.Instance;
 import com.acme.server.world.Position;
 
 import java.util.List;
@@ -21,16 +25,17 @@ import java.util.stream.Collectors;
 @Wire
 public class LootTableSystem extends PassiveSystem implements CombatListener {
 
-    private static final Family lootTableFamily = Family.all(LootTable.class).get();
+    private static final Aspect LOOT_TABLE_ASPECT = Aspect.all(LootTable.class).get();
 
     private ComponentMapper<WorldComponent> worldCm;
     private ComponentMapper<LootTable> lootTableCm;
-    private ComponentMapper<Transform> transformCm;
+    private ComponentMapper<PositionComponent> transformCm;
 
     private Engine engine;
     private SchedulerSystem schedulerSystem;
     private EntityFactory entityFactory;
-    private WorldManager worldManager;
+    private WorldSystem worldSystem;
+	private PositionSystem positionSystem;
 
     @Override
     public void onEntityDamaged(Entity attacker, Entity victim, int damage) {
@@ -38,7 +43,7 @@ public class LootTableSystem extends PassiveSystem implements CombatListener {
 
     @Override
     public void onEntityKilled(Entity killer, Entity victim) {
-        if (lootTableFamily.matches(victim)) {
+        if (LOOT_TABLE_ASPECT.matches(victim)) {
             dropItemsFrom(victim);
         }
     }
@@ -46,17 +51,16 @@ public class LootTableSystem extends PassiveSystem implements CombatListener {
     public void dropItemsFrom(Entity entity) {
         List<LootEntry> lootEntries = getSucceedDrops(entity);
 
-        WorldComponent worldComponent = worldCm.get(entity);
-        Transform transform = transformCm.get(entity);
-        Area dropArea = new Area(transform.getX() - 1, transform.getY() - 1, 2, 2);
+        WorldComponent worldTransform = worldCm.get(entity);
+        PositionComponent transform = transformCm.get(entity);
+        Area dropArea = new Area(transform.position.getX() - 1, transform.position.getY() - 1, 2, 2);
 
         for (LootEntry lootEntry : lootEntries) {
             Entity dropEntity = entityFactory.createEntity(lootEntry.getType());
-            worldCm.get(dropEntity).setInstance(worldComponent.getInstance());
             Position dropPosition = PositionUtils.getRandomPositionInside(dropArea);
-            transformCm.get(dropEntity).setPosition(dropPosition);
+            transformCm.get(dropEntity).position.setPosition(dropPosition);
             scheduleDecay(dropEntity);
-            spawnDrop(dropEntity);
+            spawnDrop(dropEntity, worldTransform.instance);
         }
     }
 
@@ -77,16 +81,16 @@ public class LootTableSystem extends PassiveSystem implements CombatListener {
 
     private void scheduleDecay0(Entity entity) {
         schedulerSystem.scheduleForEntity(entity, () -> {
-            worldManager.decay(entity);
-            worldManager.removeFromWorld(entity);
+            positionSystem.decay(entity.getNode(PositionNode.class));
+            worldSystem.removeFromWorld(entity.getNode(WorldNode.class));
             engine.removeEntity(entity);
         }, 3000);
     }
 
-    private void spawnDrop(Entity entity) {
+    private void spawnDrop(Entity entity, Instance instance) {
         schedulerSystem.scheduleForEntity(entity, () -> {
-            worldManager.bringIntoWorld(entity);
-            worldManager.spawn(entity);
+            worldSystem.addToWorld(entity.getNode(WorldNode.class), instance);
+            positionSystem.spawn(entity.getNode(PositionNode.class));
             return entity;
         }).done(this::scheduleDecay);
     }

@@ -1,7 +1,7 @@
 package com.acme.server.packets.outbound;
 
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.mechanics.network.OutboundPacket;
+import com.acme.ecs.core.Entity;
+import com.acme.commons.network.OutboundPacket;
 import com.acme.server.packets.OpCodes;
 
 public class ChatPacket extends OutboundPacket {

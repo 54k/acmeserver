@@ -1,9 +1,9 @@
 package com.acme.server.console;
 
-import com.acme.engine.ecs.core.Engine;
-import com.acme.engine.mechanics.network.SessionComponent;
+import com.acme.commons.network.SessionComponent;
+import com.acme.ecs.core.Engine;
 import com.acme.server.BrowserQuest;
-import com.acme.server.managers.WorldManager;
+import com.acme.server.model.system.passive.WorldSystem;
 import org.apache.felix.service.command.Descriptor;
 
 public class PlayerCommands {
@@ -17,12 +17,12 @@ public class PlayerCommands {
     @Descriptor("show online players")
     public void online() {
         Engine engine = getEngine();
-        System.out.println(engine.getSystem(WorldManager.class).getPlayers());
+        System.out.println(engine.getSystem(WorldSystem.class).getPlayers());
     }
 
     @Descriptor("kick player")
     public void kick(@Descriptor("player id") long id) {
-        getEngine().getSystem(WorldManager.class).getPlayerById(id)
+        getEngine().getSystem(WorldSystem.class).getPlayerById(id)
                 .getComponent(SessionComponent.class)
                 .getSession().close();
     }

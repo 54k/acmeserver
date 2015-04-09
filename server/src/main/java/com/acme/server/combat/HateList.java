@@ -1,7 +1,7 @@
 package com.acme.server.combat;
 
-import com.acme.engine.ecs.core.Component;
-import com.acme.engine.ecs.core.Entity;
+import com.acme.ecs.core.Component;
+import com.acme.ecs.core.Entity;
 
 import java.util.HashMap;
 import java.util.Map;

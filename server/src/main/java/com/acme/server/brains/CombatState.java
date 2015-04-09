@@ -1,14 +1,15 @@
 package com.acme.server.brains;
 
-import com.acme.engine.ecs.core.Entity;
-import com.acme.engine.ecs.core.Wire;
-import com.acme.engine.mechanics.brains.BrainState;
-import com.acme.engine.mechanics.brains.BrainStateMachine;
+import com.acme.commons.brains.BrainState;
+import com.acme.commons.brains.BrainStateMachine;
+import com.acme.ecs.core.Entity;
+import com.acme.ecs.core.Wire;
 import com.acme.server.combat.CombatSystem;
 import com.acme.server.combat.HateListSystem;
+import com.acme.server.model.component.PositionComponent;
+import com.acme.server.model.node.PositionNode;
+import com.acme.server.model.system.active.PositionSystem;
 import com.acme.server.packets.PacketSystem;
-import com.acme.server.position.MovementSystem;
-import com.acme.server.position.WorldNode;
 import com.acme.server.world.Position;
 
 @Wire
@@ -16,7 +17,7 @@ public class CombatState implements BrainState<Entity> {
 
     private CombatSystem combatSystem;
     private HateListSystem hateListSystem;
-    private MovementSystem movementSystem;
+    private PositionSystem positionSystem;
     private PacketSystem packetSystem;
 
     @Override
@@ -37,8 +38,8 @@ public class CombatState implements BrainState<Entity> {
             combatSystem.setTarget(owner, mostHated);
             combatSystem.engage(owner, mostHated);
         } else {
-            Position targetPosition = movementSystem.getPosition(target);
-            movementSystem.setPosition(owner.getNode(WorldNode.class), targetPosition);
+            Position targetPosition = target.getComponent(PositionComponent.class).position;
+            positionSystem.teleportTo(owner.getNode(PositionNode.class), targetPosition);
         }
     }
 
